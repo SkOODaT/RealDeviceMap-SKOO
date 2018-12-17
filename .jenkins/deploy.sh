@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Building build image..."
-docker image build -f .jenkins/Dockerfile_build -t realdevicemap/realdevicemap-build:latest ${PWD}
+docker image build -f .jenkins/Dockerfile_build -t skoodat/rdm-build:latest ${PWD}
 echo "Building build image sucessfull"
 
 echo "Running swift build..."
@@ -24,9 +24,9 @@ exit -1
 fi
 
 echo "Building deploy build..."
-docker image build -f .jenkins/Dockerfile_deploy -t realdevicemap/realdevicemap-beta:latest ${PWD}
+docker image build -f .jenkins/Dockerfile_deploy -t skoodat/rdm:latest ${PWD}
 echo "Building deploy image sucessfull"
 
 echo "Pushing image..."
-docker push realdevicemap/realdevicemap-beta:latest
+docker push skoodat/rdm:latest
 echo "Pushing image sucessfull"

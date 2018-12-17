@@ -1,4 +1,4 @@
-FROM realdevicemap/realdevicemap-build:latest
+FROM skoodat/rdm-build:latest
 COPY .build_lin/release/RealDeviceMap /perfect-deployed/realdevicemap/
 COPY resources /perfect-deployed/realdevicemap/resources
 RUN rm -rf /var/lib/apt/lists/*
