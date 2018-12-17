@@ -1040,6 +1040,17 @@ function updateCellsLoop() {
 function getPokemonPopupContent(pokemon) {
 	const despawnDate = new Date(pokemon.expire_timestamp * 1000);
 
+	let pokeGender = '';
+    if (pokemon.gender !== null) {
+	    if (pokemon.gender === 1) {
+		    pokeGender = '♂'
+		} else if (pokemon.gender === 2) {
+		    pokeGender = '♀'
+		} else if (pokemon.gender === 3) {
+		    pokeGender = '⚲'
+		}
+    }
+
     let content = '<center>';
 
     let pokemonName;
@@ -1049,7 +1060,11 @@ function getPokemonPopupContent(pokemon) {
         pokemonName = getPokemonName(pokemon.pokemon_id);
     }
 
-	content += '<h6><b>'+pokemonName+'</b></h6>';
+	content += '<h6><b>'+ pokemonName + ' ' + pokeGender +'</b></h6>';
+
+	if (pokemonName !== null) {
+		content += '<img src="static/img/pokemon/'+ pokemon.pokemon_id +'.png" height="50" width="50"/><br>';
+	}
 
 	if (pokemon.expire_timestamp_true) {
 		content += '<b>Despawn Time:</b> '
@@ -1149,7 +1164,10 @@ function getPokestopPopupContent(pokestop) {
     if (updatedDate) {
         content += "<b>Last Updated:</b> " + updatedDate.toLocaleDateString() + ' ' + updatedDate.toLocaleTimeString() + ' (' + getTimeSince(updatedDate) + ')<br>';
     }
-
+    const modifiedDate = new Date(pokestop.last_modified_timestamp*1000);
+    if (modifiedDate) {
+        content += "<b>Last Modified:</b> " + modifiedDate.toLocaleDateString() + ' ' + modifiedDate.toLocaleTimeString() + ' (' + getTimeSince(modifiedDate) + ')<br>';
+    }
     content += '<br><a href="https://www.google.com/maps/place/'+pokestop.lat+','+pokestop.lon+'" target="_blank" title="Open in Google Maps"><b>Navigate</b></a>';
     content += '</center>';
     return content;
@@ -1175,12 +1193,30 @@ function getGymPopupContent(gym) {
 
     let hasStatus = false;
     if (gym.ex_raid_eligible === true) {
-        content += '<b>Gym is EX-Raid eligible</b><br>';
+        content += '<b>Gym is EX-Raid Eligible</b><br>';
         hasStatus = true;
     }
     if (gym.in_battle === true) {
-        content += '<b>Gym is under attack!</b><br>';
+        content += '<b>Gym is Under Attack!</b><br>';
         hasStatus = true;
+    }
+
+    if (gym.team_id !== null) {
+	    if (gym.team_id === 1) {
+            content += 'Mystic Gym<br>';
+		} else if (gym.team_id === 2) {
+            content += 'Valor Gym<br>';
+		} else if (gym.team_id === 3) {
+            content += 'Instinct Gym<br>';
+		} else {
+		    content += 'Netural Gym<br>';
+		}
+		hasStatus = true;
+    }
+
+    if (gym.availble_slots !== null) {
+        content += 'Slots Open: '+gym.availble_slots+'<br>';
+		hasStatus = true;
     }
 
     if (hasStatus) {
@@ -1189,6 +1225,10 @@ function getGymPopupContent(gym) {
 
     const isRaid = raidEndDate >= now && parseInt(gym.raid_level) > 0;
     const isRaidBattle = raidBattleDate <= now && isRaid;
+
+    if (isRaid && gym.raid_is_exclusive === 1) {
+        content += '<b>GYM HAS EXRAID!</b><br>';
+    }
 
 	if (isRaid && gym.raid_pokemon_id !== 0 && gym.raid_pokemon_id !== null) {
         let pokemonName;
