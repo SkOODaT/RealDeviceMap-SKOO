@@ -362,7 +362,7 @@ class Account {
         let sql = """
             SELECT COUNT(*)
             FROM account
-            WHERE spins >= 500
+            WHERE spins >= 2000
         """
         
         let mysqlStmt = MySQLStmt(mysql)
