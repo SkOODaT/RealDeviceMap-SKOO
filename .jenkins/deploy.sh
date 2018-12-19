@@ -14,7 +14,7 @@ rm -rf ./.build_lin/*
 rm -rf ./.packages_lin/*
 fi
 
-docker run -i -v "${PWD}:/perfectbuild" -v "${PWD}/.packages_lin:/perfectbuild/Packages" -w /perfectbuild --rm -t "realdevicemap/realdevicemap-build" swift build --build-path=/perfectbuild/.build_lin -c release
+docker run -i -v "${PWD}:/perfectbuild" -v "${PWD}/.packages_lin:/perfectbuild/Packages" -w /perfectbuild --rm -t "skoodat/rdm-build" swift build --build-path=/perfectbuild/.build_lin -c release
 
 if [ $? -eq 0 ]; then
 echo "Running swift build sucessfull"
