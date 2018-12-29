@@ -26,7 +26,7 @@ class WebReqeustHandler {
     static var avilableFormsJson: String = ""
     static var avilableItemJson: String = ""
     static var enableRegister: Bool = true
-    static var tileservers = [String: String]()
+    static var tileservers = [String: [String: String]]()
     
     private static let sessionDriver = MySQLSessions()
             
@@ -156,8 +156,13 @@ class WebReqeustHandler {
             data["pokemon_time_new"] = Pokemon.defaultTimeUnseen
             data["pokemon_time_old"] = Pokemon.defaultTimeReseen
             var tileserverString = ""
-            for tileserver in tileservers {
-                tileserverString += "\(tileserver.key);\(tileserver.value)\n"
+            
+            let tileserversSorted = tileservers.sorted { (rhs, lhs) -> Bool in
+                return rhs.key == "Default" || rhs.key < lhs.key
+            }
+            
+            for tileserver in tileserversSorted {
+                tileserverString += "\(tileserver.key);\(tileserver.value["url"] ?? "");\(tileserver.value["attribution"] ?? "")\n"
             }
             data["tileservers"] = tileserverString
         case .dashboardDevices:
@@ -392,9 +397,9 @@ class WebReqeustHandler {
             data["start_lon"] = request.param(name: "lon")?.toDouble() ?? startLon
             data["start_zoom"] = request.param(name: "zoom")?.toUInt8() ?? startZoom
             data["max_pokemon_id"] = maxPokemonId
-            data["avilable_forms_json"] = avilableFormsJson
-            data["avilable_items_json"] = avilableItemJson
-            data["avilable_tileservers_json"] = tileservers.jsonEncodeForceTry() ?? ""
+            data["avilable_forms_json"] = avilableFormsJson.replacingOccurrences(of: "\\\"", with: "\\\\\"")
+            data["avilable_items_json"] = avilableItemJson.replacingOccurrences(of: "\\\"", with: "\\\\\"")
+            data["avilable_tileservers_json"] = (tileservers.jsonEncodeForceTry() ?? "").replacingOccurrences(of: "\\\"", with: "\\\\\"")
         default:
             break
         }
@@ -621,11 +626,11 @@ class WebReqeustHandler {
         let enableRegister = request.param(name: "enable_register_new") != nil
         let enableClearing = request.param(name: "enable_clearing") != nil
         
-        var tileservers = [String: String]()
+        var tileservers = [String: [String: String]]()
         for tileserverString in tileserversString.trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: "\n") {
             let split = tileserverString.components(separatedBy: ";")
-            if split.count == 2 {
-                tileservers[split[0]] = split[1]
+            if split.count == 3 {
+                tileservers[split[0]] = ["url": split[1], "attribution": split[2]]
             } else {
                 data["show_error"] = true
                 return data
