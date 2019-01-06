@@ -327,6 +327,7 @@ class WebHookRequestHandler {
                         }
                         if gym != nil {
                             gym!.addDetails(fortData: fort)
+							gym!.addDetails2(fortData: fort)
                             try? gym!.save(mysql: mysql)
                         }
                     } else if fort.type == .checkpoint {

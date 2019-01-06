@@ -207,7 +207,20 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
         self.teamId = fortData.teamColor.rawValue.toUInt8()
         
     }
-    
+
+    public func addDetails2(fortData: POGOProtos_Networking_Responses_GymGetInfoResponse) {
+        print(fortData)
+        //self.id = fortData.fortID
+        //self.lat = fortData.latitude
+        //self.lon = fortData.longitude
+        //if !fortData.imageUrls.isEmpty {
+        //    self.url = fortData.imageUrls[0]
+        //}
+        //self.name = fortData.name
+        //self.teamId = fortData.teamColor.rawValue.toUInt8()
+        
+    }
+
     public func save(mysql: MySQL?=nil) throws {
         
         guard let mysql = mysql ?? DBController.global.mysql else {
