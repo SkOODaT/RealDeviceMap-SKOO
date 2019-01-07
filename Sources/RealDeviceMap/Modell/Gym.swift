@@ -208,6 +208,19 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
         self.teamId = fortData.teamColor.rawValue.toUInt8()
         
     }
+
+    public func addGymDetails(fortData: POGOProtos_Networking_Responses_GymGetInfoResponse) {
+
+        self.id = fortData.gymStatusAndDefenders.pokemonFortProto.id
+        self.lat = fortData.gymStatusAndDefenders.pokemonFortProto.latitude
+        self.lon = fortData.gymStatusAndDefenders.pokemonFortProto.longitude
+        if !fortData.url.isEmpty {
+            self.url = fortData.url
+        }
+        self.name = fortData.name
+        self.teamId = fortData.gymStatusAndDefenders.pokemonFortProto.ownedByTeam.rawValue.toUInt8()
+		
+    }
     
     public func save(mysql: MySQL?=nil) throws {
         
