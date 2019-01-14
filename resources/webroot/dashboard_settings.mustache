@@ -37,6 +37,10 @@
                 Tileservers (one per line, Name;URL, must include {x}, {y} and {z})
                 <textarea class="form-control" rows="2" name="tileservers" required>{{{tileservers}}}</textarea>
             </div>
+            <div class="form-group">
+                Cities (one per line, Name;Lat;Lon;Zoom [Zoom is optional])
+                <textarea class="form-control" rows="2" name="cities" required>{{{cities}}}</textarea>
+            </div>
             <br>
             <h4>Pokemon</h4>
             <div class="form-group">
@@ -69,7 +73,7 @@
             </div>
             <br>
             <div class="checkbox">
-                <label><input type="checkbox" name="enable_clearing" value="enable_clearing" {{#enable_clearing}}checked{{/enable_clearing}}> Enable Clearing of removed Pokestops/Gyms (Beta)</label>
+                <label><input type="checkbox" name="enable_clearing" value="enable_clearing" {{#enable_clearing}}checked{{/enable_clearing}}> Enable Clearing of removed Pokestops/Gyms</label>
             </div>
             <br>
             <div class="checkbox">

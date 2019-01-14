@@ -457,7 +457,7 @@ class ApiRequestHandler {
                         deviceData["last_seen"] = ["timestamp": device.lastSeen, "formatted": formattedDate]
                         deviceData["buttons"] = "<a href=\"/dashboard/device/assign/\(device.uuid.encodeUrl()!)\" role=\"button\" class=\"btn btn-primary\">Assign Instance</a>"
                     } else {
-                        deviceData["last_seen"] = device.lastSeen
+                        deviceData["last_seen"] = device.lastSeen as Any
                     }
                     jsonArray.append(deviceData)
                 }
@@ -489,7 +489,16 @@ class ApiRequestHandler {
                         instanceData["type"] = "Pokemon IV"
                     }
                     
-                    instanceData["status"] = InstanceController.global.getInstanceStatus(instance: instance)
+                    if formatted {
+                        let status = InstanceController.global.getInstanceStatus(instance: instance, formatted: true)
+                        if status is String {
+                            instanceData["status"] = status as! String
+                        } else {
+                            instanceData["status"] = "?"
+                        }
+                    } else {
+                        instanceData["status"] = InstanceController.global.getInstanceStatus(instance: instance, formatted: false) as Any
+                    }
                     
                     if formatted {
                         instanceData["buttons"] = "<a href=\"/dashboard/instance/edit/\(instance.name.encodeUrl()!)\" role=\"button\" class=\"btn btn-primary\">Edit Instance</a>"

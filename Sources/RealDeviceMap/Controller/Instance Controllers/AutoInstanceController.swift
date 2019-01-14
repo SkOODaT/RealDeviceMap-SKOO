@@ -209,9 +209,9 @@ class AutoInstanceController: InstanceControllerProto {
                     let cell = S2Cell(cellId: target)
                     let center = S2LatLng(point: cell.center)
                     
-                    // Get all cells rouching a 500m circle at center
+                    // Get all cells touching a 630 (-5m for error) circle at center
                     let coord = center.coord
-                    let radians = 0.00007839251445558 // 500m
+                    let radians = 0.00009799064306948 // 625m
                     let centerNormalizedPoint = center.normalized.point
                     let circle = S2Cap(axis: centerNormalizedPoint, height: (radians*radians)/2)
                     let coverer = S2RegionCoverer()
@@ -437,7 +437,7 @@ class AutoInstanceController: InstanceControllerProto {
 
     }
     
-    func getStatus() -> String {
+    func getStatus(formatted: Bool) -> JSONConvertible? {
         switch type {
         case .quest:
             bootstrappLock.lock()
@@ -452,7 +452,16 @@ class AutoInstanceController: InstanceControllerProto {
                 } else {
                     percentage = 100
                 }
-                return "Bootstrapping \(count)/\(totalCount) (\(percentage.rounded(toStringWithDecimals: 1))%)"
+                if formatted {
+                    return "Bootstrapping \(count)/\(totalCount) (\(percentage.rounded(toStringWithDecimals: 1))%)"
+                } else {
+                    return [
+                        "bootstrapping": [
+                            "current_count": count,
+                            "total_count": totalCount
+                        ],
+                    ]
+                }
             } else {
                 bootstrappLock.unlock()
                 stopsLock.lock()
@@ -487,7 +496,17 @@ class AutoInstanceController: InstanceControllerProto {
                 } else {
                     percentageReal = 100
                 }
-                return "Done: \(currentCountDb)|\(currentCount)/\(maxCount) (\(percentageReal.rounded(toStringWithDecimals: 1))|\(percentage.rounded(toStringWithDecimals: 1))%)"
+                if formatted {
+                    return "Done: \(currentCountDb)|\(currentCount)/\(maxCount) (\(percentageReal.rounded(toStringWithDecimals: 1))|\(percentage.rounded(toStringWithDecimals: 1))%)"
+                } else {
+                    return [
+                        "quests": [
+                            "current_count_db": currentCountDb,
+                            "current_count_internal": currentCount,
+                            "total_count": maxCount
+                        ]
+                    ]
+                }
             }
         }
     }

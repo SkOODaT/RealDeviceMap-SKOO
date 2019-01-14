@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import PerfectLib
+import PerfectThread
 import Turf
 
 protocol InstanceControllerDelegate {
@@ -18,7 +20,7 @@ protocol InstanceControllerProto {
     var maxLevel: UInt8 { get }
     var delegate: InstanceControllerDelegate? { get set }
     func getTask(uuid: String, username: String?) -> [String: Any]
-    func getStatus() -> String
+    func getStatus(formatted: Bool) -> JSONConvertible?
     func reload()
     func stop()
 }
@@ -83,10 +85,12 @@ class InstanceController {
             let minLevel = instance.data["min_level"] as? UInt8 ?? (instance.data["min_level"] as? Int)?.toUInt8() ?? 0
             let maxLevel = instance.data["max_level"] as? UInt8 ?? (instance.data["max_level"] as? Int)?.toUInt8() ?? 29
             
-            if instance.type == .circlePokemon { // TODO: - Smart Raid
+            if instance.type == .circlePokemon {
                 instanceController = CircleInstanceController(name: instance.name, coords: coordsArray, type: .pokemon, minLevel: minLevel, maxLevel: maxLevel)
-            } else {
+            } else if instance.type == .circleRaid {
                 instanceController = CircleInstanceController(name: instance.name, coords: coordsArray, type: .raid, minLevel: minLevel, maxLevel: maxLevel)
+            } else {
+                instanceController = CircleSmartRaidInstanceController(name: instance.name, coords: coordsArray, minLevel: minLevel, maxLevel: maxLevel)
             }
         case .pokemonIV:
             fallthrough
@@ -211,11 +215,15 @@ class InstanceController {
         return deviceUUIDS
     }
     
-    public func getInstanceStatus(instance: Instance) -> String {
+    public func getInstanceStatus(instance: Instance, formatted: Bool) -> JSONConvertible? {
         if let instanceProto = instancesByInstanceName[instance.name] {
-            return instanceProto.getStatus()
+            return instanceProto.getStatus(formatted: formatted)
         } else {
-            return "?"
+            if formatted {
+                return "?"
+            } else {
+                return nil
+            }
         }
     }
     

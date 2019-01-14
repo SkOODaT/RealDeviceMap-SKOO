@@ -111,17 +111,27 @@ class IVInstanceController: InstanceControllerProto {
         return ["action": "scan_iv", "lat": pokemon.lat, "lon": pokemon.lon, "id": pokemon.id, "is_spawnpoint": pokemon.spawnId != nil, "min_level": minLevel, "max_level": maxLevel]
     }
     
-    func getStatus() -> String {
+    func getStatus(formatted: Bool) -> JSONConvertible? {
         
-        let ivh: String
+        let ivh: Int?
         self.statsLock.lock()
         if self.startDate != nil {
-            ivh = "\(Int(Double(self.count) / Date().timeIntervalSince(self.startDate!) * 3600))"
+            ivh = Int(Double(self.count) / Date().timeIntervalSince(self.startDate!) * 3600)
         } else {
-            ivh = "-"
+            ivh = nil
         }
         self.statsLock.unlock()
-        return "<a href=\"/dashboard/instance/ivqueue/\(name.encodeUrl() ?? "")\">Queue</a>: \(pokemonQueue.count), IV/h: \(ivh)"
+        if formatted {
+            let ivhString: String
+            if ivh == nil {
+                ivhString = "-"
+            } else {
+                ivhString = "\(ivh!)"
+            }
+            return "<a href=\"/dashboard/instance/ivqueue/\(name.encodeUrl() ?? "")\">Queue</a>: \(pokemonQueue.count), IV/h: \(ivhString)"
+        } else {
+            return ["iv_per_hour": ivh]
+        }
     }
     
     func reload() {}
@@ -166,23 +176,6 @@ class IVInstanceController: InstanceControllerProto {
         
     }
     
-    private func lastIndexOf(pokemonId: UInt16) -> Int? {
-        
-        let targetPriority = pokemonList.index(of: pokemonId)!
-        
-        var i = 0
-        for pokemon in pokemonQueue {
-            let priority = pokemonList.index(of: pokemon.pokemonId)!
-            if targetPriority < priority {
-                return i
-            }
-            i += 1
-        }
-        
-        return nil
-        
-    }
-    
     func gotIV(pokemon: Pokemon) {
         
         if multiPolygon.contains(CLLocationCoordinate2D(latitude: pokemon.lat, longitude: pokemon.lon)) {
@@ -208,4 +201,21 @@ class IVInstanceController: InstanceControllerProto {
         }
     }
 
+    private func lastIndexOf(pokemonId: UInt16) -> Int? {
+        
+        let targetPriority = pokemonList.index(of: pokemonId)!
+        
+        var i = 0
+        for pokemon in pokemonQueue {
+            let priority = pokemonList.index(of: pokemon.pokemonId)!
+            if targetPriority < priority {
+                return i
+            }
+            i += 1
+        }
+        
+        return nil
+        
+    }
+    
 }

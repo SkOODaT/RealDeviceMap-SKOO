@@ -52,13 +52,26 @@ $(function() {
 
     loadStorage();
 
-    $.each(avilableTileservers, function (index, tileserver) {
-        $('#select-mapstyle').append($('<option>', {
-            value: index,
-            text: index,
-            selected: index === selectedTileserver,
-        }));
-    });
+    let avilableTileserverKeys = [];
+    for (var avilableTileserverKey in avilableTileservers) {
+        avilableTileserverKeys.push(avilableTileserverKey);
+    }
+    avilableTileserverKeys.sort();
+    $('#select-mapstyle').append($('<option>', {
+        value: "Default",
+        text: "Default",
+        selected: "Default" === selectedTileserver,
+    }));
+    for (var i = 0; i < avilableTileserverKeys.length; i++) {
+        let key = avilableTileserverKeys[i];
+        if (key !== "Default") {
+            $('#select-mapstyle').append($('<option>', {
+                value: key,
+                text: key,
+                selected: key === selectedTileserver,
+            }));
+        }
+    };
 
     $('#settingsModal').on("show.bs.modal", function () {
         pokemonFilterNew = $.extend(true, {}, pokemonFilter);
@@ -94,8 +107,8 @@ $(function() {
         if (L.Browser.retina) {
             scale = "@2x"
         }
-        tileLayer = L.tileLayer(avilableTileservers[selectedTileserver], {
-            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+        tileLayer = L.tileLayer(avilableTileservers[selectedTileserver]['url'], {
+            attribution: avilableTileservers[selectedTileserver]['attribution'],
             maxZoom: 18,
             scale: scale,
             hq: L.Browser.retina,
@@ -258,8 +271,8 @@ function initMap() {
 	if (L.Browser.retina) {
         scale = "@2x"
     }
-    tileLayer = L.tileLayer(avilableTileservers[selectedTileserver], {
-		attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+    tileLayer = L.tileLayer(avilableTileservers[selectedTileserver]['url'], {
+		attribution: avilableTileservers[selectedTileserver]['attribution'],
 		maxZoom: 18,
         scale: scale,
         hq: L.Browser.retina,
