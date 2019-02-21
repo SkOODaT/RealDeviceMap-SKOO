@@ -87,6 +87,7 @@ class WebHookRequestHandler {
         var nearbyPokemons = [(cell: UInt64, data: POGOProtos_Map_Pokemon_NearbyPokemon)]()
         var forts = [(cell: UInt64, data: POGOProtos_Map_Fort_FortData)]()
         var fortDetails = [POGOProtos_Networking_Responses_FortDetailsResponse]()
+		//var gymDetails = [POGOProtos_Networking_Responses_GymGetInfoResponse]()
         var gymInfos = [POGOProtos_Networking_Responses_GymGetInfoResponse]()
         var quests = [POGOProtos_Data_Quests_Quest]()
         var encounters = [POGOProtos_Networking_Responses_EncounterResponse]()
@@ -109,9 +110,9 @@ class WebHookRequestHandler {
             } else if let fdr = rawData["FortDetailsResponse"] as? String {
                 data = Data(base64Encoded: fdr) ?? Data()
                 method = 104
-            } else if let fdr = rawData["GymGetInfoResponse"] as? String {
-                data = Data(base64Encoded: fdr) ?? Data()
-                method = 104
+            //} else if let fdr = rawData["GymGetInfoResponse"] as? String {
+            //    data = Data(base64Encoded: fdr) ?? Data()
+            //    method = 104
             } else if let fsr = rawData["FortSearchResponse"] as? String {
                 data = Data(base64Encoded: fsr) ?? Data()
                 method = 101
@@ -146,6 +147,11 @@ class WebHookRequestHandler {
                 } else {
                     Log.info(message: "[WebHookRequestHandler] Malformed FortDetailsResponse")
                 }
+                //if let fdr2 = try? POGOProtos_Networking_Responses_GymGetInfoResponse(serializedData: data) {
+                //    gymDetails.append(fdr2)
+                //} else {
+                //    Log.info(message: "[WebHookRequestHandler] Malformed GymGetInfoResponse")
+                //}
             } else if method == 156 {
                 if let ggi = try? POGOProtos_Networking_Responses_GymGetInfoResponse(serializedData: data) {
                     gymInfos.append(ggi)
@@ -363,22 +369,22 @@ class WebHookRequestHandler {
                 Log.debug(message: "[WebHookRequestHandler] Forts Detail Count: \(fortDetails.count) parsed in \(String(format: "%.3f", Date().timeIntervalSince(start)))s")
             }
 
-            if !gymDetails.isEmpty {
-                let start = Date()
-                for fort in gymDetails {
-                    let gym: Gym?
-                    do {
-                        gym = try Gym.getWithId(mysql: mysql, id: fort.gymStatusAndDefenders.pokemonFortProto.id)
-                    } catch {
-                        gym = nil
-                    }
-                    if gym != nil {
-                        gym!.addGymDetails(fortData: fort)
-                        try? gym!.save(mysql: mysql)
-                    }
-                }
-                Log.debug(message: "[WebHookRequestHandler] Gym Detail Count: \(gymDetails.count) parsed in \(String(format: "%.3f", Date().timeIntervalSince(start)))s")
-            }
+            //if !gymDetails.isEmpty {
+            //    let start = Date()
+            //    for fort in gymDetails {
+            //        let gym: Gym?
+            //        do {
+            //            gym = try Gym.getWithId(mysql: mysql, id: fort.gymStatusAndDefenders.pokemonFortProto.id)
+            //        } catch {
+            //            gym = nil
+            //        }
+            //        if gym != nil {
+            //            gym!.addGymDetails(fortData: fort)
+            //            try? gym!.save(mysql: mysql)
+            //        }
+            //    }
+            //    Log.debug(message: "[WebHookRequestHandler] Gym Detail Count: \(gymDetails.count) parsed in \(String(format: "%.3f", Date().timeIntervalSince(start)))s")
+            //}
 
             if !gymInfos.isEmpty {
                 let start = Date()
