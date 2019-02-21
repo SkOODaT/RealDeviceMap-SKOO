@@ -1654,12 +1654,21 @@ function getGymMarkerIcon(gym, ts) {
             popupAnchor: 	[0, -47]
         });
     } else {
-    	icon = L.icon({
-            iconUrl: 		'/static/img/gym/'+ gym.team_id + '_' + size +'.png',
-            iconSize:     	[40, 40],
-            iconAnchor:   	[20, 20],
-            popupAnchor:  	[0, -20]
-        });
+		if (gym.in_battle) {
+			icon = L.icon({
+				iconUrl: 		'/static/img/battle/'+ gym.team_id + '_' + size +'.png',
+				iconSize:     	[60, 60],
+				iconAnchor:   	[20, 20],
+				popupAnchor:  	[0, -20]
+			});
+		} else {
+			icon = L.icon({
+				iconUrl: 		'/static/img/gym/'+ gym.team_id + '_' + size +'.png',
+				iconSize:     	[40, 40],
+				iconAnchor:   	[20, 20],
+				popupAnchor:  	[0, -20]
+			});				
+		}
     }
     return icon;
 }
