@@ -134,6 +134,17 @@ class DiscordController {
                 }
                 
                 guard let json = String(data: data, encoding: .utf8)?.jsonDecodeForceTry() as? [[String: Any]] else {
+                    
+                    if let json = String(data: data, encoding: .utf8)?.jsonDecodeForceTry() as? [String: Any] {
+                        if let message = json["message"] {
+                            Log.error(message: "[DiscordController] Failed to get guild members of \(guild). (\(message))")
+                        } else if let error = json["error"] {
+                            Log.error(message: "[DiscordController] Failed to get guild members of \(guild). (\(error))")
+                        }
+                    } else {
+                        Log.error(message: "[DiscordController] Failed to get guild members of \(guild).")
+                    }
+                    
                     Threading.sleep(seconds: 60.0)
                     continue
                 }
@@ -199,6 +210,9 @@ class DiscordController {
     private func usersChanged(users: [UInt64: DiscordUser]) {
         
         if users.isEmpty {
+            return
+        }
+        if discordRules.isEmpty {
             return
         }
         
@@ -278,6 +292,12 @@ class DiscordController {
                 }
                 
                 guilds[id] = (name: name, roles: rolesNew)
+            } else if let message = json["message"] {
+                Log.error(message: "[DiscordController] Failed to get guild infos of \(guild). (\(message))")
+            } else if let error = json["error"] {
+                Log.error(message: "[DiscordController] Failed to get guild infos of \(guild). (\(error))")
+            } else {
+                Log.error(message: "[DiscordController] Failed to get guild infos of \(guild).")
             }
             
         }
@@ -315,6 +335,16 @@ class DiscordController {
         discordRules.append(discordRule)
         discordRules.sort { (lhs, rhs) -> Bool in
             return lhs.priority > rhs.priority
+        }
+        discordRulesLock.unlock()
+    }
+    
+    public func updateGroupName(oldName: String, newName: String) {
+        discordRulesLock.lock()
+        for rule in discordRules {
+            if rule.groupName == oldName {
+                rule.groupName = newName
+            }
         }
         discordRulesLock.unlock()
     }
