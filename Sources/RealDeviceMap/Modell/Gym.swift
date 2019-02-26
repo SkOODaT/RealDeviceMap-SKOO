@@ -310,7 +310,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
 
             let sql = """
                 UPDATE gym
-                SET lat = ?, lon = ? , name = ? , url = ? , guarding_pokemon_id = ? , last_modified_timestamp = ? , team_id = ? , raid_end_timestamp = ? , raid_spawn_timestamp = ? , raid_battle_timestamp = ? , raid_pokemon_id = ? , enabled = ? , availble_slots = ? , updated = UNIX_TIMESTAMP(), raid_level = ?, ex_raid_eligible = ?, in_battle = ?, raid_pokemon_move_1 = ?, raid_pokemon_move_2 = ?, raid_pokemon_form = ?, raid_pokemon_cp = ?, raid_is_exclusive = ?, cell_id = ?
+                SET lat = ?, lon = ? , name = ? , url = ? , guarding_pokemon_id = ? , last_modified_timestamp = ? , team_id = ? , raid_end_timestamp = ? , raid_spawn_timestamp = ? , raid_battle_timestamp = ? , raid_pokemon_id = ? , enabled = ? , availble_slots = ? , updated = UNIX_TIMESTAMP(), raid_level = ?, ex_raid_eligible = ?, in_battle = ?, raid_pokemon_move_1 = ?, raid_pokemon_move_2 = ?, raid_pokemon_form = ?, raid_pokemon_cp = ?, raid_is_exclusive = ?, cell_id = ?, deleted = false
                 WHERE id = ?
             """
             _ = mysqlStmt.prepare(statement: sql)
@@ -359,7 +359,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
         var sql = """
             SELECT id, lat, lon, name, url, guarding_pokemon_id, last_modified_timestamp, team_id, raid_end_timestamp, raid_spawn_timestamp, raid_battle_timestamp, raid_pokemon_id, enabled, availble_slots, updated, raid_level, ex_raid_eligible, in_battle, raid_pokemon_move_1, raid_pokemon_move_2, raid_pokemon_form, raid_pokemon_cp, raid_is_exclusive, cell_id
             FROM gym
-            WHERE lat >= ? AND lat <= ? AND lon >= ? AND lon <= ? AND updated > ?
+            WHERE lat >= ? AND lat <= ? AND lon >= ? AND lon <= ? AND updated > ? AND deleted = false
         """
         if raidsOnly {
             sql += " AND raid_end_timestamp >= UNIX_TIMESTAMP()"
@@ -513,7 +513,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
         let sql = """
         SELECT id, lat, lon, name, url, guarding_pokemon_id, last_modified_timestamp, team_id, raid_end_timestamp, raid_spawn_timestamp, raid_battle_timestamp, raid_pokemon_id, enabled, availble_slots, updated, raid_level, ex_raid_eligible, in_battle, raid_pokemon_move_1, raid_pokemon_move_2, raid_pokemon_form, raid_pokemon_cp, raid_is_exclusive, cell_id
         FROM gym
-        WHERE id IN \(inSQL)
+        WHERE id IN \(inSQL) AND deleted = false
         """
 
         let mysqlStmt = MySQLStmt(mysql)
@@ -593,7 +593,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
         let sql = """
             SELECT id, lat, lon, name, url, guarding_pokemon_id, last_modified_timestamp, team_id, raid_end_timestamp, raid_spawn_timestamp, raid_battle_timestamp, raid_pokemon_id, enabled, availble_slots, updated, raid_level, ex_raid_eligible, in_battle, raid_pokemon_move_1, raid_pokemon_move_2, raid_pokemon_form, raid_pokemon_cp, raid_is_exclusive, cell_id
             FROM gym
-            WHERE cell_id IN \(inSQL)
+            WHERE cell_id IN \(inSQL) AND deleted = false
         """
 
         let mysqlStmt = MySQLStmt(mysql)
@@ -661,7 +661,8 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
         }
 
         let sql = """
-            DELETE FROM gym
+            UPDATE gym
+            SET deleted = true
             WHERE cell_id = ? \(notInSQL)
         """
 
