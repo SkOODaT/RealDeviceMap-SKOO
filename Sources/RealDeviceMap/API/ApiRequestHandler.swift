@@ -40,6 +40,7 @@ class ApiRequestHandler {
         let showPokemon = request.param(name: "show_pokemon")?.toBool() ?? false
         let pokemonFilterExclude = request.param(name: "pokemon_filter_exclude")?.jsonDecodeForceTry() as? [Int]
         let pokemonFilterIV = request.param(name: "pokemon_filter_iv")?.jsonDecodeForceTry() as? [String: String]
+        let raidFilterExclude = request.param(name: "raid_filter_exclude")?.jsonDecodeForceTry() as?[String]
         let showSpawnpoints =  request.param(name: "show_spawnpoints")?.toBool() ?? false
         let showCells = request.param(name: "show_cells")?.toBool() ?? false
         let showDevices =  request.param(name: "show_devices")?.toBool() ?? false
@@ -48,6 +49,7 @@ class ApiRequestHandler {
         let showGroups =  request.param(name: "show_groups")?.toBool() ?? false
         let showPokemonFilter = request.param(name: "show_pokemon_filter")?.toBool() ?? false
         let showQuestFilter = request.param(name: "show_quest_filter")?.toBool() ?? false
+        let showRaidFilter = request.param(name: "show_raid_filter")?.toBool() ?? false
         let formatted =  request.param(name: "formatted")?.toBool() ?? false
         let lastUpdate = request.param(name: "last_update")?.toUInt32() ?? 0
         let showAssignments = request.param(name: "show_assignments")?.toBool() ?? false
@@ -128,7 +130,7 @@ class ApiRequestHandler {
         let permShowRaid = perms.contains(.viewMapRaid)
         let permShowGym = perms.contains(.viewMapGym)
         if isPost && (permViewMap && (showGyms && permShowGym || showRaids && permShowRaid)) {
-            data["gyms"] = try? Gym.getAll(mysql: mysql, minLat: minLat!, maxLat: maxLat!, minLon: minLon!, maxLon: maxLon!, updated: lastUpdate, raidsOnly: !showGyms, showRaids: permShowRaid)
+            data["gyms"] = try? Gym.getAll(mysql: mysql, minLat: minLat!, maxLat: maxLat!, minLon: minLon!, maxLon: maxLon!, updated: lastUpdate, raidsOnly: !showGyms, showRaids: permShowRaid, raidFilterExclude: raidFilterExclude)
         }
         let permShowStops = perms.contains(.viewMapPokestop)
         let permShowQuests =  perms.contains(.viewMapQuest)
@@ -432,7 +434,114 @@ class ApiRequestHandler {
             }
             data["quest_filters"] = questData
         }
-        
+ 
+        if permViewMap && showRaidFilter {
+            let hideString = Localizer.global.get(value: "filter_hide")
+            let showString = Localizer.global.get(value: "filter_show")
+            
+            let smallString = Localizer.global.get(value: "filter_small")
+            let normalString = Localizer.global.get(value: "filter_normal")
+            let largeString = Localizer.global.get(value: "filter_large")
+            let hugeString = Localizer.global.get(value: "filter_huge")
+            
+            let raidLevelString = Localizer.global.get(value: "filter_raid_level")
+            let pokemonTypeString = Localizer.global.get(value: "filter_pokemon")
+            
+            var raidData = [[String: Any]]()
+            for i in 1...5 {
+                
+                let raidLevel: String
+                // Level
+                raidLevel = Localizer.global.get(value: "filter_raid_level_\(i)")
+                
+                let filter = """
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <label class="btn btn-sm btn-off select-button-new" data-id="\(i)" data-type="raid-level" data-info="hide">
+                <input type="radio" name="options" id="hide" autocomplete="off">\(hideString)
+                </label>
+                <label class="btn btn-sm btn-on select-button-new" data-id="\(i)" data-type="raid-level" data-info="show">
+                <input type="radio" name="options" id="show" autocomplete="off">\(showString)
+                </label>
+                </div>
+                """
+                
+                let size = """
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <label class="btn btn-sm btn-size select-button-new" data-id="\(i)" data-type="raid-level" data-info="small">
+                <input type="radio" name="options" id="hide" autocomplete="off">\(smallString)
+                </label>
+                <label class="btn btn-sm btn-size select-button-new" data-id="\(i)" data-type="raid-level" data-info="normal">
+                <input type="radio" name="options" id="show" autocomplete="off">\(normalString)
+                </label>
+                <label class="btn btn-sm btn-size select-button-new" data-id="\(i)" data-type="raid-level" data-info="large">
+                <input type="radio" name="options" id="show" autocomplete="off">\(largeString)
+                </label>
+                <label class="btn btn-sm btn-size select-button-new" data-id="\(i)" data-type="raid-level" data-info="huge">
+                <input type="radio" name="options" id="show" autocomplete="off">\(hugeString)
+                </label>
+                </div>
+                """
+                
+                raidData.append([
+                    "id": [
+                        "formatted": String(format: "%03d", i),
+                        "sort": i
+                    ],
+                    "name": raidLevel,
+                    "image": "<img class=\"lazy_load\" data-src=\"/static/img/egg/\(i).png\" style=\"height:50px; width:50px;\">",
+                    "filter": filter,
+                    "size": size,
+                    "type": raidLevelString
+                ])
+            }
+            
+            // Pokemon
+            for i in 1...WebReqeustHandler.maxPokemonId {
+                
+                let filter = """
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <label class="btn btn-sm btn-off select-button-new" data-id="\(i)" data-type="raid-pokemon" data-info="hide">
+                <input type="radio" name="options" id="hide" autocomplete="off">\(hideString)
+                </label>
+                <label class="btn btn-sm btn-on select-button-new" data-id="\(i)" data-type="raid-pokemon" data-info="show">
+                <input type="radio" name="options" id="show" autocomplete="off">\(showString)
+                </label>
+                </div>
+                """
+                
+                let size = """
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <label class="btn btn-sm btn-size select-button-new" data-id="\(i)" data-type="raid-pokemon" data-info="small">
+                <input type="radio" name="options" id="hide" autocomplete="off">\(smallString)
+                </label>
+                <label class="btn btn-sm btn-size select-button-new" data-id="\(i)" data-type="raid-pokemon" data-info="normal">
+                <input type="radio" name="options" id="show" autocomplete="off">\(normalString)
+                </label>
+                <label class="btn btn-sm btn-size select-button-new" data-id="\(i)" data-type="raid-pokemon" data-info="large">
+                <input type="radio" name="options" id="show" autocomplete="off">\(largeString)
+                </label>
+                <label class="btn btn-sm btn-size select-button-new" data-id="\(i)" data-type="raid-pokemon" data-info="huge">
+                <input type="radio" name="options" id="show" autocomplete="off">\(hugeString)
+                </label>
+                </div>
+                """
+                
+                raidData.append([
+                    "id": [
+                        "formatted": String(format: "%03d", i),
+                        "sort": i+200
+                    ],
+                    "name": Localizer.global.get(value: "poke_\(i)") ,
+                    "image": "<img class=\"lazy_load\" data-src=\"/static/img/pokemon/\(i).png\" style=\"height:50px; width:50px;\">",
+                    "filter": filter,
+                    "size": size,
+                    "type": pokemonTypeString
+                    ])
+            }
+            
+            data["raid_filters"] = raidData
+        }
+         
         if showDevices && perms.contains(.admin) {
             
             let devices = try? Device.getAll(mysql: mysql)

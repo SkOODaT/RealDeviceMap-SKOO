@@ -38,9 +38,11 @@
         "filter_disable_all": "Disable All",
         "filter_pokemon_filter": "Pokemon Filter",
 		"filter_quest_filter": "Quest Filter",
+		"filter_raid_filter": "Raid Filter",
 		"filter_table_search": "Search:",
 		"filter_pokemon_table_empty": "No matching Pokemon found",
 		"filter_quest_table_empty": "No matching Quests found",
+		"filter_raid_table_empty": "No matching Raids found",
 		"filter_global_iv": "Global IV Limit",
         "filter_and": "And",
         "filter_or": "Or",
@@ -55,6 +57,7 @@
 		"filter_cells": "Cells",
         "filter_mapstyle": "Map-Style",
         "filter_select_mapstyle": "Select Map-Style",
+		"filter_level": "Level",
 		"register_title": "Register to %{name}!",
 		"register_username": "Username",
 		"register_email": "Email",
@@ -1446,6 +1449,12 @@
         "item_1402": "Paid Raid Ticket",
         "item_1403": "Legendary Raid Ticket",
         "item_1404": "Star Piece",
-        "item_1405": "Friend Gift Box"
+        "item_1405": "Friend Gift Box",
+        "filter_raid_level": "Raid Level",
+        "filter_raid_level_1": "Level 1",
+        "filter_raid_level_2": "Level 2",
+        "filter_raid_level_3": "Level 3",
+        "filter_raid_level_4": "Level 4",
+        "filter_raid_level_5": "Level 5"
     }
 }
