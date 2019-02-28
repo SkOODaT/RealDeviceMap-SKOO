@@ -358,6 +358,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
 
         var excludedLevels = [Int]()
         var excludedPokemon = [Int]()
+        var excludeAllButEx = false;
         
         if showRaids && raidFilterExclude != nil {
             for filter in raidFilterExclude! {
@@ -369,12 +370,16 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
                     if let id = filter.stringByReplacing(string: "l", withString: "").toInt() {
                         excludedLevels.append(id)
                     }
+                } else if filter.contains(string: "ex") {
+                    excludeAllButEx = true
+
                 }
             }
         }
         
         let excludeLevelSQL: String
         let excludePokemonSQL: String
+        let excludeAllButExSQL: String
         if showRaids {
             if excludedLevels.isEmpty {
                 excludeLevelSQL = ""
@@ -397,15 +402,23 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
                 sqlExcludeCreate += "?))"
                 excludePokemonSQL = sqlExcludeCreate
             }
+            
+            if excludeAllButEx {
+                excludeAllButExSQL = "AND (ex_raid_eligible = 1)"
+            } else {
+                excludeAllButExSQL = ""
+            }
+
         } else {
             excludeLevelSQL = ""
             excludePokemonSQL = ""
+            excludeAllButExSQL = ""
         }
 
         var sql = """
             SELECT id, lat, lon, name, url, guarding_pokemon_id, last_modified_timestamp, team_id, raid_end_timestamp, raid_spawn_timestamp, raid_battle_timestamp, raid_pokemon_id, enabled, availble_slots, updated, raid_level, ex_raid_eligible, in_battle, raid_pokemon_move_1, raid_pokemon_move_2, raid_pokemon_form, raid_pokemon_cp, raid_is_exclusive, cell_id
             FROM gym
-            WHERE lat >= ? AND lat <= ? AND lon >= ? AND lon <= ? AND updated > ? AND deleted = false \(excludeLevelSQL) \(excludePokemonSQL)
+            WHERE lat >= ? AND lat <= ? AND lon >= ? AND lon <= ? AND updated > ? AND deleted = false \(excludeLevelSQL) \(excludePokemonSQL) \(excludeAllButExSQL)
         """
         if raidsOnly {
             sql += " AND raid_end_timestamp >= UNIX_TIMESTAMP()"

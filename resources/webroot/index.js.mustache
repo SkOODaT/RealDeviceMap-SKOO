@@ -277,7 +277,12 @@ function loadStorage() {
         const defaultRaidFilter = {};
         let i;
         for (i = 1; i <= 5; i++) {
-            defaultRaidFilter["l" + i] = {"show": true, "size": "normal"};
+            if (defaultRaidFilter["l" + i] === undefined) {
+                defaultRaidFilter["l" + i] = {"show": true, "size": "normal"};
+            }
+        }
+        if (defaultRaidFilter["ex"] === undefined) {
+            defaultRaidFilter["ex"] = {"show": false, "size": "normal"};
         }
         let j;
         for (j = 1; j <= {{max_pokemon_id}}; j++) {
@@ -295,6 +300,9 @@ function loadStorage() {
             if (raidFilter["l" + i] === undefined) {
                 raidFilter["l" + i] = {"show": true, "size": "normal"};
             }
+        }
+        if (raidFilter["ex"] === undefined) {
+            raidFilter["ex"] = {"show": false, "size": "normal"};
         }
         let j;
         for (j = 1; j <= {{max_pokemon_id}}; j++) {
@@ -391,6 +399,7 @@ function initMap() {
         for (i = 1; i <= 5; i++) {
             defaultRaidFilter["l" + i] = {"show": true, "size": "normal"};
         }
+        defaultRaidFilter["ex"] = {"show": false, "size": "normal"};
         let j;
         for (j = 1; j <= {{max_pokemon_id}}; j++) {
             defaultRaidFilter["p" + j] = {"show": true, "size": "normal"};
@@ -408,6 +417,7 @@ function initMap() {
         for (i = 1; i <= 5; i++) {
             defaultRaidFilter["l" + i] = {"show": false, "size": raidFilterNew["l" + i]["size"]};
         }
+		defaultRaidFilter["ex"] = {"show": false, "size": raidFilterNew["ex"]["size"]}
         let j;
         for (j = 1; j <= {{max_pokemon_id}}; j++) {
             defaultRaidFilter["p" + j] = {"show": false, "size": raidFilterNew["p" + j]["size"]};
@@ -727,6 +737,9 @@ function loadData() {
             if (raidFilter["l" + i]["show"] === false) {
                 raidFilterExclude.push("l" + i);
             }
+        }
+        if (raidFilter["ex"]["show"] === false) {
+            raidFilterExclude.push("ex");
         }
         let j;
         for (j = 1; j <= {{max_pokemon_id}}; j++) {
@@ -1941,6 +1954,27 @@ function manageSelectButton(e, isNew) {
                 shouldShow = raidFilterNew["p" + id]["size"] === "huge";
                 break;
         }
+    } else if (type === "raid-ex") {
+        switch (info) {
+            case "hide":
+                shouldShow = raidFilterNew[id]["show"] === false;
+                break;
+            case "show":
+                shouldShow = raidFilterNew[id]["show"] === true;
+                break;
+            case "small":
+                shouldShow = raidFilterNew[id]["size"] === "small";
+                break;
+            case "normal":
+                shouldShow = raidFilterNew[id]["size"] === "normal";
+                break;
+            case "large":
+                shouldShow = raidFilterNew[id]["size"] === "large";
+                break;
+            case "huge":
+                shouldShow = raidFilterNew[id]["size"] === "huge";
+                break;
+        }
     } else {
         shouldShow = false;
     }
@@ -2089,6 +2123,27 @@ function manageSelectButton(e, isNew) {
                         break;
                     case "huge":
                         raidFilterNew["p" + id]["size"] = "huge";
+                        break;
+                }
+            } else if (type === "raid-ex") {
+                switch (info) {
+                    case "hide":
+                        raidFilterNew[id]["show"] = false;
+                        break;
+                    case "show":
+                        raidFilterNew[id]["show"] = true;
+                        break;
+                    case "small":
+                        raidFilterNew[id]["size"] = "small";
+                        break;
+                    case "normal":
+                        raidFilterNew[id]["size"] = "normal";
+                        break;
+                    case "large":
+                        raidFilterNew[id]["size"] = "large";
+                        break;
+                    case "huge":
+                        raidFilterNew[id]["size"] = "huge";
                         break;
                 }
             }

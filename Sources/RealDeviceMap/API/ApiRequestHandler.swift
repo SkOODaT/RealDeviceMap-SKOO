@@ -444,10 +444,13 @@ class ApiRequestHandler {
             let largeString = Localizer.global.get(value: "filter_large")
             let hugeString = Localizer.global.get(value: "filter_huge")
             
-            let raidLevelString = Localizer.global.get(value: "filter_raid_level")
+            let raidOptionsString = Localizer.global.get(value: "filter_raid_options")
             let pokemonTypeString = Localizer.global.get(value: "filter_pokemon")
+			
+            let exRaidString = Localizer.global.get(value: "filter_raid_ex")
             
             var raidData = [[String: Any]]()
+            // Level
             for i in 1...5 {
                 
                 let raidLevel: String
@@ -491,9 +494,50 @@ class ApiRequestHandler {
                     "image": "<img class=\"lazy_load\" data-src=\"/static/img/egg/\(i).png\" style=\"height:50px; width:50px;\">",
                     "filter": filter,
                     "size": size,
-                    "type": raidLevelString
+                    "type": raidOptionsString
                 ])
             }
+
+            // Ex Raids
+            let exFilter = """
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <label class="btn btn-sm btn-off select-button-new" data-id="ex" data-type="raid-ex" data-info="hide">
+            <input type="radio" name="options" id="hide" autocomplete="off">\(hideString)
+            </label>
+            <label class="btn btn-sm btn-on select-button-new" data-id="ex" data-type="raid-ex" data-info="show">
+            <input type="radio" name="options" id="show" autocomplete="off">\(showString)
+            </label>
+            </div>
+            """
+            
+            let exSize = """
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <label class="btn btn-sm btn-size select-button-new" data-id="ex" data-type="raid-ex" data-info="small">
+            <input type="radio" name="options" id="hide" autocomplete="off">\(smallString)
+            </label>
+            <label class="btn btn-sm btn-size select-button-new" data-id="ex" data-type="raid-ex" data-info="normal">
+            <input type="radio" name="options" id="show" autocomplete="off">\(normalString)
+            </label>
+            <label class="btn btn-sm btn-size select-button-new" data-id="ex" data-type="raid-ex" data-info="large">
+            <input type="radio" name="options" id="show" autocomplete="off">\(largeString)
+            </label>
+            <label class="btn btn-sm btn-size select-button-new" data-id="ex" data-type="raid-ex" data-info="huge">
+            <input type="radio" name="options" id="show" autocomplete="off">\(hugeString)
+            </label>
+            </div>
+            """
+            
+            raidData.append([
+                "id": [
+                    "formatted": String(format: "%03d", 6), //Need a better way to display, new section?
+                    "sort": 6
+                ],
+                "name": Localizer.global.get(value: "filter_raid_ex") ,
+                "image": "<img class=\"lazy_load\" data-src=\"/static/img/item/1403.png\" style=\"height:50px; width:50px;\">",
+                "filter": exFilter,
+                "size": exSize,
+                "type": raidOptionsString
+                ])
             
             // Pokemon
             for i in 1...WebReqeustHandler.maxPokemonId {

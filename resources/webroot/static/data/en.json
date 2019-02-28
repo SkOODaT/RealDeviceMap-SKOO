@@ -1455,6 +1455,8 @@
         "filter_raid_level_2": "Level 2",
         "filter_raid_level_3": "Level 3",
         "filter_raid_level_4": "Level 4",
-        "filter_raid_level_5": "Level 5"
+		"filter_raid_level_5": "Level 5",
+		"filter_raid_ex": "Only EX Raids",
+		"filter_raid_options": "Options"
     }
 }
