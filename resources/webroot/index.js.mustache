@@ -20,6 +20,9 @@ let questFilterNew = {};
 let raidFilter = {};
 let raidFilterNew = {};
 
+let gymFilter = {};
+let gymFilterNew = {};
+
 let openedPokemon;
 let openedPokestop;
 let openedGym;
@@ -41,6 +44,7 @@ let selectedTileserver = "Default";
 let pokemonFilterLoaded = false;
 let questFilterLoaded = false;
 let raidFilterLoaded = false;
+let gymFilterLoaded = false;
 
 let tileLayer;
 
@@ -81,6 +85,7 @@ $(function() {
         pokemonFilterNew = $.extend(true, {}, pokemonFilter);
         questFilterNew = $.extend(true, {}, questFilter);
         raidFilterNew = $.extend(true, {}, raidFilter);
+        gymFilterNew = $.extend(true, {}, gymFilter);
 
         $('.select-button').each(function (button) {
             manageSelectButton($(this), false);
@@ -102,6 +107,11 @@ $(function() {
         if (!raidFilterLoaded) {
             raidFilterLoaded = true;
             loadRaidFilter();
+        }
+		
+        if (!gymFilterLoaded) {
+            gymFilterLoaded = true;
+            loadGymFilter();
         }
 
     });
@@ -311,6 +321,27 @@ function loadStorage() {
             }
         }
     }
+    const gymFilterValue = retrieve('gym_filter');
+    if (gymFilterValue === null) {
+        const defaultGymFilter = {};
+        let i;
+        for (i = 0; i <= 3; i++) {
+            if (defaultGymFilter["t" + i] === undefined) {
+                defaultGymFilter["t" + i] = {"show": true, "size": "normal"};
+            }
+        }
+
+        store('gym_filter', JSON.stringify(defaultGymFilter));
+        gymFilter = defaultGymFilter;
+    } else {
+        gymFilter = JSON.parse(gymFilterValue);
+        let i;
+        for (i = 0; i <= 3; i++) {
+            if (gymFilter["t" + i] === undefined) {
+                gymFilter["t" + i] = {"show": true, "size": "normal"};
+            }
+        }
+    }
 }
 
 function initMap() {
@@ -393,6 +424,22 @@ function initMap() {
         $('#table-filter-quest').DataTable().rows().invalidate('data').draw(false);
     });
 
+    $('#disable-all-quest-filter').on('click', function(event) {
+        const defaultQuestFilter = {};
+        let i;
+        for (i = 1; i <= {{max_pokemon_id}}; i++) {
+            defaultQuestFilter["p" + i] = {"show": false, "size": questFilterNew["p" + i]["size"]};
+        }
+        $.each(avilableItems, function (index, itemId) {
+            defaultQuestFilter["i" + itemId] = {"show": false, "size": questFilterNew["i" + itemId]["size"]};
+        });
+
+        store('quest_filter', JSON.stringify(defaultQuestFilter));
+        questFilterNew = defaultQuestFilter;
+
+        $('#table-filter-quest').DataTable().rows().invalidate('data').draw(false);
+    });
+
     $('#reset-raid-filter').on('click', function(event) {
         const defaultRaidFilter = {};
         let i;
@@ -429,20 +476,30 @@ function initMap() {
         $('#table-filter-raid').DataTable().rows().invalidate('data').draw(false);
     });
 
-    $('#disable-all-quest-filter').on('click', function(event) {
-        const defaultQuestFilter = {};
+    $('#reset-gym-filter').on('click', function(event) {
+        const defaultGymFilter = {};
         let i;
-        for (i = 1; i <= {{max_pokemon_id}}; i++) {
-            defaultQuestFilter["p" + i] = {"show": false, "size": questFilterNew["p" + i]["size"]};
+        for (i = 0; i <= 3; i++) {
+            defaultGymFilter["t" + i] = {"show": true, "size": gymFilterNew["t" + i]["size"]};
         }
-        $.each(avilableItems, function (index, itemId) {
-            defaultQuestFilter["i" + itemId] = {"show": false, "size": questFilterNew["i" + itemId]["size"]};
-        });
 
-        store('quest_filter', JSON.stringify(defaultQuestFilter));
-        questFilterNew = defaultQuestFilter;
+        store('gym_filter', JSON.stringify(defaultGymFilter));
+        gymFilterNew = defaultGymFilter;
 
-        $('#table-filter-quest').DataTable().rows().invalidate('data').draw(false);
+        $('#table-filter-gym').DataTable().rows().invalidate('data').draw(false);
+    });
+
+    $('#disable-all-gym-finder').on('click', function(event) {
+        const defaultGymFilter = {};
+        let i;
+        for (i = 0; i <= 3; i++) {
+            defaultGymFilter["t" + i] = {"show": false, "size": gymFilterNew["t" + i]["size"]};
+        }
+
+        store('gym_filter', JSON.stringify(defaultGymFilter));
+        gymFilterNew = defaultGymFilter;
+
+        $('#table-filter-gym').DataTable().rows().invalidate('data').draw(false);
     });
 
 	$('#saveSettings').on('click', function(event) {
@@ -555,6 +612,8 @@ function initMap() {
         });
         pokestopMarkers = newPokestopMarkers;
 
+        gymFilter = gymFilterNew;
+
         raidFilter = raidFilterNew;
         //const raidFilterOld = $.extend(true, {}, raidFilter);
         const newGymMarkers = [];
@@ -579,6 +638,7 @@ function initMap() {
         store('pokemon_filter',JSON.stringify(pokemonFilter));
         store('quest_filter',JSON.stringify(questFilter));
         store('raid_filter',JSON.stringify(raidFilter));
+        store('gym_filter', JSON.stringify(gymFilter));
         store('show_cells', newShowCells);
         showCells = newShowCells;
 
@@ -738,13 +798,23 @@ function loadData() {
                 raidFilterExclude.push("l" + i);
             }
         }
-        if (raidFilter["ex"]["show"] === false) {
+        if (raidFilter["ex"]["show"] !== false) {
             raidFilterExclude.push("ex");
         }
         let j;
         for (j = 1; j <= {{max_pokemon_id}}; j++) {
             if (raidFilter["p" + j]["show"] === false) {
                 raidFilterExclude.push("p" + j);
+            }
+        }
+    }
+
+    const gymFilterExclude = [];
+    if (showGyms) {
+        let i;
+        for (i = 0; i <= 3; i++) {
+            if (gymFilter["t" + i]["show"] === false) {
+                gymFilterExclude.push("t" + i);
             }
         }
     }
@@ -764,6 +834,7 @@ function loadData() {
         'quest_filter_exclude': JSON.stringify(questFilterExclude),
         'pokemon_filter_iv': JSON.stringify(pokemonFilterIV),
 		'raid_filter_exclude': JSON.stringify(raidFilterExclude),
+        'gym_filter_exclude': JSON.stringify(gymFilterExclude),
         'show_spawnpoints': showSpawnpoints,
         'show_cells': showCells,
         'last_update': lastUpdateServer,
@@ -1975,6 +2046,27 @@ function manageSelectButton(e, isNew) {
                 shouldShow = raidFilterNew[id]["size"] === "huge";
                 break;
         }
+    } else if (type === "gym-team") {
+        switch (info) {
+            case "hide":
+                shouldShow = gymFilterNew["t" + id]["show"] === false;
+                break;
+            case "show":
+                shouldShow = gymFilterNew["t" + id]["show"] === true;
+                break;
+            case "small":
+                shouldShow = gymFilterNew["t" + id]["size"] === "small";
+                break;
+            case "normal":
+                shouldShow = gymFilterNew["t" + id]["size"] === "normal";
+                break;
+            case "large":
+                shouldShow = gymFilterNew["t" + id]["size"] === "large";
+                break;
+            case "huge":
+                shouldShow = gymFilterNew["t" + id]["size"] === "huge";
+                break;
+        }
     } else {
         shouldShow = false;
     }
@@ -2144,6 +2236,27 @@ function manageSelectButton(e, isNew) {
                         break;
                     case "huge":
                         raidFilterNew[id]["size"] = "huge";
+                        break;
+                }
+            } else if (type === "gym-team") {
+                switch (info) {
+                    case "hide":
+                        gymFilterNew["t" + id]["show"] = false;
+                        break;
+                    case "show":
+                        gymFilterNew["t" + id]["show"] = true;
+                        break;
+                    case "small":
+                        gymFilterNew["t" + id]["size"] = "small";
+                        break;
+                    case "normal":
+                        gymFilterNew["t" + id]["size"] = "normal";
+                        break;
+                    case "large":
+                        gymFilterNew["t" + id]["size"] = "large";
+                        break;
+                    case "huge":
+                        gymFilterNew["t" + id]["size"] = "huge";
                         break;
                 }
             }
@@ -2514,4 +2627,93 @@ function loadRaidFilter() {
         dataTable.responsive.recalc();
         dataTable.columns.adjust();
     });
+}
+
+function loadGymFilter() {
+    const scrollHeight = $(document).height() * 0.5;
+    const table = $('#table-filter-gym').DataTable( {
+        "language": {
+            "search": i18n('filter_table_search'),
+            "emptyTable": i18n('filter_gym_table_empty'),
+            "zeroRecords": i18n('filter_gym_table_empty'),
+        },
+        rowGroup: {
+            dataSrc: "type"
+        },
+        "autoWidth": false,
+        "columns": [
+            { "data": "image", "width": "5%", "className": 'details-control'},
+            { "data": "name", "width": "15%" },
+            { "data": {
+                    _:    "id.formatted",
+                    sort: "id.sort"
+                }, "width": "5%" },
+            { "data": "filter" },
+            { "data": "size" }
+        ],
+        "ajax": {
+            "url": "/api/get_data?show_gym_filter=true",
+            "dataSrc": "data.gym_filters"
+        },
+        "info":     false,
+        "order": [[ 2, "asc" ]],
+        "search.caseInsensitive": true,
+        "columnDefs": [ {
+            "targets": [0,3,4],
+            "orderable": false
+        },{
+            "type": "num",
+            "targets": 2
+        } ],
+        "deferRender": true,
+        "scrollY": scrollHeight,
+        "scrollCollapse": false,
+        "scroller": true,
+        "lengthChange": false,
+        "dom": "lfrti",
+        "drawCallback": function( settings ) {
+            $('.lazy_load').each(function () {
+                var img = $(this);
+                img.removeClass("lazy_load");
+                img.attr('src', img.data('src'));
+            });
+
+            $('.select-button-new').each(function (button) {
+                manageSelectButton($(this), true);
+            });
+            $('.configure-button-new').each(function (button) {
+                manageConfigureButton($(this), true);
+            });
+        },
+        "responsive": true
+    });
+
+    $('#table-filter-gym tbody').on('click', 'td.details-control', function () {
+        $('.select-button-new').each(function (button) {
+            manageSelectButton($(this), true);
+        });
+        $('.configure-button-new').each(function (button) {
+            manageConfigureButton($(this), true);
+        });
+    } );
+
+    table.on( 'search.dt', function () {
+        $( "tr" ).each(function() {
+            var tr = $(this).closest('tr');
+            var row = table.row(tr);
+            if (row.child.isShown()) {
+                row.child.hide();
+                tr.removeClass('parent');
+
+            };
+        })
+    } );
+
+
+    $('#filterGymModal').on("shown.bs.modal", function () {
+        const dataTable= $('#table-filter-gym').DataTable();
+        dataTable.responsive.recalc();
+        dataTable.columns.adjust();
+    });
+
 }

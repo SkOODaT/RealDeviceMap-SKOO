@@ -40,7 +40,8 @@ class ApiRequestHandler {
         let showPokemon = request.param(name: "show_pokemon")?.toBool() ?? false
         let pokemonFilterExclude = request.param(name: "pokemon_filter_exclude")?.jsonDecodeForceTry() as? [Int]
         let pokemonFilterIV = request.param(name: "pokemon_filter_iv")?.jsonDecodeForceTry() as? [String: String]
-        let raidFilterExclude = request.param(name: "raid_filter_exclude")?.jsonDecodeForceTry() as?[String]
+        let raidFilterExclude = request.param(name: "raid_filter_exclude")?.jsonDecodeForceTry() as? [String]
+        let gymFilterExclude = request.param(name: "gym_filter_exclude")?.jsonDecodeForceTry() as? [String]
         let showSpawnpoints =  request.param(name: "show_spawnpoints")?.toBool() ?? false
         let showCells = request.param(name: "show_cells")?.toBool() ?? false
         let showDevices =  request.param(name: "show_devices")?.toBool() ?? false
@@ -50,6 +51,7 @@ class ApiRequestHandler {
         let showPokemonFilter = request.param(name: "show_pokemon_filter")?.toBool() ?? false
         let showQuestFilter = request.param(name: "show_quest_filter")?.toBool() ?? false
         let showRaidFilter = request.param(name: "show_raid_filter")?.toBool() ?? false
+        let showGymFilter = request.param(name: "show_gym_filter")?.toBool() ?? false
         let formatted =  request.param(name: "formatted")?.toBool() ?? false
         let lastUpdate = request.param(name: "last_update")?.toUInt32() ?? 0
         let showAssignments = request.param(name: "show_assignments")?.toBool() ?? false
@@ -130,7 +132,7 @@ class ApiRequestHandler {
         let permShowRaid = perms.contains(.viewMapRaid)
         let permShowGym = perms.contains(.viewMapGym)
         if isPost && (permViewMap && (showGyms && permShowGym || showRaids && permShowRaid)) {
-            data["gyms"] = try? Gym.getAll(mysql: mysql, minLat: minLat!, maxLat: maxLat!, minLon: minLon!, maxLon: maxLon!, updated: lastUpdate, raidsOnly: !showGyms, showRaids: permShowRaid, raidFilterExclude: raidFilterExclude)
+            data["gyms"] = try? Gym.getAll(mysql: mysql, minLat: minLat!, maxLat: maxLat!, minLon: minLon!, maxLon: maxLon!, updated: lastUpdate, raidsOnly: !showGyms, showRaids: permShowRaid, raidFilterExclude: raidFilterExclude, gymFilterExclude: gymFilterExclude)
         }
         let permShowStops = perms.contains(.viewMapPokestop)
         let permShowQuests =  perms.contains(.viewMapQuest)
@@ -447,7 +449,7 @@ class ApiRequestHandler {
             let raidOptionsString = Localizer.global.get(value: "filter_raid_options")
             let pokemonTypeString = Localizer.global.get(value: "filter_pokemon")
 			
-            let exRaidString = Localizer.global.get(value: "filter_raid_ex")
+            //let exRaidString = Localizer.global.get(value: "filter_raid_ex")
             
             var raidData = [[String: Any]]()
             // Level
@@ -585,7 +587,69 @@ class ApiRequestHandler {
             
             data["raid_filters"] = raidData
         }
-         
+
+        if permViewMap && showGymFilter {
+            let hideString = Localizer.global.get(value: "filter_hide")
+            let showString = Localizer.global.get(value: "filter_show")
+            
+            let smallString = Localizer.global.get(value: "filter_small")
+            let normalString = Localizer.global.get(value: "filter_normal")
+            let largeString = Localizer.global.get(value: "filter_large")
+            let hugeString = Localizer.global.get(value: "filter_huge")
+            
+            let gymTeamString = Localizer.global.get(value: "filter_gym_team");
+            
+            var gymData = [[String: Any]]()
+            //Team
+            for i in 0...3 {
+                
+                let gymTeam: String
+                gymTeam = Localizer.global.get(value: "filter_gym_team_\(i)")
+                
+                let filter = """
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <label class="btn btn-sm btn-off select-button-new" data-id="\(i)" data-type="gym-team" data-info="hide">
+                <input type="radio" name="options" id="hide" autocomplete="off">\(hideString)
+                </label>
+                <label class="btn btn-sm btn-on select-button-new" data-id="\(i)" data-type="gym-team" data-info="show">
+                <input type="radio" name="options" id="show" autocomplete="off">\(showString)
+                </label>
+                </div>
+                """
+                
+                let size = """
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <label class="btn btn-sm btn-size select-button-new" data-id="\(i)" data-type="gym-team" data-info="small">
+                <input type="radio" name="options" id="hide" autocomplete="off">\(smallString)
+                </label>
+                <label class="btn btn-sm btn-size select-button-new" data-id="\(i)" data-type="gym-team" data-info="normal">
+                <input type="radio" name="options" id="show" autocomplete="off">\(normalString)
+                </label>
+                <label class="btn btn-sm btn-size select-button-new" data-id="\(i)" data-type="gym-team" data-info="large">
+                <input type="radio" name="options" id="show" autocomplete="off">\(largeString)
+                </label>
+                <label class="btn btn-sm btn-size select-button-new" data-id="\(i)" data-type="gym-team" data-info="huge">
+                <input type="radio" name="options" id="show" autocomplete="off">\(hugeString)
+                </label>
+                </div>
+                """
+                
+                gymData.append([
+                    "id": [
+                        "formatted": String(format: "%03d", i),
+                        "sort": i
+                    ],
+                    "name": gymTeam,
+                    "image": "<img class=\"lazy_load\" data-src=\"/static/img/gym/\(i)_\(i).png\" style=\"height:50px; width:50px;\">",
+                    "filter": filter,
+                    "size": size,
+                    "type": gymTeamString
+                    ])
+            }
+            
+            data["gym_filters"] = gymData
+        }
+             
         if showDevices && perms.contains(.admin) {
             
             let devices = try? Device.getAll(mysql: mysql)

@@ -39,10 +39,12 @@
         "filter_pokemon_filter": "Pokemon Filter",
 		"filter_quest_filter": "Quest Filter",
 		"filter_raid_filter": "Raid Filter",
+		"filter_gym_filter": "Gym Filter",
 		"filter_table_search": "Search:",
 		"filter_pokemon_table_empty": "No matching Pokemon found",
 		"filter_quest_table_empty": "No matching Quests found",
 		"filter_raid_table_empty": "No matching Raids found",
+		"filter_gym_table_empty": "No matching Gyms found",
 		"filter_global_iv": "Global IV Limit",
         "filter_and": "And",
         "filter_or": "Or",
@@ -1455,8 +1457,13 @@
         "filter_raid_level_2": "Level 2",
         "filter_raid_level_3": "Level 3",
         "filter_raid_level_4": "Level 4",
-		"filter_raid_level_5": "Level 5",
-		"filter_raid_ex": "Only EX Raids",
-		"filter_raid_options": "Options"
+        "filter_raid_level_5": "Level 5",
+        "filter_raid_ex": "Only EX Raids",
+		"filter_raid_options": "Options",
+		"filter_gym_team": "Team",
+		"filter_gym_team_0": "Neutral",
+		"filter_gym_team_1": "Mystic",
+		"filter_gym_team_2": "Valor",
+		"filter_gym_team_3": "Instinct"
     }
 }
