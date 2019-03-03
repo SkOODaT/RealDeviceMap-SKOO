@@ -63,18 +63,6 @@
                         {{filter_quests}}
                         <button class="btn btn-sm btn-primary float-right" data-toggle="modal" data-target="#filterQuestModal">{{filter_filter}}</button>
                     </div>
-                    <div style="height:31px; margin-top: 10px; margin-bottom: 10px" {{#hide_spawnpoints}}class="d-none"{{/hide_spawnpoints}}>
-                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                            <label id="hide-spawnpoints" class="btn btn-sm btn-off">
-                                <input type="radio" name="options" id="hide" autocomplete="off" checked>{{filter_hide}}
-                            </label>
-                            <label id="show-spawnpoints" class="btn btn-sm btn-on">
-                                <input type="radio" name="options" id="show" autocomplete="off">{{filter_show}}
-                            </label>
-                        </div>
-                        {{filter_spawnpoints}}
-                        <button class="btn btn-sm btn-primary float-right disabled">{{filter_filter}}</button>
-                    </div>
                     <div style="height:31px; margin-top: 10px; margin-bottom: 10px" {{#hide_pokemon}}class="d-none"{{/hide_pokemon}}>
                         <div class="btn-group btn-group-toggle" data-toggle="buttons">
                             <label id="hide-pokemon" class="btn btn-sm btn-off">
@@ -86,6 +74,18 @@
                         </div>
                         {{filter_pokemon}}
                         <button class="btn btn-sm btn-primary float-right" data-toggle="modal" data-target="#filterPokemonModal">{{filter_filter}}</button>
+                    </div>
+                    <div style="height:31px; margin-top: 10px; margin-bottom: 10px" {{#hide_spawnpoints}}class="d-none"{{/hide_spawnpoints}}>
+                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                            <label id="hide-spawnpoints" class="btn btn-sm btn-off">
+                                <input type="radio" name="options" id="hide" autocomplete="off" checked>{{filter_hide}}
+                            </label>
+                            <label id="show-spawnpoints" class="btn btn-sm btn-on">
+                                <input type="radio" name="options" id="show" autocomplete="off">{{filter_show}}
+                            </label>
+                        </div>
+                        {{filter_spawnpoints}}
+                        <button class="btn btn-sm btn-primary float-right disabled">{{filter_filter}}</button>
                     </div>
                     <div style="height:31px; margin-top: 10px; margin-bottom: 10px" {{#hide_cells}}class="d-none"{{/hide_cells}}>
                         <div class="btn-group btn-group-toggle" data-toggle="buttons">
