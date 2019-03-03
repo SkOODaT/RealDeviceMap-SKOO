@@ -42,6 +42,7 @@ class ApiRequestHandler {
         let pokemonFilterIV = request.param(name: "pokemon_filter_iv")?.jsonDecodeForceTry() as? [String: String]
         let raidFilterExclude = request.param(name: "raid_filter_exclude")?.jsonDecodeForceTry() as? [String]
         let gymFilterExclude = request.param(name: "gym_filter_exclude")?.jsonDecodeForceTry() as? [String]
+        let pokestopFilterExclude = request.param(name: "pokestop_filter_exclude")?.jsonDecodeForceTry() as? [String]
         let showSpawnpoints =  request.param(name: "show_spawnpoints")?.toBool() ?? false
         let showCells = request.param(name: "show_cells")?.toBool() ?? false
         let showDevices =  request.param(name: "show_devices")?.toBool() ?? false
@@ -52,6 +53,7 @@ class ApiRequestHandler {
         let showQuestFilter = request.param(name: "show_quest_filter")?.toBool() ?? false
         let showRaidFilter = request.param(name: "show_raid_filter")?.toBool() ?? false
         let showGymFilter = request.param(name: "show_gym_filter")?.toBool() ?? false
+        let showPokestopFilter = request.param(name: "show_pokestop_filter")?.toBool() ?? false
         let formatted =  request.param(name: "formatted")?.toBool() ?? false
         let lastUpdate = request.param(name: "last_update")?.toUInt32() ?? 0
         let showAssignments = request.param(name: "show_assignments")?.toBool() ?? false
@@ -137,7 +139,7 @@ class ApiRequestHandler {
         let permShowStops = perms.contains(.viewMapPokestop)
         let permShowQuests =  perms.contains(.viewMapQuest)
         if isPost && (permViewMap && (showPokestops && permShowStops || showQuests && permShowQuests)) {
-            data["pokestops"] = try? Pokestop.getAll(mysql: mysql, minLat: minLat!, maxLat: maxLat!, minLon: minLon!, maxLon: maxLon!, updated: lastUpdate, questsOnly: !showPokestops, showQuests: permShowQuests, questFilterExclude: questFilterExclude)
+            data["pokestops"] = try? Pokestop.getAll(mysql: mysql, minLat: minLat!, maxLat: maxLat!, minLon: minLon!, maxLon: maxLon!, updated: lastUpdate, questsOnly: !showPokestops, showQuests: permShowQuests, questFilterExclude: questFilterExclude, pokestopFilterExclude: pokestopFilterExclude)
         }
         let permShowIV = perms.contains(.viewMapIV)
         if isPost && permViewMap && showPokemon && perms.contains(.viewMapPokemon){
@@ -695,7 +697,66 @@ class ApiRequestHandler {
    
             data["gym_filters"] = gymData
         }
-             
+
+        if permViewMap && showPokestopFilter {
+            let hideString = Localizer.global.get(value: "filter_hide")
+            let showString = Localizer.global.get(value: "filter_show")
+            
+            let smallString = Localizer.global.get(value: "filter_small")
+            let normalString = Localizer.global.get(value: "filter_normal")
+            let largeString = Localizer.global.get(value: "filter_large")
+            let hugeString = Localizer.global.get(value: "filter_huge")
+            
+            let pokestopOptionsString = Localizer.global.get(value: "filter_pokestop_options")
+            
+            var pokestopData = [[String: Any]]()
+            
+            let pokestopLured: String
+            pokestopLured = Localizer.global.get(value: "filter_pokestop_lured")
+                
+            let filter = """
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <label class="btn btn-sm btn-off select-button-new" data-id="lured" data-type="pokestop-lured" data-info="hide">
+            <input type="radio" name="options" id="hide" autocomplete="off">\(hideString)
+            </label>
+            <label class="btn btn-sm btn-on select-button-new" data-id="lured" data-type="pokestop-lured" data-info="show">
+            <input type="radio" name="options" id="show" autocomplete="off">\(showString)
+            </label>
+            </div>
+            """
+                
+            let size = """
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <label class="btn btn-sm btn-size select-button-new" data-id="lured" data-type="pokestop-lured" data-info="small">
+            <input type="radio" name="options" id="hide" autocomplete="off">\(smallString)
+            </label>
+            <label class="btn btn-sm btn-size select-button-new" data-id="lured" data-type="pokestop-lured" data-info="normal">
+            <input type="radio" name="options" id="show" autocomplete="off">\(normalString)
+            </label>
+            <label class="btn btn-sm btn-size select-button-new" data-id="lured" data-type="pokestop-lured" data-info="large">
+            <input type="radio" name="options" id="show" autocomplete="off">\(largeString)
+            </label>
+            <label class="btn btn-sm btn-size select-button-new" data-id="lured" data-type="pokestop-lured" data-info="huge">
+            <input type="radio" name="options" id="show" autocomplete="off">\(hugeString)
+            </label>
+            </div>
+            """
+                
+            pokestopData.append([
+                "id": [
+                    "formatted": String(format: "%03d", 0),
+                    "sort": 0
+                ],
+                "name": pokestopLured,
+                "image": "<img class=\"lazy_load\" data-src=\"/static/img/pokestop/1.png\" style=\"height:50px; width:50px;\">",
+                "filter": filter,
+                "size": size,
+                "type": pokestopOptionsString
+                ])
+        
+            data["pokestop_filters"] = pokestopData
+        }
+              
         if showDevices && perms.contains(.admin) {
             
             let devices = try? Device.getAll(mysql: mysql)

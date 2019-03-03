@@ -40,11 +40,13 @@
 		"filter_quest_filter": "Quest Filter",
 		"filter_raid_filter": "Raid Filter",
 		"filter_gym_filter": "Gym Filter",
+        "filter_pokestop_filter": "Pokestop Filter",
 		"filter_table_search": "Search:",
 		"filter_pokemon_table_empty": "No matching Pokemon found",
 		"filter_quest_table_empty": "No matching Quests found",
 		"filter_raid_table_empty": "No matching Raids found",
 		"filter_gym_table_empty": "No matching Gyms found",
+		"filter_pokestop_table_empty": "No matching Pokestops found",
 		"filter_global_iv": "Global IV Limit",
         "filter_and": "And",
         "filter_or": "Or",
@@ -1472,6 +1474,8 @@
 		"filter_gym_available_slots_3": "3 Slots Available",
 		"filter_gym_available_slots_4": "4 Slots Available",
 		"filter_gym_available_slots_5": "5 Slots Available",
-		"filter_gym_available_slots_6": "Empty"
+		"filter_gym_available_slots_6": "Empty",
+		"filter_pokestop_options": "Options",
+		"filter_pokestop_lured": "Only Lured"
     }
 }

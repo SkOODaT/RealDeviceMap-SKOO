@@ -23,6 +23,9 @@ let raidFilterNew = {};
 let gymFilter = {};
 let gymFilterNew = {};
 
+let pokestopFilter = {};
+let pokestopFilterNew = {};
+
 let hiddenPokemonIds = [];
 
 let openedPokemon;
@@ -47,6 +50,7 @@ let pokemonFilterLoaded = false;
 let questFilterLoaded = false;
 let raidFilterLoaded = false;
 let gymFilterLoaded = false;
+let pokestopFilterLoaded = false;
 
 let tileLayer;
 
@@ -88,6 +92,7 @@ $(function() {
         questFilterNew = $.extend(true, {}, questFilter);
         raidFilterNew = $.extend(true, {}, raidFilter);
         gymFilterNew = $.extend(true, {}, gymFilter);
+		pokestopFilterNew = $.extend(true, {}, pokestopFilter);
 
         $('.select-button').each(function (button) {
             manageSelectButton($(this), false);
@@ -114,6 +119,11 @@ $(function() {
         if (!gymFilterLoaded) {
             gymFilterLoaded = true;
             loadGymFilter();
+        }
+		
+        if (!pokestopFilterLoaded) {
+            pokestopFilterLoaded = true;
+            loadPokestopFilter();
         }
 
     });
@@ -356,6 +366,21 @@ function loadStorage() {
             }
         }
     }
+    const pokestopFilterValue = retrieve('pokestop_filter');
+    if (pokestopFilterValue === null) {
+        const defaultPokestopFilter = {};
+        if (defaultPokestopFilter["lured"] === undefined) {
+            defaultPokestopFilter["lured"] = {"show": false, "size": "normal"};
+        }
+
+        store('pokestop_filter', JSON.stringify(defaultPokestopFilter));
+        pokestopFilter = defaultPokestopFilter;
+    } else {
+        pokestopFilter = JSON.parse(pokestopFilterValue);
+        if (pokestopFilter["lured"] === undefined) {
+            pokestopFilter["lured"] = {"show": false, "size": "normal"};
+        }
+    }
 }
 
 function initMap() {
@@ -524,6 +549,26 @@ function initMap() {
         $('#table-filter-gym').DataTable().rows().invalidate('data').draw(false);
     });
 
+    $('#reset-pokestop-filter').on('click', function(event) {
+        const defaultPokestopFilter = {};
+        defaultPokestopFilter["lured"] = {"show": false, "size": pokestopFilterNew["lured"]["size"]};
+
+        store('pokestop_filter', JSON.stringify(defaultPokestopFilter));
+        pokestopFilterNew = defaultPokestopFilter;
+
+        $('#table-filter-pokestop').DataTable().rows().invalidate('data').draw(false);
+    });
+
+    $('#disable-all-pokestop-finder').on('click', function(event) {
+        const defaultPokestopFilter = {};
+        defaultPokestopFilter["lured"] = {"show": false, "size": pokestopFilterNew["lured"]["size"]};
+
+        store('pokestop_filter', JSON.stringify(defaultPokestopFilter));
+        pokestopFilterNew = defaultPokestopFilter;
+
+        $('#table-filter-pokestop').DataTable().rows().invalidate('data').draw(false);
+    });
+
 	$('#saveSettings').on('click', function(event) {
 
 
@@ -635,7 +680,7 @@ function initMap() {
         pokestopMarkers = newPokestopMarkers;
 
         gymFilter = gymFilterNew;
-
+        pokestopFilter = pokestopFilterNew;
         raidFilter = raidFilterNew;
         //const raidFilterOld = $.extend(true, {}, raidFilter);
         const newGymMarkers = [];
@@ -661,6 +706,7 @@ function initMap() {
         store('quest_filter',JSON.stringify(questFilter));
         store('raid_filter',JSON.stringify(raidFilter));
         store('gym_filter', JSON.stringify(gymFilter));
+        store('pokestop_filter', JSON.stringify(pokestopFilter));
         store('show_cells', newShowCells);
         showCells = newShowCells;
 
@@ -847,6 +893,13 @@ function loadData() {
         }
     }
 
+    const pokestopFilterExclude = [];
+    if (showPokestops) {
+        if (pokestopFilter["lured"]["show"] !== false) {
+            pokestopFilterExclude.push("lured");
+        }
+    }
+
     const data = {
         '_': Math.round((new Date()).getTime() / 1000),
 		'min_lat': bounds._southWest.lat,
@@ -863,6 +916,7 @@ function loadData() {
         'pokemon_filter_iv': JSON.stringify(pokemonFilterIV),
 		'raid_filter_exclude': JSON.stringify(raidFilterExclude),
         'gym_filter_exclude': JSON.stringify(gymFilterExclude),
+        'pokestop_filter_exclude': JSON.stringify(pokestopFilterExclude),
         'show_spawnpoints': showSpawnpoints,
         'show_cells': showCells,
         'last_update': lastUpdateServer,
@@ -2153,6 +2207,27 @@ function manageSelectButton(e, isNew) {
                 shouldShow = gymFilterNew["s" + id]["size"] === "huge";
                 break;
         }
+    } else if (type === "pokestop-lured") {
+        switch (info) {
+            case "hide":
+                shouldShow = pokestopFilterNew[id]["show"] === false;
+                break;
+            case "show":
+                shouldShow = pokestopFilterNew[id]["show"] === true;
+                break;
+            case "small":
+                shouldShow = pokestopFilterNew[id]["size"] === "small";
+                break;
+            case "normal":
+                shouldShow = pokestopFilterNew[id]["size"] === "normal";
+                break;
+            case "large":
+                shouldShow = pokestopFilterNew[id]["size"] === "large";
+                break;
+            case "huge":
+                shouldShow = pokestopFilterNew[id]["size"] === "huge";
+                break;
+        }
     } else {
         shouldShow = false;
     }
@@ -2364,6 +2439,27 @@ function manageSelectButton(e, isNew) {
                         break;
                     case "huge":
                         gymFilterNew["s" + id]["size"] = "huge";
+                        break;
+                }
+            } else if (type === "pokestop-lured") {
+                switch (info) {
+                    case "hide":
+                        pokestopFilterNew[id]["show"] = false;
+                        break;
+                    case "show":
+                        pokestopFilterNew[id]["show"] = true;
+                        break;
+                    case "small":
+                        pokestopFilterNew[id]["size"] = "small";
+                        break;
+                    case "normal":
+                        pokestopFilterNew[id]["size"] = "normal";
+                        break;
+                    case "large":
+                        pokestopFilterNew[id]["size"] = "large";
+                        break;
+                    case "huge":
+                        pokestopFilterNew[id]["size"] = "huge";
                         break;
                 }
             }
@@ -2819,6 +2915,96 @@ function loadGymFilter() {
 
     $('#filterGymModal').on("shown.bs.modal", function () {
         const dataTable= $('#table-filter-gym').DataTable();
+        dataTable.responsive.recalc();
+        dataTable.columns.adjust();
+    });
+
+}
+
+function loadPokestopFilter() {
+    const scrollHeight = $(document).height() * 0.5;
+    const table = $('#table-filter-pokestop').DataTable( {
+        "language": {
+            "title": i18n('filter_pokestop_filter'),
+            "search": i18n('filter_table_search'),
+            "emptyTable": i18n('filter_pokestop_table_empty'),
+            "zeroRecords": i18n('filter_pokestop_table_empty'),
+        },
+        rowGroup: {
+            dataSrc: "type"
+        },
+        "autoWidth": false,
+        "columns": [
+            { "data": "image", "width": "5%", "className": 'details-control'},
+            { "data": "name", "width": "15%" },
+            { "data": {
+                    _:    "id.formatted",
+                    sort: "id.sort"
+                }, "width": "5%" },
+            { "data": "filter" },
+            { "data": "size" }
+        ],
+        "ajax": {
+            "url": "/api/get_data?show_pokestop_filter=true",
+            "dataSrc": "data.pokestop_filters"
+        },
+        "info":     false,
+        "order": [[ 2, "asc" ]],
+        "search.caseInsensitive": true,
+        "columnDefs": [ {
+            "targets": [0,3,4],
+            "orderable": false
+        },{
+            "type": "num",
+            "targets": 2
+        } ],
+        "deferRender": true,
+        "scrollY": scrollHeight,
+        "scrollCollapse": false,
+        "scroller": true,
+        "lengthChange": false,
+        "dom": "lfrti",
+        "drawCallback": function( settings ) {
+            $('.lazy_load').each(function () {
+                var img = $(this);
+                img.removeClass("lazy_load");
+                img.attr('src', img.data('src'));
+            });
+
+            $('.select-button-new').each(function (button) {
+                manageSelectButton($(this), true);
+            });
+            $('.configure-button-new').each(function (button) {
+                manageConfigureButton($(this), true);
+            });
+        },
+        "responsive": true
+    });
+
+    $('#table-filter-pokestop tbody').on('click', 'td.details-control', function () {
+        $('.select-button-new').each(function (button) {
+            manageSelectButton($(this), true);
+        });
+        $('.configure-button-new').each(function (button) {
+            manageConfigureButton($(this), true);
+        });
+    } );
+
+    table.on( 'search.dt', function () {
+        $( "tr" ).each(function() {
+            var tr = $(this).closest('tr');
+            var row = table.row(tr);
+            if (row.child.isShown()) {
+                row.child.hide();
+                tr.removeClass('parent');
+
+            };
+        })
+    } );
+
+
+    $('#filterPokestopModal').on("shown.bs.modal", function () {
+        const dataTable= $('#table-filter-pokestop').DataTable();
         dataTable.responsive.recalc();
         dataTable.columns.adjust();
     });
