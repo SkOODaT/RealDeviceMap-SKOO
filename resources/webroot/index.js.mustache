@@ -1016,10 +1016,12 @@ function loadData() {
 							pokemon.lon += + lonOffset;
 						}
 
-						pokemon.marker = getPokemonMarker(pokemon, ts);
-						pokemonMarkers.push(pokemon);
-						startDespawnTimer(pokemon, ts);
-                        pokemon.marker.addTo(map);
+                        if (!hiddenPokemonIds.includes(pokemon.id)) {
+						    pokemon.marker = getPokemonMarker(pokemon, ts);
+						    pokemonMarkers.push(pokemon);
+						    startDespawnTimer(pokemon, ts);
+						    pokemon.marker.addTo(map);
+                        }
 					} else {
 						if (oldPokemon.expire_timestamp !== pokemon.expire_timestamp){
 							oldPokemon.expire_timestamp = pokemon.expire_timestamp;
@@ -1037,6 +1039,10 @@ function loadData() {
 						}
                         if (oldPokemon.updated !== pokemon.updated){
                             oldPokemon.updated = pokemon.updated;
+                        }
+						
+                        if (hiddenPokemonIds.includes(oldPokemon.id)) {
+                            map.removeLayer(oldPokemon.marker);
                         }
 					}
 				}
@@ -1291,6 +1297,8 @@ function getPokemonPopupContent(pokemon) {
 
 	content += '<h6><b>'+ pokemonName + ' ' + pokeGender +'</b></h6>';
 
+	content += '<a title="Add Pokemon to Filter" href="#" onclick="addPokemonFilter(' + pokemon.pokemon_id + ', false);return false;"><b>Filter</b></a>&nbsp;&nbsp;&nbsp;&nbsp;<a id="h' + pokemon.id + '" title="Hide Individual Pokemon" href="#" onclick="setIndividualPokemonHidden(' + pokemon.id + ');return false;"><b>Hide</b></a><br>';
+	
 	if (pokemonName !== null) {
 		content += '<img src="static/img/pokemon/'+ pokemon.pokemon_id +'.png" height="50" width="50"/><br>';
 	}
@@ -1354,9 +1362,21 @@ function setIndividualPokemonHidden(id) {
 
         if (pokemonMarker === null) {
             console.log("Failed to find pokemon marker", id);
+        } else {
+            map.removeLayer(pokemonMarker.marker);
         }
-        map.removeLayer(pokemonMarker.marker);
     }
+}
+
+function addPokemonFilter(pokemonId, show) {
+    pokemonFilter[pokemonId]["show"] = show;
+    store('pokemon_filter', JSON.stringify(pokemonFilter));
+
+    $.each(pokemonMarkers, function (index, pokemon) {
+        if (pokemon.pokemon_id === pokemonId) {
+            map.removeLayer(pokemon.marker);
+        }
+    });
 }
 
 function getPokestopPopupContent(pokestop) {
