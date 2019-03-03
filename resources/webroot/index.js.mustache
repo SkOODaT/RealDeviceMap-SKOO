@@ -1213,6 +1213,19 @@ function getQuestIndex(questId) {
     }
 }
 
+function getPokestopSize(lured) {
+    const size = pokestopFilter[lured]["size"];
+    if (size === "small") {
+        return 20;
+    } else if (size == "large") {
+        return 45;
+    } else if (size === "huge") {
+        return 65;
+    } else {
+        return 30;
+    }
+}
+
 // MARK: - Local Storage
 
 function store(name, value) {
@@ -1833,11 +1846,13 @@ function getPokestopMarkerIcon(pokestop, ts) {
         }
     } else {
         if (pokestop.lure_expire_timestamp >= ts) {
+		    const size = getPokestopSize('lured');
             icon = L.icon({
                 iconUrl: '/static/img/pokestop/1.png',
-                iconSize: [30, 30],
-                iconAnchor: [15, 27],
-                popupAnchor: [0, -27]
+                iconSize:       [size       , size       ],
+                iconAnchor:     [size / 2   , size       ],
+                popupAnchor:    [0          , -(size / 2)]
+
             });
         } else {
             icon = L.icon({
