@@ -1346,8 +1346,6 @@ function getPokemonPopupContent(pokemon) {
 
     content += '<br><a href="https://www.google.com/maps/place/'+pokemon.lat+','+pokemon.lon+'" target="_blank" title="Open in Google Maps"><b>Navigate</b></a>';
 	
-	content += '<br><a id="h' + pokemon.id + '" title="Hide Pokemon" href="#" onclick="setIndividualPokemonHidden(' + pokemon.id + ');return false;"><b>Hide Pokemon</b></a>';
-
     content += '</center>';
 
 	return content
