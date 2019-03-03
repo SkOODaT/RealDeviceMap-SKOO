@@ -332,6 +332,12 @@ function loadStorage() {
                 defaultGymFilter["t" + i] = {"show": true, "size": "normal"};
             }
         }
+        let j;
+        for (j = 0; j <= 6; j++) {
+            if (defaultGymFilter["s" + j] === undefined) {
+                defaultGymFilter["s" + j] = {"show": true, "size": "normal"};
+            }
+        }
 
         store('gym_filter', JSON.stringify(defaultGymFilter));
         gymFilter = defaultGymFilter;
@@ -341,6 +347,12 @@ function loadStorage() {
         for (i = 0; i <= 3; i++) {
             if (gymFilter["t" + i] === undefined) {
                 gymFilter["t" + i] = {"show": true, "size": "normal"};
+            }
+        }
+        let j;
+        for (j = 0; j <= 6; j++) {
+            if (gymFilter["s" + j] === undefined) {
+                gymFilter["s" + j] = {"show": true, "size": "normal"};
             }
         }
     }
@@ -484,6 +496,10 @@ function initMap() {
         for (i = 0; i <= 3; i++) {
             defaultGymFilter["t" + i] = {"show": true, "size": gymFilterNew["t" + i]["size"]};
         }
+        let j;
+        for (j = 0; j <= 6; j++) {
+            defaultGymFilter["s" + j] = {"show": true, "size": gymFilterNew["s" + j]["size"]};
+        }
 
         store('gym_filter', JSON.stringify(defaultGymFilter));
         gymFilterNew = defaultGymFilter;
@@ -496,6 +512,10 @@ function initMap() {
         let i;
         for (i = 0; i <= 3; i++) {
             defaultGymFilter["t" + i] = {"show": false, "size": gymFilterNew["t" + i]["size"]};
+        }
+        let j;
+        for (j = 0; j <= 6; j++) {
+            defaultGymFilter["s" + j] = {"show": false, "size": gymFilterNew["s" + j]["size"]};
         }
 
         store('gym_filter', JSON.stringify(defaultGymFilter));
@@ -817,6 +837,12 @@ function loadData() {
         for (i = 0; i <= 3; i++) {
             if (gymFilter["t" + i]["show"] === false) {
                 gymFilterExclude.push("t" + i);
+            }
+        }
+        let j;
+        for (j = 0; j <= 6; j++) {
+            if (gymFilter["s" + j]["show"] === false) {
+                gymFilterExclude.push("s" + j);
             }
         }
     }
@@ -2086,6 +2112,27 @@ function manageSelectButton(e, isNew) {
                 shouldShow = gymFilterNew["t" + id]["size"] === "huge";
                 break;
         }
+    } else if (type === "gym-slots") {
+        switch (info) {
+            case "hide":
+                shouldShow = gymFilterNew["s" + id]["show"] === false;
+                break;
+            case "show":
+                shouldShow = gymFilterNew["s" + id]["show"] === true;
+                break;
+            case "small":
+                shouldShow = gymFilterNew["s" + id]["size"] === "small";
+                break;
+            case "normal":
+                shouldShow = gymFilterNew["s" + id]["size"] === "normal";
+                break;
+            case "large":
+                shouldShow = gymFilterNew["s" + id]["size"] === "large";
+                break;
+            case "huge":
+                shouldShow = gymFilterNew["s" + id]["size"] === "huge";
+                break;
+        }
     } else {
         shouldShow = false;
     }
@@ -2276,6 +2323,27 @@ function manageSelectButton(e, isNew) {
                         break;
                     case "huge":
                         gymFilterNew["t" + id]["size"] = "huge";
+                        break;
+                }
+            } else if (type === "gym-slots") {
+                switch (info) {
+                    case "hide":
+                        gymFilterNew["s" + id]["show"] = false;
+                        break;
+                    case "show":
+                        gymFilterNew["s" + id]["show"] = true;
+                        break;
+                    case "small":
+                        gymFilterNew["s" + id]["size"] = "small";
+                        break;
+                    case "normal":
+                        gymFilterNew["s" + id]["size"] = "normal";
+                        break;
+                    case "large":
+                        gymFilterNew["s" + id]["size"] = "large";
+                        break;
+                    case "huge":
+                        gymFilterNew["s" + id]["size"] = "huge";
                         break;
                 }
             }

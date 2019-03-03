@@ -597,7 +597,8 @@ class ApiRequestHandler {
             let largeString = Localizer.global.get(value: "filter_large")
             let hugeString = Localizer.global.get(value: "filter_huge")
             
-            let gymTeamString = Localizer.global.get(value: "filter_gym_team");
+            let gymTeamString = Localizer.global.get(value: "filter_gym_team")
+            let availableSlotsString = Localizer.global.get(value: "filter_gym_available_slots")
             
             var gymData = [[String: Any]]()
             //Team
@@ -646,7 +647,52 @@ class ApiRequestHandler {
                     "type": gymTeamString
                     ])
             }
-            
+ 
+            for i in 0...6 {
+                let availableSlots: String
+                availableSlots = Localizer.global.get(value: "filter_gym_available_slots_\(i)")
+                
+                let filter = """
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <label class="btn btn-sm btn-off select-button-new" data-id="\(i)" data-type="gym-slots" data-info="hide">
+                <input type="radio" name="options" id="hide" autocomplete="off">\(hideString)
+                </label>
+                <label class="btn btn-sm btn-on select-button-new" data-id="\(i)" data-type="gym-slots" data-info="show">
+                <input type="radio" name="options" id="show" autocomplete="off">\(showString)
+                </label>
+                </div>
+                """
+                
+                let size = """
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <label class="btn btn-sm btn-size select-button-new" data-id="\(i)" data-type="gym-slots" data-info="small">
+                <input type="radio" name="options" id="hide" autocomplete="off">\(smallString)
+                </label>
+                <label class="btn btn-sm btn-size select-button-new" data-id="\(i)" data-type="gym-slots" data-info="normal">
+                <input type="radio" name="options" id="show" autocomplete="off">\(normalString)
+                </label>
+                <label class="btn btn-sm btn-size select-button-new" data-id="\(i)" data-type="gym-slots" data-info="large">
+                <input type="radio" name="options" id="show" autocomplete="off">\(largeString)
+                </label>
+                <label class="btn btn-sm btn-size select-button-new" data-id="\(i)" data-type="gym-slots" data-info="huge">
+                <input type="radio" name="options" id="show" autocomplete="off">\(hugeString)
+                </label>
+                </div>
+                """
+                
+                gymData.append([
+                    "id": [
+                        "formatted": String(format: "%03d", i),
+                        "sort": i+100
+                    ],
+                    "name": availableSlots,
+                    "image": "<img class=\"lazy_load\" data-src=\"/static/img/gym/\(i == 6 ? 0 : 2/*Valor <3*/)_\(6 - i).png\" style=\"height:50px; width:50px;\">",
+                    "filter": filter,
+                    "size": size,
+                    "type": availableSlotsString
+                    ])
+            }
+   
             data["gym_filters"] = gymData
         }
              

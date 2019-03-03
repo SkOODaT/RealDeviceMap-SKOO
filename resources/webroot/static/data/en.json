@@ -1464,6 +1464,14 @@
 		"filter_gym_team_0": "Neutral",
 		"filter_gym_team_1": "Mystic",
 		"filter_gym_team_2": "Valor",
-		"filter_gym_team_3": "Instinct"
+		"filter_gym_team_3": "Instinct",
+		"filter_gym_available_slots": "Available Slots",
+		"filter_gym_available_slots_0": "Full",
+		"filter_gym_available_slots_1": "1 Slot Available",
+		"filter_gym_available_slots_2": "2 Slots Available",
+		"filter_gym_available_slots_3": "3 Slots Available",
+		"filter_gym_available_slots_4": "4 Slots Available",
+		"filter_gym_available_slots_5": "5 Slots Available",
+		"filter_gym_available_slots_6": "Empty"
     }
 }
