@@ -1344,7 +1344,7 @@ function getPokemonPopupContent(pokemon) {
         content += '<b>CP:</b> ' + pokemon.cp + ' (Lvl. ' + pokemon.level + ')<br>';
     }
 
-    content += '<br><a href="https://www.google.com/maps/place/'+pokemon.lat+','+pokemon.lon+'" target="_blank" title="Open in Google Maps"><b>Navigate</b></a>';
+    content += '<br><a href="https://www.google.com/maps/search/?api=1&query='+pokemon.lat+','+pokemon.lon+'" target="_blank" title="Open in Google Maps"><b>Google</b></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://maps.apple.com/maps?daddr='+pokemon.lat+','+pokemon.lon+'" target="_blank" title="Open in Apple Maps"><b>Apple</b></a>';
 	
     content += '</center>';
 
@@ -1432,7 +1432,8 @@ function getPokestopPopupContent(pokestop) {
     if (modifiedDate) {
         content += "<b>Last Modified:</b> " + modifiedDate.toLocaleDateString() + ' ' + modifiedDate.toLocaleTimeString() + ' (' + getTimeSince(modifiedDate) + ')<br>';
     }
-    content += '<br><a href="https://www.google.com/maps/place/'+pokestop.lat+','+pokestop.lon+'" target="_blank" title="Open in Google Maps"><b>Navigate</b></a>';
+    content += '<br><a href="https://www.google.com/maps/search/?api=1&query='+pokestop.lat+','+pokestop.lon+'" target="_blank" title="Open in Google Maps"><b>Google</b></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://maps.apple.com/maps?daddr='+pokestop.lat+','+pokestop.lon+'" target="_blank" title="Open in Apple Maps"><b>Apple</b></a>';
+	
     content += '</center>';
     return content;
 
@@ -1535,7 +1536,8 @@ function getGymPopupContent(gym) {
         content += "<b>Last Modified:</b> " + modifiedDate.toLocaleDateString() + ' ' + modifiedDate.toLocaleTimeString() + ' (' + getTimeSince(modifiedDate) + ')<br>';
     }
 
-    content += '<br><a href="https://www.google.com/maps/place/'+gym.lat+','+gym.lon+'" target="_blank" title="Open in Google Maps"><b>Navigate</b></a>';
+    content += '<br><a href="https://www.google.com/maps/search/?api=1&query='+gym.lat+','+gym.lon+'" target="_blank" title="Open in Google Maps"><b>Google</b></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://maps.apple.com/maps?daddr='+gym.lat+','+gym.lon+'" target="_blank" title="Open in Apple Maps"><b>Apple</b></a>';
+	
 	content += '</center>';
 	return content;
 }
