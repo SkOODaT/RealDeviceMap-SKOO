@@ -507,7 +507,7 @@ function initMap() {
         $('#table-filter-gym').DataTable().rows().invalidate('data').draw(false);
     });
 
-    $('#disable-all-gym-finder').on('click', function(event) {
+    $('#disable-all-gym-filter').on('click', function(event) {
         const defaultGymFilter = {};
         let i;
         for (i = 0; i <= 3; i++) {
