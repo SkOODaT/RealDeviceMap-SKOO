@@ -1213,6 +1213,32 @@ function getQuestIndex(questId) {
     }
 }
 
+function getGymSize(teamId) {
+    const size = gymFilter["t" + teamId]["size"];
+    if (size === "small") {
+        return 30;
+    } else if (size == "large") {
+        return 55;
+    } else if (size === "huge") {
+        return 75;
+    } else {
+        return 40;
+    }
+}
+
+function getRaidSize(id) {
+    const size = raidFilter[id]["size"];
+    if (size === "small") {
+        return 30;
+    } else if (size == "large") {
+        return 55;
+    } else if (size === "huge") {
+        return 75;
+    } else {
+        return 40;
+    }
+}
+
 function getPokestopSize(lured) {
     const size = pokestopFilter[lured]["size"];
     if (size === "small") {
@@ -1953,28 +1979,36 @@ function getGymMarkerIcon(gym, ts) {
         		pokemonIdString = '' + gym.raid_pokemon_id;
 			}
 
+            //Raid Boss
+            var iconSize = getRaidSize("p" + gym.raid_pokemon_id);
             icon = L.icon({
                 iconUrl: 		'/static/img/raid/'+ gym.team_id + '_' + size + '_' + pokemonIdString+ '.png',
-                iconSize: 		[40, 67],
-                iconAnchor: 	[20, 47],
-                popupAnchor: 	[0, -47]
+                iconSize: 		[iconSize, iconSize * 1.667],
+                iconAnchor: 	[iconSize / 2, iconSize * 1.567],
+                popupAnchor: 	[0, iconSize * -1.567]
             });
         } else {
+            //Egg
+            var iconSize = getRaidSize("l" + raidLevel);
             icon = L.icon({
                 iconUrl: 		'/static/img/raid/'+ gym.team_id + '_' + size + '_ue' + raidLevel + '.png',
-                iconSize: 		[40, 67],
-                iconAnchor: 	[20, 47],
-                popupAnchor: 	[0, -47]
+                iconSize: 		[iconSize, iconSize * 1.667],
+                iconAnchor: 	[iconSize / 2, iconSize * 1.567],
+                popupAnchor: 	[0, iconSize * -1.567]
             });
         }
     } else if (gym.raid_end_timestamp >= ts && parseInt(gym.raid_level) > 0 && showRaids) {
+        //Egg
+        var iconSize = getRaidSize("l" + raidLevel);
         icon = L.icon({
             iconUrl: 		'/static/img/raid/'+ gym.team_id + '_' + size + '_e' + raidLevel + '.png',
-            iconSize: 		[40, 67],
-            iconAnchor: 	[20, 47],
-            popupAnchor: 	[0, -47]
+            iconSize: 		[iconSize, iconSize * 1.667],
+            iconAnchor: 	[iconSize / 2, iconSize * 1.567],
+            popupAnchor: 	[0, iconSize * -1.567]
         });
     } else {
+        //Gym
+        var iconSize = getGymSize(gym.team_id);
 		if (gym.in_battle) {
 			icon = L.icon({
 				iconUrl: 		'/static/img/battle/'+ gym.team_id + '_' + size +'.png',
@@ -1985,9 +2019,9 @@ function getGymMarkerIcon(gym, ts) {
 		} else {
 			icon = L.icon({
 				iconUrl: 		'/static/img/gym/'+ gym.team_id + '_' + size +'.png',
-				iconSize:     	[40, 40],
-				iconAnchor:   	[20, 20],
-				popupAnchor:  	[0, -20]
+                iconSize:     	[iconSize, iconSize],
+                iconAnchor:   	[iconSize / 2, iconSize / 2],
+                popupAnchor:  	[0, -20] //TODO: //size * -1.567
 			});				
 		}
     }
