@@ -291,7 +291,7 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
         
         let oldPokestop: Pokestop?
         do {
-            oldPokestop = try Pokestop.getWithId(mysql: mysql, id: id)
+            oldPokestop = try Pokestop.getWithId(mysql: mysql, id: id, withDeleted: true)
         } catch {
             oldPokestop = nil
         }
@@ -628,17 +628,23 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
         
     }
 
-    public static func getWithId(mysql: MySQL?=nil, id: String) throws -> Pokestop? {
+    public static func getWithId(mysql: MySQL?=nil, id: String, withDeleted:Bool=false) throws -> Pokestop? {
         
         guard let mysql = mysql ?? DBController.global.mysql else {
             Log.error(message: "[POKESTOP] Failed to connect to database.")
             throw DBController.DBError()
         }
         
+        let withDeletedSQL: String
+        if withDeleted {
+            withDeletedSQL = ""
+        } else {
+            withDeletedSQL = "AND deleted = false"
+        }
         let sql = """
             SELECT id, lat, lon, name, url, enabled, lure_expire_timestamp, last_modified_timestamp, updated, quest_type, quest_timestamp, quest_target, CAST(quest_conditions AS CHAR), CAST(quest_rewards AS CHAR), quest_template, cell_id
             FROM pokestop
-            WHERE id = ?
+            WHERE id = ? \(withDeletedSQL)
         """
         
         let mysqlStmt = MySQLStmt(mysql)
@@ -746,7 +752,7 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
         let sql = """
             UPDATE pokestop
             SET deleted = true
-            WHERE cell_id = ? \(notInSQL)
+            WHERE cell_id = ? \(notInSQL) AND deleted = false
         """
         
         let mysqlStmt = MySQLStmt(mysql)

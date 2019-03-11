@@ -232,7 +232,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
 
         let oldGym: Gym?
         do {
-            oldGym = try Gym.getWithId(mysql: mysql, id: id)
+            oldGym = try Gym.getWithId(mysql: mysql, id: id, withDeleted: true)
         } catch {
             oldGym = nil
         }
@@ -361,7 +361,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
         var excludeAllButEx = false
         var excludedTeams = [Int]()
         var excludedAvailableSlots = [Int]();
-        
+
         if showRaids && raidFilterExclude != nil {
             for filter in raidFilterExclude! {
                 if filter.contains(string: "p") {
@@ -408,7 +408,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
                 sqlExcludeCreate += "?)))"
                 excludeLevelSQL = sqlExcludeCreate
             }
-            
+
             if excludedPokemon.isEmpty {
                 excludePokemonSQL = ""
             } else {
@@ -419,7 +419,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
                 sqlExcludeCreate += "?)))"
                 excludePokemonSQL = sqlExcludeCreate
             }
-            
+
             if excludeAllButEx {
                 excludeAllButExSQL = "AND ((raid_end_timestamp IS NULL OR raid_end_timestamp < UNIX_TIMESTAMP()) OR (raid_end_timestamp >= UNIX_TIMESTAMP() AND ex_raid_eligible = 1))"
             } else {
@@ -430,7 +430,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
             excludePokemonSQL = ""
             excludeAllButExSQL = ""
         }
-        
+
         if excludedTeams.isEmpty {
             excludeTeamSQL = ""
         } else {
@@ -452,7 +452,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
             sqlExcludeCreate += "?))"
             excludeAvailableSlotsSQL = sqlExcludeCreate
         }
-   
+
         var sql = """
             SELECT id, lat, lon, name, url, guarding_pokemon_id, last_modified_timestamp, team_id, raid_end_timestamp, raid_spawn_timestamp, raid_battle_timestamp, raid_pokemon_id, enabled, availble_slots, updated, raid_level, ex_raid_eligible, in_battle, raid_pokemon_move_1, raid_pokemon_move_2, raid_pokemon_form, raid_pokemon_cp, raid_is_exclusive, cell_id
             FROM gym
@@ -469,7 +469,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
         mysqlStmt.bindParam(minLon)
         mysqlStmt.bindParam(maxLon)
         mysqlStmt.bindParam(updated)
-        
+
         for id in excludedLevels {
             mysqlStmt.bindParam(id)
         }
@@ -537,17 +537,23 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
 
     }
 
-    public static func getWithId(mysql: MySQL?=nil, id: String) throws -> Gym? {
+    public static func getWithId(mysql: MySQL?=nil, id: String, withDeleted: Bool=false) throws -> Gym? {
 
         guard let mysql = mysql ?? DBController.global.mysql else {
             Log.error(message: "[GYM] Failed to connect to database.")
             throw DBController.DBError()
         }
 
+        let withDeletedSQL: String
+        if withDeleted {
+            withDeletedSQL = ""
+        } else {
+            withDeletedSQL = "AND deleted = false"
+        }
         let sql = """
             SELECT id, lat, lon, name, url, guarding_pokemon_id, last_modified_timestamp, team_id, raid_end_timestamp, raid_spawn_timestamp, raid_battle_timestamp, raid_pokemon_id, enabled, availble_slots, updated, raid_level, ex_raid_eligible, in_battle, raid_pokemon_move_1, raid_pokemon_move_2, raid_pokemon_form, raid_pokemon_cp, raid_is_exclusive, cell_id
             FROM gym
-            WHERE id = ?
+            WHERE id = ? \(withDeletedSQL)
         """
 
         let mysqlStmt = MySQLStmt(mysql)
@@ -775,7 +781,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
         let sql = """
             UPDATE gym
             SET deleted = true
-            WHERE cell_id = ? \(notInSQL)
+            WHERE cell_id = ? \(notInSQL) AND deleted = false
         """
 
         let mysqlStmt = MySQLStmt(mysql)
