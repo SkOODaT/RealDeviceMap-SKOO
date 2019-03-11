@@ -1035,6 +1035,7 @@ function initMap() {
 	setInterval(updateOpenedPopupLoop, 1000);
     setInterval(updateCellsLoop, 10000);
     setInterval(updateDevicesLoop, 10000);
+    setInterval(updateMapTimers, 1000);
 }
 
 // MARK: - Date Loading
@@ -1200,6 +1201,7 @@ function loadData() {
 						if (gym.raid_end_timestamp >= ts) {
 							startRaidTimer(gym, ts);
 							gym.raidTimerSet = true;
+                            setDespawnTimer(gym.marker);
 						} else {
 							gym.raidTimerSet = false;
 						}
@@ -1230,6 +1232,7 @@ function loadData() {
 							if (oldGym.raid_end_timestamp >= ts && !oldGym.raidTimerSet) {
 								startRaidTimer(oldGym, ts);
 								oldGym.raidTimerSet = true;
+                                setDespawnTimer(oldGym.marker);
 							}
 						}
 					}
@@ -1598,7 +1601,7 @@ function startRaidTimer(gym, ts) {
 				});
 				map.removeLayer(realGym.marker);
 			} else {
-				realGym.marker.setIcon(getGymMarkerIcon(realGym, ts2 + 1));
+                realGym.marker.setIcon(getGymMarkerIcon(realGym, ts2 + 1));
 			}
 
 		}, (gym.raid_end_timestamp - ts) * 1000);
@@ -1666,6 +1669,12 @@ function updateDevicesLoop() {
     $.each(deviceMarkers, function (index, device) {
         var newLatLng = new L.LatLng(device.last_lat, device.last_lon);
         device.marker.setLatLng(newLatLng);
+    });
+}
+
+function updateMapTimers() {
+    $.each(gymMarkers, function(index, marker) {
+        setDespawnTimer(marker.marker);
     });
 }
 
@@ -2599,6 +2608,32 @@ function isDeviceOffline(device, ts) {
     var delta = 15 * 60;
     var isOffline = device.last_seen > (ts - delta) ? 0 : 1;
     return isOffline;
+}
+
+function setDespawnTimer(marker) {
+    var date = new Date();
+    var ts = date.getTime();
+    var raidTimestamp = 0;
+    if (marker.raid_battle_timestamp <= ts && marker.raid_end_timestamp >= ts && showRaids && parseInt(gym.raid_level) > 0) {
+        raidTimestamp = marker.raid_end_timestamp;
+    } else if (marker.raid_end_timestamp >= ts && parseInt(marker.raid_level) > 0 && showRaids) {
+        raidTimestamp = marker.raid_battle_timestamp;
+    } else {
+        marker.unbindTooltip();
+        marker.timerSet = false;
+    }
+
+    if (timestamp > 0) {
+        var timer = getTimeUntill(raidTimestamp);
+        if (marker.timerSet) {
+            var text = "<span>" + timer + "</span>";
+            marker.setTooltipContent(text);
+        } else {
+            var options = {permanent: true, className: "leaflet-tooltip", direction: "bottom", offset: [0, 10]};
+            var tooltip = marker.bindTooltip(timer, options);
+            marker.timerSet = true;
+        }
+    }
 }
 
 // MARK: - Misc
