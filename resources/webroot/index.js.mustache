@@ -1989,7 +1989,7 @@ function getGymMarkerIcon(gym, ts) {
             });
         } else {
             //Egg
-            var iconSize = getRaidSize("l" + raidLevel);
+            var iconSize = getRaidSize(raidLevel == "ex" ? "ex" : "l" + raidLevel);
             icon = L.icon({
                 iconUrl: 		'/static/img/raid/'+ gym.team_id + '_' + size + '_ue' + raidLevel + '.png',
                 iconSize: 		[iconSize, iconSize * 1.667],
@@ -1999,7 +1999,7 @@ function getGymMarkerIcon(gym, ts) {
         }
     } else if (gym.raid_end_timestamp >= ts && parseInt(gym.raid_level) > 0 && showRaids) {
         //Egg
-        var iconSize = getRaidSize("l" + raidLevel);
+        var iconSize = getRaidSize(raidLevel == "ex" ? "ex" : "l" + raidLevel);
         icon = L.icon({
             iconUrl: 		'/static/img/raid/'+ gym.team_id + '_' + size + '_e' + raidLevel + '.png',
             iconSize: 		[iconSize, iconSize * 1.667],
