@@ -115,12 +115,12 @@ $(function() {
             raidFilterLoaded = true;
             loadRaidFilter();
         }
-		
+
         if (!gymFilterLoaded) {
             gymFilterLoaded = true;
             loadGymFilter();
         }
-		
+
         if (!pokestopFilterLoaded) {
             pokestopFilterLoaded = true;
             loadPokestopFilter();
@@ -1044,7 +1044,7 @@ function loadData() {
 			const pokemon = data.data.pokemon;
             ts = Math.round((new Date()).getTime() / 1000);
             $.each(pokemon, function (index, pokemon) {
-				if (showPokemon && pokemon.expire_timestamp >= ts /*&& matchesPokemonFilter(pokemon.pokemon_id)*/) {
+				if (showPokemon && pokemon.expire_timestamp >= ts /*&& matchesPokemonFilter(pokemon.pokemon_id)*/ && !hiddenPokemonIds.includes(pokemon.id)) {
 					if (pokemon.updated > lastUpdateServer) {
 						lastUpdateServer = pokemon.updated;
 					}
@@ -1094,7 +1094,7 @@ function loadData() {
                         if (oldPokemon.updated !== pokemon.updated){
                             oldPokemon.updated = pokemon.updated;
                         }
-						
+
                         if (hiddenPokemonIds.includes(oldPokemon.id)) {
                             map.removeLayer(oldPokemon.marker);
                         }
@@ -1391,7 +1391,7 @@ function getPokemonPopupContent(pokemon) {
 	content += '<h6><b>'+ pokemonName + ' ' + pokeGender +'</b></h6>';
 
 	content += '<a title="Add Pokemon to Filter" href="#" onclick="addPokemonFilter(' + pokemon.pokemon_id + ', false);return false;"><b>Filter</b></a>&nbsp;&nbsp;&nbsp;&nbsp;<a id="h' + pokemon.id + '" title="Hide Individual Pokemon" href="#" onclick="setIndividualPokemonHidden(' + pokemon.id + ');return false;"><b>Hide</b></a><br>';
-	
+
 	if (pokemonName !== null) {
 		content += '<img src="static/img/pokemon/'+ pokemon.pokemon_id +'.png" height="50" width="50"/><br>';
 	}
@@ -1438,7 +1438,7 @@ function getPokemonPopupContent(pokemon) {
     }
 
     content += '<br><a href="https://www.google.com/maps/search/?api=1&query='+pokemon.lat+','+pokemon.lon+'" target="_blank" title="Open in Google Maps"><b>Google</b></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://maps.apple.com/maps?daddr='+pokemon.lat+','+pokemon.lon+'" target="_blank" title="Open in Apple Maps"><b>Apple</b></a>';
-	
+
     content += '</center>';
 
 	return content
@@ -1526,7 +1526,7 @@ function getPokestopPopupContent(pokestop) {
         content += "<b>Last Modified:</b> " + modifiedDate.toLocaleDateString() + ' ' + modifiedDate.toLocaleTimeString() + ' (' + getTimeSince(modifiedDate) + ')<br>';
     }
     content += '<br><a href="https://www.google.com/maps/search/?api=1&query='+pokestop.lat+','+pokestop.lon+'" target="_blank" title="Open in Google Maps"><b>Google</b></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://maps.apple.com/maps?daddr='+pokestop.lat+','+pokestop.lon+'" target="_blank" title="Open in Apple Maps"><b>Apple</b></a>';
-	
+
     content += '</center>';
     return content;
 
@@ -1630,7 +1630,7 @@ function getGymPopupContent(gym) {
     }
 
     content += '<br><a href="https://www.google.com/maps/search/?api=1&query='+gym.lat+','+gym.lon+'" target="_blank" title="Open in Google Maps"><b>Google</b></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://maps.apple.com/maps?daddr='+gym.lat+','+gym.lon+'" target="_blank" title="Open in Apple Maps"><b>Apple</b></a>';
-	
+
 	content += '</center>';
 	return content;
 }
@@ -2022,7 +2022,7 @@ function getGymMarkerIcon(gym, ts) {
                 iconSize:     	[iconSize, iconSize],
                 iconAnchor:   	[iconSize / 2, iconSize / 2],
                 popupAnchor:  	[0, -20] //TODO: //size * -1.567
-			});				
+			});
 		}
     }
     return icon;
