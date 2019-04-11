@@ -963,10 +963,12 @@ function loadData() {
 							oldGym.availble_slots !== gym.availble_slots ||
 							oldGym.team_id !== gym.team_id ||
 							oldGym.raid_end_timestamp != gym.raid_end_timestamp ||
-							oldGym.raid_pokemon_id != gym.raid_pokemon_id
+							oldGym.raid_pokemon_id != gym.raid_pokemon_id ||
+                            oldGym.total_cp != gym.total_cp
 						) {
 							oldGym.availble_slots = gym.availble_slots;
 							oldGym.team_id = gym.team_id;
+                            oldGym.total_cp = gym.total_cp;
 							oldGym.raid_end_timestamp = gym.raid_end_timestamp;
 							oldGym.raid_battle_timestamp = gym.raid_battle_timestamp;
 							oldGym.raid_spawn_timestamp = gym.raid_spawn_timestamp;
@@ -1572,6 +1574,11 @@ function getGymPopupContent(gym) {
 		hasStatus = true;
     }
 
+    if (gym.total_cp !== null) {
+        content += 'Gym CP: '+gym.total_cp+'<br>';
+		hasStatus = true;
+    }
+	
     if (gym.availble_slots !== null) {
         content += 'Slots Open: '+gym.availble_slots+'<br>';
 		hasStatus = true;
