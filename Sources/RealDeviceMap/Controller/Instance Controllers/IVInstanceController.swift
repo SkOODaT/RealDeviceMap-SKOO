@@ -8,6 +8,7 @@
 import Foundation
 import PerfectLib
 import PerfectThread
+import PerfectMySQL
 import Turf
 
 class IVInstanceController: InstanceControllerProto {
@@ -110,8 +111,69 @@ class IVInstanceController: InstanceControllerProto {
         scannedPokemonLock.lock()
         scannedPokemon.append((Date(), pokemon))
         scannedPokemonLock.unlock()
+
+        let nearbyPokemons = self.getNearbyPokemons(lat: pokemon.lat, lon: pokemon.lon)
+
+        return ["action": "scan_iv", "lat": pokemon.lat, "lon": pokemon.lon, "id": pokemon.id, "is_spawnpoint": pokemon.spawnId != nil, "min_level": minLevel, "max_level": maxLevel, "nearbyPokemons": nearbyPokemons]
+    }
+
+
+    func getNearbyPokemons(lat: Double, lon: Double) -> [[String: Any]] {
+        guard let mysql = DBController.global.mysql else {
+            Log.error(message: "[InstanceControllerProto] Failed to connect to database.")
+            return [[String: Any]]()
+        }
+
+        let sql = """
+                        SELECT id,lat,lon,pokemon_id,ROUND(
+                            6371 * acos(cos(radians(?)) * cos(radians(lat))
+                            * cos(radians(lon) - radians(?))
+                            + sin(radians(?)) * sin(radians(lat)))
+                        ,2) AS distance
+                        FROM pokemon WHERE
+                        ABS(lat-?) < 0.001 AND
+                        ABS(lon-?) < 0.001 AND
+                        atk_iv IS NULL AND
+                        (expire_timestamp > UNIX_TIMESTAMP(NOW() + INTERVAL 10 MINUTE)
+                        OR (
+                        expire_timestamp > UNIX_TIMESTAMP(NOW()) AND
+                        ABS(lat-?) < 0.00001 AND
+                        ABS(lon-?) < 0.00001
+                        )
+                )
+                ORDER BY distance LIMIT 20;
+                """
         
-        return ["action": "scan_iv", "lat": pokemon.lat, "lon": pokemon.lon, "id": pokemon.id, "is_spawnpoint": pokemon.spawnId != nil, "min_level": minLevel, "max_level": maxLevel]
+        let mysqlStmt = MySQLStmt(mysql)
+        _ = mysqlStmt.prepare(statement: sql)
+        // TODO: Is not possible to bind parameters with name?
+        mysqlStmt.bindParam(lat)
+        mysqlStmt.bindParam(lon)
+        mysqlStmt.bindParam(lat)
+        mysqlStmt.bindParam(lat)
+        mysqlStmt.bindParam(lon)
+        mysqlStmt.bindParam(lat)
+        mysqlStmt.bindParam(lon)
+
+        guard mysqlStmt.execute() else {
+            Log.error(message: "[DBController] Failed to execute Nearby Pokemons query. (\(mysqlStmt.errorMessage())")
+            return [[String: Any]]()
+        }
+        let results = mysqlStmt.results()
+        if results.numRows == 0 {
+            return [[String: Any]]()
+        }
+        var pokemons = [[String: Any]]()
+        while let result = results.next() {
+            let id = result[0] as! String
+            let lat = result[1] as! Double
+            let lon = result[2] as! Double
+            let spawnId = result[3] as? UInt64
+            pokemons.append(["lat": lat, "lon": lon, "id": id, "is_spawnpoint": spawnId != nil]);
+        }
+
+        return pokemons;
+
     }
     
     func getStatus(formatted: Bool) -> JSONConvertible? {
