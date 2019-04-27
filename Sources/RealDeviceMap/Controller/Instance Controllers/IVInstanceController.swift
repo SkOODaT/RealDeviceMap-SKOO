@@ -226,9 +226,9 @@ class IVInstanceController: InstanceControllerProto {
             
             let index = lastIndexOf(pokemonId: pokemon.pokemonId)
             
-            if pokemonQueue.count >= 100 && index == nil {
+            if pokemonQueue.count >= 200 && index == nil {
                 Log.warning(message: "[IVInstanceController] Queue is full!")
-            } else if pokemonQueue.count >= 100 {
+            } else if pokemonQueue.count >= 200 {
                 pokemonQueue.insert(pokemon, at: index!)
                 _ = pokemonQueue.popLast()
             } else if index != nil {
