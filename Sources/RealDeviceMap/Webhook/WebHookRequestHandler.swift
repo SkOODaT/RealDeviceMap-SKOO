@@ -81,6 +81,7 @@ class WebHookRequestHandler {
         let latTarget = json["lat_target"] as? Double
         let lonTarget = json["lon_target"] as? Double
         let pokemonEncounterId = json["pokemon_encounter_id"] as? String
+        let pokemonEncounterIdForEncounter = json["pokemon_encounter_id_for_encounter"] as? String
         let targetMaxDistance = json["target_max_distnace"] as? Double ?? 250
 
         var wildPokemons = [(cell: UInt64, data: POGOProtos_Map_Pokemon_WildPokemon, timestampMs: UInt64)]()
@@ -278,6 +279,19 @@ class WebHookRequestHandler {
 
         var data = ["nearby": nearbyPokemons.count, "wild": wildPokemons.count, "forts": forts.count, "quests": quests.count, "encounters": encounters.count, "level": trainerLevel as Any, "only_empty_gmos": containsGMO && isEmtpyGMO, "only_invalid_gmos": containsGMO && isInvalidGMO, "contains_gmos": containsGMO]
 
+        if pokemonEncounterIdForEncounter != nil {
+                //If the UIC sets pokemon_encounter_id_for_encounter,
+                //only return encounters != 0 if we actually encounter that target.
+                //"Guaranteed scan"
+                data["encounters"] = 0;
+                for encounter in encounters {
+                        if (encounter.wildPokemon.encounterID.description == pokemonEncounterIdForEncounter){
+                                //We actually encountered the target.
+                                data["encounters"] = 1;
+                        }
+                }
+        }
+        
         if latTarget != nil && lonTarget != nil {
             data["in_area"] = inArea
             data["lat_target"] = latTarget!
@@ -291,19 +305,57 @@ class WebHookRequestHandler {
         
         let listScatterPokemon = json["list_scatter_pokemon"] as? Bool ?? false
         if listScatterPokemon,
+        if listScatterPokemon && 
+           pokemonCoords != nil &&
+           pokemonEncounterId != nil,
            let uuid = json["uuid"] as? String,
            let controller = InstanceController.global.getInstanceController(deviceUUID: uuid) as? IVInstanceController {
            
             var scatterPokemon = [[String: Any]]()
             for pokemon in wildPokemons {
+                //Don't return the main query in the scattershot list
+                if pokemon.data.encounterID.description == pokemonEncounterId {
+                        continue
+                }
                 let pokemonId = UInt16(pokemon.data.pokemonData.pokemonID.rawValue)
+                let oldPokemon: Pokemon?
+                do {
+                    oldPokemon = try Pokemon.getWithId(mysql: mysql, id:pokemon.data.encounterID.description)
+                    if (oldPokemon != nil && oldPokemon!.atkIv != nil){
+                        //Skip going to mons already with IVs.
+                        continue
+                    }
+                } catch {
+                    oldPokemon = nil
+                }
                 if controller.scatterPokemon.contains(pokemonId) {
                     scatterPokemon.append([
                         "lat": pokemon.data.latitude,
                         "lon": pokemon.data.longitude,
                         "pokemon_id": pokemonId
+                        "id": pokemon.data.encounterID.description
                     ])
                 }
+            }
+            //Do a greedy sort so that we go to to the scattershot mons in < 35m jumps
+            var currentCoords = pokemonCoords! 
+            for i in 0..<scatterPokemon.count {
+                if i+1 < scatterPokemon.count {
+                        for j in i+1..<scatterPokemon.count {
+                                let jCoords = CLLocationCoordinate2D(latitude: scatterPokemon[j]["lat"] as! Double, longitude: scatterPokemon[j]["lon"] as! Double)
+                                let iCoords = CLLocationCoordinate2D(latitude: scatterPokemon[i]["lat"] as! Double, longitude: scatterPokemon[i]["lon"] as! Double)
+                                if (currentCoords.distance(to:jCoords) < currentCoords.distance(to:iCoords)){
+                                        scatterPokemon.swapAt(i,j)
+                                }
+                        }
+                }
+                let iCoords = CLLocationCoordinate2D(latitude: scatterPokemon[i]["lat"] as! Double, longitude: scatterPokemon[i]["lon"] as! Double)
+                if (currentCoords.distance(to: iCoords) > 35){
+                        //Cut it off here.
+                        scatterPokemon = Array(scatterPokemon.prefix(upTo:i))
+                        break
+                }
+                currentCoords = iCoords
             }
             data["scatter_pokemon"] = scatterPokemon
         }
