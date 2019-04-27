@@ -304,7 +304,6 @@ class WebHookRequestHandler {
         }
         
         let listScatterPokemon = json["list_scatter_pokemon"] as? Bool ?? false
-        if listScatterPokemon,
         if listScatterPokemon && 
            pokemonCoords != nil &&
            pokemonEncounterId != nil,
