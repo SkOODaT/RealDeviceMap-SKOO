@@ -331,7 +331,7 @@ class WebHookRequestHandler {
                     scatterPokemon.append([
                         "lat": pokemon.data.latitude,
                         "lon": pokemon.data.longitude,
-                        "pokemon_id": pokemonId
+                        "pokemon_id": pokemonId,
                         "id": pokemon.data.encounterID.description
                     ])
                 }
