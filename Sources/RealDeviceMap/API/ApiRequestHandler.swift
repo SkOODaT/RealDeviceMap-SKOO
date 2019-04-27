@@ -450,11 +450,11 @@ class ApiRequestHandler {
             
             let raidOptionsString = Localizer.global.get(value: "filter_raid_options")
             let pokemonTypeString = Localizer.global.get(value: "filter_pokemon")
-			
+           
             //let exRaidString = Localizer.global.get(value: "filter_raid_ex")
             
             var raidData = [[String: Any]]()
-            // Level
+            //Level
             for i in 1...5 {
                 
                 let raidLevel: String
@@ -501,47 +501,6 @@ class ApiRequestHandler {
                     "type": raidOptionsString
                 ])
             }
-
-            // Ex Raids
-            let exFilter = """
-            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-            <label class="btn btn-sm btn-off select-button-new" data-id="ex" data-type="raid-ex" data-info="hide">
-            <input type="radio" name="options" id="hide" autocomplete="off">\(hideString)
-            </label>
-            <label class="btn btn-sm btn-on select-button-new" data-id="ex" data-type="raid-ex" data-info="show">
-            <input type="radio" name="options" id="show" autocomplete="off">\(showString)
-            </label>
-            </div>
-            """
-            
-            let exSize = """
-            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-            <label class="btn btn-sm btn-size select-button-new" data-id="ex" data-type="raid-ex" data-info="small">
-            <input type="radio" name="options" id="hide" autocomplete="off">\(smallString)
-            </label>
-            <label class="btn btn-sm btn-size select-button-new" data-id="ex" data-type="raid-ex" data-info="normal">
-            <input type="radio" name="options" id="show" autocomplete="off">\(normalString)
-            </label>
-            <label class="btn btn-sm btn-size select-button-new" data-id="ex" data-type="raid-ex" data-info="large">
-            <input type="radio" name="options" id="show" autocomplete="off">\(largeString)
-            </label>
-            <label class="btn btn-sm btn-size select-button-new" data-id="ex" data-type="raid-ex" data-info="huge">
-            <input type="radio" name="options" id="show" autocomplete="off">\(hugeString)
-            </label>
-            </div>
-            """
-            
-            raidData.append([
-                "id": [
-                    "formatted": String(format: "%03d", 6), //Need a better way to display, new section?
-                    "sort": 6
-                ],
-                "name": Localizer.global.get(value: "filter_raid_ex") ,
-                "image": "<img class=\"lazy_load\" data-src=\"/static/img/item/1403.png\" style=\"height:50px; width:50px;\">",
-                "filter": exFilter,
-                "size": exSize,
-                "type": raidOptionsString
-                ])
             
             // Pokemon
             for i in 1...WebReqeustHandler.maxPokemonId {
@@ -600,6 +559,7 @@ class ApiRequestHandler {
             let hugeString = Localizer.global.get(value: "filter_huge")
             
             let gymTeamString = Localizer.global.get(value: "filter_gym_team")
+            let gymOptionsString = Localizer.global.get(value: "filter_gym_options")
             let availableSlotsString = Localizer.global.get(value: "filter_gym_available_slots")
             
             var gymData = [[String: Any]]()
@@ -649,7 +609,49 @@ class ApiRequestHandler {
                     "type": gymTeamString
                     ])
             }
- 
+            
+            // Ex Raids
+            let exFilter = """
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <label class="btn btn-sm btn-off select-button-new" data-id="ex" data-type="gym-ex" data-info="hide">
+            <input type="radio" name="options" id="hide" autocomplete="off">\(hideString)
+            </label>
+            <label class="btn btn-sm btn-on select-button-new" data-id="ex" data-type="gym-ex" data-info="show">
+            <input type="radio" name="options" id="show" autocomplete="off">\(showString)
+            </label>
+            </div>
+            """
+            
+            let exSize = """
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <label class="btn btn-sm btn-size select-button-new" data-id="ex" data-type="gym-ex" data-info="small">
+            <input type="radio" name="options" id="hide" autocomplete="off">\(smallString)
+            </label>
+            <label class="btn btn-sm btn-size select-button-new" data-id="ex" data-type="gym-ex" data-info="normal">
+            <input type="radio" name="options" id="show" autocomplete="off">\(normalString)
+            </label>
+            <label class="btn btn-sm btn-size select-button-new" data-id="ex" data-type="gym-ex" data-info="large">
+            <input type="radio" name="options" id="show" autocomplete="off">\(largeString)
+            </label>
+            <label class="btn btn-sm btn-size select-button-new" data-id="ex" data-type="gym-ex" data-info="huge">
+            <input type="radio" name="options" id="show" autocomplete="off">\(hugeString)
+            </label>
+            </div>
+            """
+            
+            gymData.append([
+                "id": [
+                    "formatted": String(format: "%03d", 5), //Need a better way to display, new section?
+                    "sort": 5
+                ],
+                "name": Localizer.global.get(value: "filter_raid_ex") ,
+                "image": "<img class=\"lazy_load\" data-src=\"/static/img/item/1403.png\" style=\"height:50px; width:50px;\">",
+                "filter": exFilter,
+                "size": exSize,
+                "type": gymOptionsString
+                ])
+            
+            //Available slots
             for i in 0...6 {
                 let availableSlots: String
                 availableSlots = Localizer.global.get(value: "filter_gym_available_slots_\(i)")
@@ -682,19 +684,21 @@ class ApiRequestHandler {
                 </div>
                 """
                 
+                let team = (UInt16.random % 3) + 1
+                
                 gymData.append([
                     "id": [
                         "formatted": String(format: "%03d", i),
                         "sort": i+100
                     ],
                     "name": availableSlots,
-                    "image": "<img class=\"lazy_load\" data-src=\"/static/img/gym/\(i == 6 ? 0 : 2/*Valor <3*/)_\(6 - i).png\" style=\"height:50px; width:50px;\">",
+                    "image": "<img class=\"lazy_load\" data-src=\"/static/img/gym/\(i == 6 ? 0 : team)_\(6 - i).png\" style=\"height:50px; width:50px;\">",
                     "filter": filter,
                     "size": size,
                     "type": availableSlotsString
                     ])
             }
-   
+
             data["gym_filters"] = gymData
         }
 

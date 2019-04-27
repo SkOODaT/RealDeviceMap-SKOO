@@ -411,7 +411,6 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
                 }
             }
         }
-
         
         if pokestopFilterExclude != nil {
             for filter in pokestopFilterExclude! {

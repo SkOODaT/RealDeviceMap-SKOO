@@ -384,8 +384,6 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
                     if let id = filter.stringByReplacing(string: "l", withString: "").toInt() {
                         excludedLevels.append(id)
                     }
-                } else if filter.contains(string: "ex") {
-                    excludeAllButEx = true
                 }
             }
         }
@@ -400,6 +398,8 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
                     if let id = filter.stringByReplacing(string: "s", withString: "").toInt() {
                         excludedAvailableSlots.append(id)
                     }
+                } else if filter.contains(string: "ex") {
+                    excludeAllButEx = true
                 }
             }
         }
@@ -431,16 +431,9 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
                 sqlExcludeCreate += "?)))"
                 excludePokemonSQL = sqlExcludeCreate
             }
-
-            if excludeAllButEx {
-                excludeAllButExSQL = "AND ((raid_end_timestamp IS NULL OR raid_end_timestamp < UNIX_TIMESTAMP()) OR (raid_end_timestamp >= UNIX_TIMESTAMP() AND ex_raid_eligible = 1))"
-            } else {
-                excludeAllButExSQL = ""
-            }
         } else {
             excludeLevelSQL = ""
             excludePokemonSQL = ""
-            excludeAllButExSQL = ""
         }
 
         if excludedTeams.isEmpty {
@@ -464,11 +457,17 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
             sqlExcludeCreate += "?))"
             excludeAvailableSlotsSQL = sqlExcludeCreate
         }
+        
+        if excludeAllButEx {
+            excludeAllButExSQL = "AND (ex_raid_eligible = 1)"
+        } else {
+            excludeAllButExSQL = ""
+        }
 
         var sql = """
             SELECT id, lat, lon, name, url, guarding_pokemon_id, last_modified_timestamp, team_id, raid_end_timestamp, raid_spawn_timestamp, raid_battle_timestamp, raid_pokemon_id, enabled, availble_slots, updated, raid_level, ex_raid_eligible, in_battle, raid_pokemon_move_1, raid_pokemon_move_2, raid_pokemon_form, raid_pokemon_cp, raid_is_exclusive, cell_id, total_cp
             FROM gym
-            WHERE lat >= ? AND lat <= ? AND lon >= ? AND lon <= ? AND updated > ? AND deleted = false \(excludeLevelSQL) \(excludePokemonSQL) \(excludeAllButExSQL) \(excludeTeamSQL) \(excludeAvailableSlotsSQL)
+            WHERE lat >= ? AND lat <= ? AND lon >= ? AND lon <= ? AND updated > ? AND deleted = false \(excludeLevelSQL) \(excludePokemonSQL) \(excludeTeamSQL) \(excludeAvailableSlotsSQL) \(excludeAllButExSQL)
         """
         if raidsOnly {
             sql += " AND raid_end_timestamp >= UNIX_TIMESTAMP()"
@@ -488,11 +487,9 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
         for id in excludedPokemon {
             mysqlStmt.bindParam(id)
         }
-
         for id in excludedTeams {
             mysqlStmt.bindParam(id)
         }
-
         for id in excludedAvailableSlots {
             mysqlStmt.bindParam(id)
         }
