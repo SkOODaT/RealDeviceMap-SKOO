@@ -1020,6 +1020,7 @@ function loadData() {
 					} else {
 						if (oldPokestop.lure_expire_timestamp !== pokestop.lure_expire_timestamp) {
 							oldPokestop.lure_expire_timestamp = pokestop.lure_expire_timestamp;
+							oldPokestop.lure_id = pokestop.lure_id;
 							oldPokestop.marker.setIcon(getPokestopMarkerIcon(pokestop, ts));
 						}
 
@@ -1490,6 +1491,7 @@ function getPokestopPopupContent(pokestop) {
     }
 
 	if (lureExpireDate >= now) {
+        content += '<b>Lure Type:</b> ' + getLureTypeName(pokestop.lure_id) + '<br>';
 		content += '<b>Lure End Time:</b> ' + lureExpireDate.toLocaleTimeString() + ' (' + getTimeUntill(lureExpireDate) + ')<br><br>';
 	}
 
@@ -1879,8 +1881,9 @@ function getPokestopMarkerIcon(pokestop, ts) {
 
 
         if (pokestop.lure_expire_timestamp >= ts) {
+            var lureIconId = getLureIconId(pokestop.lure_id);
             icon = L.icon({
-                iconUrl: '/static/img/quest/1_' + rewardString + '.png',
+                iconUrl: '/static/img/quest/' + lureIconId + '_' + rewardString + '.png',
                 iconSize: 		[size       , size * 1.667  ],
                 iconAnchor: 	[size / 2   , size * 1.567  ],
                 popupAnchor: 	[0          , size * -1.567 ]
@@ -1895,9 +1898,10 @@ function getPokestopMarkerIcon(pokestop, ts) {
         }
     } else {
         if (pokestop.lure_expire_timestamp >= ts) {
+            var lureIconId = getLureIconId(pokestop.lure_id);
 		    const size = getPokestopSize('lured');
             icon = L.icon({
-                iconUrl: '/static/img/pokestop/1.png',
+                iconUrl: '/static/img/pokestop/' + lureIconId + '.png',
                 iconSize:       [size       , size       ],
                 iconAnchor:     [size / 2   , size       ],
                 popupAnchor:    [0          , -(size / 2)]
@@ -2629,6 +2633,35 @@ function manageGlobalIVPopup(id, filter) {
 
 function checkIVFilterValid(filter) {
     return filter.replace(/\s/g,'').match(/^(?!&&|\|\|)((\|\||&&)?\(?((A|D|S|L)?[0-9.]+(-(A|D|S|L)?[0-9.]+)?)\)?)*$/g);
+}
+
+function getLureIconId(lureId) {
+    //return lureId - 500;
+    switch (lureId) {
+        //case 501:
+        //    return 1;
+        case 502:
+            return 2;
+        case 503:
+            return 3;
+        case 504:
+            return 4;
+    }
+    return 1;
+}
+
+function getLureTypeName(lureId) {
+    switch (lureId) {
+        case 501:
+            return "Normal";
+        case 502:
+            return "Glacial";
+        case 503:
+            return "Mossy";
+        case 504:
+            return "Magnetic";
+    }
+    return "Unknown";
 }
 
 
