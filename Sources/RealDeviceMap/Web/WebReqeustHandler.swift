@@ -560,6 +560,9 @@ class WebReqeustHandler {
             let instanceName = request.urlVariables["instance_name"] ?? ""
             data["instance_name_url"] = instanceName
             data["instance_name"] = instanceName.decodeUrl() ?? ""
+        case .dashboardDeviceGroups:
+            data["page_is_dashboard"] = true
+            data["page"] = "Dashboard - Device Groups"
         case .dashboardAssignments:
             data["page_is_dashboard"] = true
             data["page"] = "Dashboard - Assignments"

@@ -49,6 +49,7 @@ class ApiRequestHandler {
         let showDevices =  request.param(name: "show_devices")?.toBool() ?? false
         let showActiveDevices = request.param(name: "show_active_devices")?.toBool() ?? false
         let showInstances =  request.param(name: "show_instances")?.toBool() ?? false
+        let showDeviceGroups = request.param(name: "show_devicegroups")?.toBool() ?? false
         let showUsers =  request.param(name: "show_users")?.toBool() ?? false
         let showGroups =  request.param(name: "show_groups")?.toBool() ?? false
         let showPokemonFilter = request.param(name: "show_pokemon_filter")?.toBool() ?? false
@@ -953,6 +954,7 @@ class ApiRequestHandler {
             if devices != nil {
                 for device in devices! {
                     var deviceData = [String: Any]()
+                    //deviceData["chk"] = ""
                     deviceData["uuid"] = device.uuid
                     deviceData["host"] = device.lastHost ?? ""
                     deviceData["instance"] = device.instanceName ?? ""
@@ -1024,6 +1026,50 @@ class ApiRequestHandler {
             }
             data["instances"] = jsonArray
             
+        }
+        
+        if showDeviceGroups && perms.contains(.admin) {
+            
+            //let deviceGroups = try? DeviceGroup.getAll(mysql: mysql)
+            
+            var jsonArray = [[String: Any]]()
+            /*
+            if deviceGroups != nil {
+                for deviceGroup in deviceGroups! {
+                    var instanceData = [String: Any]()
+                    instanceData["name"] = instance.name
+                    switch instance.type {
+                    case .circleRaid:
+                        instanceData["type"] = "Circle Raid"
+                    case .circleSmartRaid:
+                        instanceData["type"] = "Circle Smart Raid"
+                    case .circlePokemon:
+                        instanceData["type"] = "Circle Pokemon"
+                    case .autoQuest:
+                        instanceData["type"] = "Auto Quest"
+                    case .pokemonIV:
+                        instanceData["type"] = "Pokemon IV"
+                    }
+                    
+                    if formatted {
+                        let status = InstanceController.global.getInstanceStatus(instance: instance, formatted: true)
+                        if status is String {
+                            instanceData["status"] = status as! String
+                        } else {
+                            instanceData["status"] = "?"
+                        }
+                    } else {
+                        instanceData["status"] = InstanceController.global.getInstanceStatus(instance: instance, formatted: false) as Any
+                    }
+                    
+                    if formatted {
+                        instanceData["buttons"] = "<a href=\"/dashboard/instance/edit/\(instance.name.encodeUrl()!)\" role=\"button\" class=\"btn btn-primary\">Edit Instance</a>"
+                    }
+                    jsonArray.append(instanceData)
+                }
+            }
+ */
+            data["devicegroups"] = jsonArray
         }
         
         if showAssignments && perms.contains(.admin) {
