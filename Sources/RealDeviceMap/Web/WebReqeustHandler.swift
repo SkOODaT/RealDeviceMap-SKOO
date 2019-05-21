@@ -1868,13 +1868,6 @@ class WebReqeustHandler {
         }
         
         let deviceUUIDs = request.params(named: "devices")
-        //TODO: Maybe allow groups to be created without devices initially
-        if deviceUUIDs.count < 0 {
-            data["show_error"] = true
-            data["error"] = "Invalid Request."
-            return data
-        }
-
         //TODO: Check if group name exists already
         
         do {
