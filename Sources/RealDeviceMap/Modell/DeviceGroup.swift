@@ -111,7 +111,12 @@ class DeviceGroup: Hashable {
         
         let sql = """
             SELECT name, instance_name
-            FROM device_group
+            FROM device_group AS devgroup
+            LEFT JOIN (
+                SELECT device_group
+                FROM device
+                GROUP BY device_group
+            ) AS dev ON (dev.device_group = devgroup.name)
         """
         
         let mysqlStmt = MySQLStmt(mysql)
@@ -127,11 +132,47 @@ class DeviceGroup: Hashable {
         while let result = results.next() {
             let name = result[0] as! String
             let instanceName = result[1] as! String
-            let devices = result[2] as! [Device]
+            let devices = try! getDevicesByGroup(name: name)!
             deviceGroups.append(DeviceGroup(name: name, instanceName: instanceName, devices: devices))
         }
         return deviceGroups
         
+    }
+    
+    public static func getDevicesByGroup(mysql: MySQL?=nil, name: String) throws -> [Device]? {
+        guard let mysql = mysql ?? DBController.global.mysql else {
+            Log.error(message: "[DEVICEGROUP] Failed to connect to database.")
+            throw DBController.DBError()
+        }
+        
+        let sql = """
+            SELECT uuid, instance_name, last_host, last_seen, account_username, device_group
+            FROM device
+            WHERE device_group = ?
+        """
+        
+        let mysqlStmt = MySQLStmt(mysql)
+        _ = mysqlStmt.prepare(statement: sql)
+        mysqlStmt.bindParam(name)
+        
+        guard mysqlStmt.execute() else {
+            Log.error(message: "[DEVICE] Failed to execute query. (\(mysqlStmt.errorMessage())")
+            throw DBController.DBError()
+        }
+        let results = mysqlStmt.results()
+        
+        var devices = [Device]()
+        while let result = results.next() {
+            let uuid = result[0] as! String
+            let instanceName = result[1] as? String
+            let lastHost = result[2] as? String
+            let lastSeen = result[3] as! UInt32
+            let accountUsername = result[4] as? String
+            let deviceGroup = result[5] as? String
+            
+            devices.append(Device(uuid: uuid, instanceName: instanceName, lastHost: lastHost, lastSeen: lastSeen, accountUsername: accountUsername, deviceGroup: deviceGroup))
+        }
+        return devices
     }
     
     public static func getByName(mysql: MySQL?=nil, name: String) throws -> DeviceGroup? {
@@ -162,7 +203,7 @@ class DeviceGroup: Hashable {
         
         let result = results.next()!
         let instanceName = result[0] as! String
-        let devices = result[1] as! [Device]
+        let devices = try! getDevicesByGroup(name: name)!
         return DeviceGroup(name: name, instanceName: instanceName, devices: devices)
         
     }

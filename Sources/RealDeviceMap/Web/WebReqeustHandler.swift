@@ -1868,24 +1868,29 @@ class WebReqeustHandler {
         }
         
         let deviceUUIDs = request.params(named: "devices")
-        if deviceUUIDs == nil {
+        //TODO: Maybe allow groups to be created without devices initially
+        if deviceUUIDs.count < 0 {
             data["show_error"] = true
             data["error"] = "Invalid Request."
             return data
         }
-        
-        let deviceGroup = try! DeviceGroup.getByName(name: groupName)!
-        if (deviceGroup == nil) {
-            data["show_error"] = true
-            data["error"] = "Invalid Request."
-            return data
-        }
+
+        //TODO: Check if group name exists already
         
         do {
+            let deviceGroup = DeviceGroup(name: groupName, instanceName: instanceName, devices: [Device]())
             deviceGroup.name = groupName
-            let group = try! deviceGroup.create()
-            //try deviceGroup!.save(oldUUID: device!.uuid)
-            //InstanceController.global.reloadDevice(newDevice: device!, oldDeviceUUID: deviceUUID)
+            deviceGroup.instanceName = instanceName
+            try! deviceGroup.create()
+            for deviceUUID in deviceUUIDs {
+                let device = try! Device.getById(id: deviceUUID)!
+                device.deviceGroup = groupName
+                device.instanceName = instanceName
+                try! device.save(oldUUID: device.uuid)
+                deviceGroup.devices.append(device)
+                InstanceController.global.reloadDevice(newDevice: device, oldDeviceUUID: deviceUUID)
+            }
+            //deviceGroup.save()
         } catch {
             data["show_error"] = true
             data["error"] = "Failed to assign Device."
