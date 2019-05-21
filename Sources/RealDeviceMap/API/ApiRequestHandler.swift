@@ -1030,45 +1030,25 @@ class ApiRequestHandler {
         
         if showDeviceGroups && perms.contains(.admin) {
             
-            //let deviceGroups = try? DeviceGroup.getAll(mysql: mysql)
+            let deviceGroups = try? DeviceGroup.getAll(mysql: mysql)
             
             var jsonArray = [[String: Any]]()
-            /*
+            
             if deviceGroups != nil {
                 for deviceGroup in deviceGroups! {
-                    var instanceData = [String: Any]()
-                    instanceData["name"] = instance.name
-                    switch instance.type {
-                    case .circleRaid:
-                        instanceData["type"] = "Circle Raid"
-                    case .circleSmartRaid:
-                        instanceData["type"] = "Circle Smart Raid"
-                    case .circlePokemon:
-                        instanceData["type"] = "Circle Pokemon"
-                    case .autoQuest:
-                        instanceData["type"] = "Auto Quest"
-                    case .pokemonIV:
-                        instanceData["type"] = "Pokemon IV"
-                    }
+                    var deviceGroupData = [String: Any]()
+                    deviceGroupData["name"] = deviceGroup.name
+                    deviceGroupData["instance"] = deviceGroup.instanceName
+                    deviceGroupData["devices"] = deviceGroup.devices.count
                     
                     if formatted {
-                        let status = InstanceController.global.getInstanceStatus(instance: instance, formatted: true)
-                        if status is String {
-                            instanceData["status"] = status as! String
-                        } else {
-                            instanceData["status"] = "?"
-                        }
-                    } else {
-                        instanceData["status"] = InstanceController.global.getInstanceStatus(instance: instance, formatted: false) as Any
+                        deviceGroupData["buttons"] = "<a href=\"/dashboard/devicegroup/assign/\(deviceGroup.name.encodeUrl()!)\" role=\"button\" class=\"btn btn-primary\">Assign Instance</a><a href=\"/dashboard/devicegroup/edit/\(deviceGroup.name.encodeUrl()!)\" role=\"button\" class=\"btn btn-primary\">Edit</a>"
                     }
-                    
-                    if formatted {
-                        instanceData["buttons"] = "<a href=\"/dashboard/instance/edit/\(instance.name.encodeUrl()!)\" role=\"button\" class=\"btn btn-primary\">Edit Instance</a>"
-                    }
-                    jsonArray.append(instanceData)
+
+                    jsonArray.append(deviceGroupData)
                 }
             }
- */
+
             data["devicegroups"] = jsonArray
         }
         

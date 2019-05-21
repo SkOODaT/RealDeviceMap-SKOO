@@ -563,6 +563,23 @@ class WebReqeustHandler {
         case .dashboardDeviceGroups:
             data["page_is_dashboard"] = true
             data["page"] = "Dashboard - Device Groups"
+        case .dashboardDeviceGroupAdd:
+            data["page_is_dashboard"] = true
+            data["page"] = "Dashboard - Add Device Group"
+            if request.method == .post {
+                do {
+                    data = try addDeviceGroupPost(data: data, request: request, response: response)
+                } catch {
+                    return
+                }
+            } else {
+                do {
+                    data["nothing_selected"] = true
+                    data = try addDeviceGroupGet(data: data, request: request, response: response)
+                } catch {
+                    return
+                }
+            }
         case .dashboardAssignments:
             data["page_is_dashboard"] = true
             data["page"] = "Dashboard - Assignments"
@@ -1801,6 +1818,84 @@ class WebReqeustHandler {
             
             return data
         }
+    }
+    
+    static func addDeviceGroupGet(data: MustacheEvaluationContext.MapType, request: HTTPRequest, response: HTTPResponse) throws -> MustacheEvaluationContext.MapType {
+        
+        var data = data;
+        let instances: [Instance]
+        let devices: [Device]
+        
+        do {
+            instances = try Instance.getAll()
+            devices = try Device.getAll()
+        } catch {
+            response.setBody(string: "Internal Server Errror")
+            sessionDriver.save(session: request.session!)
+            response.completed(status: .internalServerError)
+            throw CompletedEarly()
+        }
+        
+        var instancesData = [[String: Any]]()
+        for instance in instances {
+            instancesData.append(["name": instance.name, "selected": false])
+        }
+        data["instances"] = instancesData
+        
+        var devicesData = [[String: Any]]()
+        for device in devices {
+            devicesData.append(["name": device.uuid, "selected": false])
+        }
+        data["devices"] = devicesData
+        
+        return data
+    }
+    
+    static func addDeviceGroupPost(data: MustacheEvaluationContext.MapType, request: HTTPRequest, response: HTTPResponse) throws -> MustacheEvaluationContext.MapType {
+        
+        var data = data
+        
+        guard let groupName = request.param(name: "name") else {
+            data["show_error"] = true
+            data["error"] = "Invalid Request."
+            return data;
+        }
+        
+        guard let instanceName = request.param(name: "instance") else {
+            data["show_error"] = true
+            data["error"] = "Invalid Request."
+            return data
+        }
+        
+        let deviceUUIDs = request.params(named: "devices")
+        if deviceUUIDs == nil {
+            data["show_error"] = true
+            data["error"] = "Invalid Request."
+            return data
+        }
+        
+        let deviceGroup = try! DeviceGroup.getByName(name: groupName)!
+        if (deviceGroup == nil) {
+            data["show_error"] = true
+            data["error"] = "Invalid Request."
+            return data
+        }
+        
+        do {
+            deviceGroup.name = groupName
+            let group = try! deviceGroup.create()
+            //try deviceGroup!.save(oldUUID: device!.uuid)
+            //InstanceController.global.reloadDevice(newDevice: device!, oldDeviceUUID: deviceUUID)
+        } catch {
+            data["show_error"] = true
+            data["error"] = "Failed to assign Device."
+            return data
+        }
+        response.redirect(path: "/dashboard/devicegroups")
+        sessionDriver.save(session: request.session!)
+        response.completed(status: .seeOther)
+        throw CompletedEarly()
+        
     }
     
     static func assignDevicePost(data: MustacheEvaluationContext.MapType, request: HTTPRequest, response: HTTPResponse, deviceUUID: String) throws -> MustacheEvaluationContext.MapType {
