@@ -580,6 +580,41 @@ class WebReqeustHandler {
                     return
                 }
             }
+        case .dashboardDeviceGroupEdit:
+            let deviceGroupName = (request.urlVariables["name"] ?? "").decodeUrl()!
+            data["page_is_dashboard"] = true
+            data["page"] = "Dashboard - Edit Device Group"
+            data["old_name"] = deviceGroupName
+            
+            if request.param(name: "delete") == "true" {
+                do {
+                    try DeviceGroup.delete(name: deviceGroupName)
+                    //TODO: Clear device group column
+                    //InstanceController.global.removeInstance(instanceName: instanceName)
+                    response.redirect(path: "/dashboard/devicegroups")
+                    sessionDriver.save(session: request.session!)
+                    response.completed(status: .seeOther)
+                    return
+                } catch {
+                    response.setBody(string: "Internal Server Error")
+                    sessionDriver.save(session: request.session!)
+                    response.completed(status: .internalServerError)
+                    return
+                }
+                
+            } else if request.method == .post {
+                do {
+                    data = try editDeviceGroupPost(data: data, request: request, response: response, deviceGroupName: deviceGroupName)
+                } catch {
+                    return
+                }
+            } else {
+                do {
+                    data = try editDeviceGroupGet(data: data, request: request, response: response, deviceGroupName: deviceGroupName)
+                } catch {
+                    return
+                }
+            }
         case .dashboardAssignments:
             data["page_is_dashboard"] = true
             data["page"] = "Dashboard - Assignments"
@@ -1855,18 +1890,15 @@ class WebReqeustHandler {
         
         var data = data
         
-        guard let groupName = request.param(name: "name") else {
-            data["show_error"] = true
-            data["error"] = "Invalid Request."
-            return data;
+        guard
+            let groupName = request.param(name: "name"),
+            let instanceName = request.param(name: "instance")
+            else {
+                data["show_error"] = true
+                data["error"] = "Invalid Request."
+                return data;
         }
-        
-        guard let instanceName = request.param(name: "instance") else {
-            data["show_error"] = true
-            data["error"] = "Invalid Request."
-            return data
-        }
-        
+
         let deviceUUIDs = request.params(named: "devices")
         //TODO: Check if group name exists already
         
@@ -1874,12 +1906,12 @@ class WebReqeustHandler {
             let deviceGroup = DeviceGroup(name: groupName, instanceName: instanceName, devices: [Device]())
             deviceGroup.name = groupName
             deviceGroup.instanceName = instanceName
-            try! deviceGroup.create()
+            try deviceGroup.create()
             for deviceUUID in deviceUUIDs {
-                let device = try! Device.getById(id: deviceUUID)!
+                let device = try Device.getById(id: deviceUUID)!
                 device.deviceGroup = groupName
                 device.instanceName = instanceName
-                try! device.save(oldUUID: device.uuid)
+                try device.save(oldUUID: device.uuid)
                 deviceGroup.devices.append(device)
                 InstanceController.global.reloadDevice(newDevice: device, oldDeviceUUID: deviceUUID)
             }
@@ -1894,6 +1926,138 @@ class WebReqeustHandler {
         response.completed(status: .seeOther)
         throw CompletedEarly()
         
+    }
+    
+    static func editDeviceGroupGet(data: MustacheEvaluationContext.MapType, request: HTTPRequest, response: HTTPResponse, deviceGroupName: String) throws -> MustacheEvaluationContext.MapType {
+        
+        var data = data
+        
+        let oldDeviceGroup: DeviceGroup?
+        do {
+            oldDeviceGroup = try DeviceGroup.getByName(name: deviceGroupName)
+        } catch {
+            response.setBody(string: "Internal Server Error")
+            sessionDriver.save(session: request.session!)
+            response.completed(status: .internalServerError)
+            throw CompletedEarly()
+        }
+        if oldDeviceGroup == nil {
+            response.setBody(string: "Instance Not Found")
+            sessionDriver.save(session: request.session!)
+            response.completed(status: .notFound)
+            throw CompletedEarly()
+        } else {
+            data["old_name"] = oldDeviceGroup!.name
+            data["name"] = oldDeviceGroup!.name
+
+            let instances: [Instance]
+            let devices: [Device]
+            
+            do {
+                instances = try Instance.getAll()
+                devices = try Device.getAll()
+            } catch {
+                response.setBody(string: "Internal Server Errror")
+                sessionDriver.save(session: request.session!)
+                response.completed(status: .internalServerError)
+                throw CompletedEarly()
+            }
+            
+            var instancesData = [[String: Any]]()
+            for instance in instances {
+                instancesData.append(["name": instance.name, "selected": instance.name == oldDeviceGroup!.instanceName])
+            }
+            data["instances"] = instancesData
+            
+            var devicesData = [[String: Any]]()
+            for device in devices {
+                devicesData.append(["name": device.uuid, "selected": device.deviceGroup == oldDeviceGroup!.name])
+            }
+            data["devices"] = devicesData
+            
+            return data
+        }
+    }
+    
+    static func editDeviceGroupPost(data: MustacheEvaluationContext.MapType, request: HTTPRequest, response: HTTPResponse, deviceGroupName: String? = nil) throws -> MustacheEvaluationContext.MapType {
+        
+        var data = data
+        guard
+            let name = request.param(name: "name"),
+            let instanceName = request.param(name: "instance")
+            else {
+                data["show_error"] = true
+                data["error"] = "Invalid Request."
+                return data
+        }
+        
+        let deviceUUIDs = request.params(named: "devices");
+        
+        data["name"] = name
+        if deviceGroupName != nil {
+            let oldDeviceGroup: DeviceGroup?
+            do {
+                oldDeviceGroup = try DeviceGroup.getByName(name: deviceGroupName!)
+            } catch {
+                data["show_error"] = true
+                data["error"] = "Failed to update device group. Is the name unique?"
+                return data
+            }
+            if oldDeviceGroup == nil {
+                response.setBody(string: "Device Group Not Found")
+                sessionDriver.save(session: request.session!)
+                response.completed(status: .notFound)
+                throw CompletedEarly()
+            } else {
+                oldDeviceGroup!.name = name
+                oldDeviceGroup!.instanceName = instanceName
+
+                do {
+                    try oldDeviceGroup!.update(oldName: deviceGroupName!)
+                    oldDeviceGroup!.devices.removeAll()
+                    //TODO: Check against old device list and clear device group for removed devices
+                    for deviceUUID in deviceUUIDs {
+                        let device = try Device.getById(id: deviceUUID)!
+                        device.deviceGroup = name
+                        device.instanceName = instanceName
+                        try device.save(oldUUID: device.uuid)
+                        oldDeviceGroup!.devices.append(device)
+                        InstanceController.global.reloadDevice(newDevice: device, oldDeviceUUID: deviceUUID)
+                    }
+                } catch {
+                    data["show_error"] = true
+                    data["error"] = "Failed to update device group. Is the name unique?"
+                    return data
+                }
+                //InstanceController.global.reloadInstance(newInstance: oldInstance!, oldInstanceName: instanceName!)
+                response.redirect(path: "/dashboard/devicegroups")
+                sessionDriver.save(session: request.session!)
+                response.completed(status: .seeOther)
+                throw CompletedEarly()
+            }
+        } else {
+            let deviceGroup = DeviceGroup(name: name, instanceName: instanceName, devices: [Device]())
+            do {
+                try deviceGroup.create()
+                for deviceUUID in deviceUUIDs {
+                    let device = try Device.getById(id: deviceUUID)!
+                    device.deviceGroup = deviceGroupName
+                    device.instanceName = instanceName
+                    try device.save(oldUUID: device.uuid)
+                    deviceGroup.devices.append(device)
+                    InstanceController.global.reloadDevice(newDevice: device, oldDeviceUUID: deviceUUID)
+                }
+            } catch {
+                data["show_error"] = true
+                data["error"] = "Failed to create device group. Is the name unique?"
+                return data
+            }
+        }
+
+        response.redirect(path: "/dashboard/devicegroups")
+        sessionDriver.save(session: request.session!)
+        response.completed(status: .seeOther)
+        throw CompletedEarly()
     }
     
     static func assignDevicePost(data: MustacheEvaluationContext.MapType, request: HTTPRequest, response: HTTPResponse, deviceUUID: String) throws -> MustacheEvaluationContext.MapType {
