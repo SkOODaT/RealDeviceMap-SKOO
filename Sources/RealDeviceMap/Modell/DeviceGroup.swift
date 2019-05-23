@@ -39,7 +39,6 @@ class DeviceGroup: Hashable {
             INSERT INTO device_group (name, instance_name)
             VALUES (?, ?)
         """
-        //TODO: Assign devices
         
         _ = mysqlStmt.prepare(statement: sql)
         mysqlStmt.bindParam(name)
@@ -64,8 +63,6 @@ class DeviceGroup: Hashable {
             WHERE name = ?
         """
         
-        //TODO: Update devices device_group column
-        
         _ = mysqlStmt.prepare(statement: sql)
         mysqlStmt.bindParam(name)
         
@@ -88,8 +85,6 @@ class DeviceGroup: Hashable {
             SET name = ?, instance_name = ?
             WHERE name = ?
         """
-        
-        //TODO: Update devices column
         
         _ = mysqlStmt.prepare(statement: sql)
         mysqlStmt.bindParam(name)

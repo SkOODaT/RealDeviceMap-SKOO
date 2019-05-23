@@ -582,15 +582,16 @@ class WebReqeustHandler {
             }
         case .dashboardDeviceGroupEdit:
             let deviceGroupName = (request.urlVariables["name"] ?? "").decodeUrl()!
+            let devices = request.params(named: "devices")
             data["page_is_dashboard"] = true
             data["page"] = "Dashboard - Edit Device Group"
             data["old_name"] = deviceGroupName
+            data["old_devices"] = devices
             
             if request.param(name: "delete") == "true" {
                 do {
                     try DeviceGroup.delete(name: deviceGroupName)
                     //TODO: Clear device group column
-                    //InstanceController.global.removeInstance(instanceName: instanceName)
                     response.redirect(path: "/dashboard/devicegroups")
                     sessionDriver.save(session: request.session!)
                     response.completed(status: .seeOther)
@@ -1900,13 +1901,18 @@ class WebReqeustHandler {
         }
 
         let deviceUUIDs = request.params(named: "devices")
-        //TODO: Check if group name exists already
-        
+        let deviceGroup = DeviceGroup(name: groupName, instanceName: instanceName, devices: [Device]())
+        deviceGroup.name = groupName
+        deviceGroup.instanceName = instanceName
         do {
-            let deviceGroup = DeviceGroup(name: groupName, instanceName: instanceName, devices: [Device]())
-            deviceGroup.name = groupName
-            deviceGroup.instanceName = instanceName
             try deviceGroup.create()
+        } catch {
+            data["show_error"] = true
+            data["error"] = "Failed to create device group. Does this device group already exist?"
+            return data
+        }
+
+        do {
             for deviceUUID in deviceUUIDs {
                 let device = try Device.getById(id: deviceUUID)!
                 device.deviceGroup = groupName
@@ -1915,7 +1921,6 @@ class WebReqeustHandler {
                 deviceGroup.devices.append(device)
                 InstanceController.global.reloadDevice(newDevice: device, oldDeviceUUID: deviceUUID)
             }
-            //deviceGroup.save()
         } catch {
             data["show_error"] = true
             data["error"] = "Failed to assign Device."
@@ -1942,7 +1947,7 @@ class WebReqeustHandler {
             throw CompletedEarly()
         }
         if oldDeviceGroup == nil {
-            response.setBody(string: "Instance Not Found")
+            response.setBody(string: "Device Group Not Found")
             sessionDriver.save(session: request.session!)
             response.completed(status: .notFound)
             throw CompletedEarly()
@@ -1992,6 +1997,7 @@ class WebReqeustHandler {
         }
         
         let deviceUUIDs = request.params(named: "devices");
+        let oldDeviceUUIDs = data["old_devices"]
         
         data["name"] = name
         if deviceGroupName != nil {
@@ -2029,7 +2035,6 @@ class WebReqeustHandler {
                     data["error"] = "Failed to update device group. Is the name unique?"
                     return data
                 }
-                //InstanceController.global.reloadInstance(newInstance: oldInstance!, oldInstanceName: instanceName!)
                 response.redirect(path: "/dashboard/devicegroups")
                 sessionDriver.save(session: request.session!)
                 response.completed(status: .seeOther)
