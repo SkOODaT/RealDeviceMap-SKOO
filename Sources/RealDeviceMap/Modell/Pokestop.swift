@@ -722,7 +722,7 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
         
         let sql = """
             UPDATE pokestop
-            SET updated = UNIX_TIMESTAMP(), quest_type = NULL, quest_timestamp = NULL, quest_target = NULL, quest_conditions = NULL, quest_rewards = NULL, quest_template = NULL
+            SET quest_type = NULL, quest_timestamp = NULL, quest_target = NULL, quest_conditions = NULL, quest_rewards = NULL, quest_template = NULL
             \(whereSQL)
         """
         
