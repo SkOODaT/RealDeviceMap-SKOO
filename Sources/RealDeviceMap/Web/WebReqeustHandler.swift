@@ -582,16 +582,13 @@ class WebReqeustHandler {
             }
         case .dashboardDeviceGroupEdit:
             let deviceGroupName = (request.urlVariables["name"] ?? "").decodeUrl()!
-            let devices = request.params(named: "devices")
             data["page_is_dashboard"] = true
             data["page"] = "Dashboard - Edit Device Group"
             data["old_name"] = deviceGroupName
-            data["old_devices"] = devices
             
             if request.param(name: "delete") == "true" {
                 do {
                     try DeviceGroup.delete(name: deviceGroupName)
-                    //TODO: Clear device group column
                     response.redirect(path: "/dashboard/devicegroups")
                     sessionDriver.save(session: request.session!)
                     response.completed(status: .seeOther)
@@ -1975,9 +1972,14 @@ class WebReqeustHandler {
             data["instances"] = instancesData
             
             var devicesData = [[String: Any]]()
+            var oldDevicesData = [String]()
             for device in devices {
+                if device.deviceGroup == oldDeviceGroup!.name {
+                    oldDevicesData.append(device.uuid)
+                }
                 devicesData.append(["name": device.uuid, "selected": device.deviceGroup == oldDeviceGroup!.name])
             }
+            data["old_devices"] = oldDevicesData
             data["devices"] = devicesData
             
             return data
@@ -1996,8 +1998,17 @@ class WebReqeustHandler {
                 return data
         }
         
-        let deviceUUIDs = request.params(named: "devices");
-        let oldDeviceUUIDs = data["old_devices"]
+        let deviceUUIDs = request.params(named: "devices")
+        let oldDeviceUUIDs = request.param(name: "old_devices")
+
+        var oldDevices = [String]()
+        let split = oldDeviceUUIDs!.components(separatedBy: ",")
+        for device in split {
+            let deviceName = device.replacingOccurrences(of: "[", with: "").replacingOccurrences(of: "]", with: "").replacingOccurrences(of: "\"", with: "").replacingOccurrences(of: " ", with: "")
+            oldDevices.append(deviceName)
+        }
+        
+        let deviceDiff = Array(Set(oldDevices).symmetricDifference(Set(deviceUUIDs)))
         
         data["name"] = name
         if deviceGroupName != nil {
@@ -2020,8 +2031,15 @@ class WebReqeustHandler {
 
                 do {
                     try oldDeviceGroup!.update(oldName: deviceGroupName!)
+                    //Remove all existing devices from the group's device list.
                     oldDeviceGroup!.devices.removeAll()
-                    //TODO: Check against old device list and clear device group for removed devices
+                    
+                    //Set any removed device's group name to null.
+                    for deviceUUID in deviceDiff {
+                        let device = try Device.getById(id: deviceUUID)!
+                        try device.clearGroup()
+                    }
+                    //Update new and existing devices
                     for deviceUUID in deviceUUIDs {
                         let device = try Device.getById(id: deviceUUID)!
                         device.deviceGroup = name

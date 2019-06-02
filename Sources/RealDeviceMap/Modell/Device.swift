@@ -227,10 +227,31 @@ class Device : JSONConvertibleObject, Hashable {
             Log.error(message: "[DEVICE] Failed to execute query. (\(mysqlStmt.errorMessage())")
             throw DBController.DBError()
         }
-    }
+    }  
     
+    public func clearGroup(mysql: MySQL?=nil) throws {
+        
+        guard let mysql = mysql ?? DBController.global.mysql else {
+            Log.error(message: "[DEVICE] Failed to connect to database.")
+            throw DBController.DBError()
+        }
+        
+        let mysqlStmt = MySQLStmt(mysql)
+        let sql = """
+            UPDATE device SET device_group = NULL
+            WHERE uuid = ?
+        """
+        
+        _ = mysqlStmt.prepare(statement: sql)
+        mysqlStmt.bindParam(uuid)
+        
+        guard mysqlStmt.execute() else {
+            Log.error(message: "[DEVICE] Failed to execute query. (\(mysqlStmt.errorMessage())")
+            throw DBController.DBError()
+        }
+    }
+
     static func == (lhs: Device, rhs: Device) -> Bool {
         return lhs.uuid == rhs.uuid
-    }    
-    
+    }  
 }

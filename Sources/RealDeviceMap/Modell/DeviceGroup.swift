@@ -70,6 +70,11 @@ class DeviceGroup: Hashable {
             Log.error(message: "[DEVICEGROUP] Failed to execute query. (\(mysqlStmt.errorMessage())")
             throw DBController.DBError()
         }
+        
+        let devices = try getDevicesByGroup(name: name)!
+        for device in devices {
+            try device.clearGroup()
+        }
     }
     
     public func update(mysql: MySQL?=nil, oldName: String) throws {
@@ -96,7 +101,7 @@ class DeviceGroup: Hashable {
             throw DBController.DBError()
         }
     }
-    
+
     public static func getAll(mysql: MySQL?=nil) throws -> [DeviceGroup] {
         
         guard let mysql = mysql ?? DBController.global.mysql else {
