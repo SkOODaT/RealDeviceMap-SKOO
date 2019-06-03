@@ -1487,7 +1487,11 @@ function getPokestopPopupContent(pokestop) {
 	}
 
     if (pokestop.url !== null) {
-        content += '<img src="'+pokestop.url.replace("http://", "https://")+'" style="max-width:150px;max-height:100px;"/><br><br>';
+		if (lureExpireDate >= now) {
+			content += `<img class='pokestop-imgcircle lure' src='${pokestop.url.replace("http://", "https://")}'>`;
+		} else {
+		    content += `<img class='pokestop-imgcircle nolure' src='${pokestop.url.replace("http://", "https://")}'>`;
+		}
     }
 
 	if (lureExpireDate >= now) {
@@ -1552,7 +1556,7 @@ function getGymPopupContent(gym) {
     }
 
     if (gym.url !== null) {
-        content += '<img src="'+gym.url.replace("http://", "https://")+'" style="max-width:150px;max-height:100px;"/><br><br>';
+		content += `<img class='gym-imgcircle team-${gym.team_id}' src='${gym.url.replace("http://", "https://")}'>`;
     }
 
     let hasStatus = false;
