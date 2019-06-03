@@ -1,5 +1,12 @@
 {{> header}}
-
+	<script>
+		if ("{{google_analytics_id}}" !== false) {
+			window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};
+			ga.l=+new Date;
+			ga('create', '{{google_analytics_id}}', 'auto');
+			ga('send', 'pageview');
+		}
+	</script>
     <link href="/index.css?timestamp={{timestamp}}" rel="stylesheet">
     <script src="/index.js?timestamp={{timestamp}}&lat={{lat}}&lon={{lon}}&zoom={{zoom}}"></script>
 

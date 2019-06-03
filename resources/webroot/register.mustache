@@ -1,4 +1,12 @@
 {{> header}}
+<script>
+	if ("{{google_analytics_id}}" !== false) {
+		window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};
+		ga.l=+new Date;
+		ga('create', '{{google_analytics_id}}', 'auto');
+		ga('send', 'pageview');
+	}
+</script>
 <body>
     <br>
     <h1 align="center">{{register_title}}</h1>

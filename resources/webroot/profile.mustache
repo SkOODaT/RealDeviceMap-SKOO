@@ -1,4 +1,12 @@
 {{> header}}
+<script>
+	if ("{{google_analytics_id}}" !== false) {
+		window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};
+		ga.l=+new Date;
+		ga('create', '{{google_analytics_id}}', 'auto');
+		ga('send', 'pageview');
+	}
+</script>
 <body>
     <br>
     <div class="alert alert-warning w-75 {{#mail_verified}}d-none{{/mail_verified}}" style="float: none; margin: 0 auto;">
