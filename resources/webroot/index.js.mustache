@@ -1395,11 +1395,11 @@ function getPokemonPopupContent(pokemon) {
 
 	content += '<h6><b>'+ pokemonName + ' ' + pokeGender +'</b></h6>';
 
-	content += '<a title="Add Pokemon to Filter" href="#" onclick="addPokemonFilter(' + pokemon.pokemon_id + ', false);return false;"><b>Filter</b></a>&nbsp;&nbsp;&nbsp;&nbsp;<a id="h' + pokemon.id + '" title="Hide Individual Pokemon" href="#" onclick="setIndividualPokemonHidden(' + pokemon.id + ');return false;"><b>Hide</b></a><br>';
-
 	if (pokemonName !== null) {
 		content += '<img src="static/img/pokemon/'+ pokemon.pokemon_id +'.png" height="50" width="50"/><br>';
 	}
+	
+	content += '&nbsp;&nbsp;<button class="w3-button w3-black w3-tiny w3-round-xxlarge" onclick="addPokemonFilter(' + pokemon.pokemon_id + ', false);return false;" href="#" title="Add Pokemon to Filter">Filter</button>&nbsp;&nbsp;&nbsp;&nbsp;<button class="w3-button w3-black w3-tiny w3-round-xxlarge" onclick="setIndividualPokemonHidden(' + pokemon.id + ');return false;" id="h' + pokemon.id + '" href="#" title="Hide Individual Pokemon">Hide</button><br>'
 
 	if (pokemon.expire_timestamp_verified) {
 		content += '<b>Despawn Time:</b> '
