@@ -2044,7 +2044,7 @@ function getPokestopMarker(pokestop, ts) {
 function getSpawnpointMarkerIcon(spawnpoint, ts) {
     var iconId = spawnpoint.despawn_second != null ? 1 : 0;
     const icon = L.icon({
-        iconUrl:		'/static/img/spawnpoint/' + iconId + '.png',
+        iconUrl:		'/static/img/spawnpoint/' + (spawnpoint.despawn_second != null ? 1 : 0) + '.png',
         iconSize:		[10, 10],
         iconAnchor:		[5, 5],
         popupAnchor:	[0, -5]
