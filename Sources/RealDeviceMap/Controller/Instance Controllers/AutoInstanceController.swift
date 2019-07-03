@@ -317,7 +317,7 @@ class AutoInstanceController: InstanceControllerProto {
                 } catch { }
                 
                 if username != nil && account != nil {
-                    if account!.spins >= 500 {
+                    if account!.spins >= 1000 {
                         return ["action": "switch_account", "min_level": minLevel, "max_level": maxLevel]
                     } else {
                         try? Account.spin(mysql: mysql, username: username!)
