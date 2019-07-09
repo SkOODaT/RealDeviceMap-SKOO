@@ -64,7 +64,9 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
                 "guard_pokemon_id": guardPokemonId ?? 0,
                 "slots_available": availbleSlots ?? 6,
                 "raid_active_until": raidEndTimestamp ?? 0,
-                "ex_raid_eligible": exRaidEligible ?? 0
+                "ex_raid_eligible": exRaidEligible ?? 0,
+                "in_battle": inBattle ?? 0,
+                "total_cp": totalCp ?? 0,
             ]
         } else if type == "gym-info" {
             realType = "gym_details"
@@ -77,7 +79,8 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
                 "team": teamId ?? 0,
                 "slots_available": availbleSlots ?? 6,
                 "ex_raid_eligible": exRaidEligible ?? 0,
-                "in_battle": inBattle ?? false,
+                "in_battle": inBattle ?? 0,
+                "total_cp": totalCp ?? 0,
             ]
         } else if type == "egg" || type == "raid" {
             realType = "raid"
@@ -99,6 +102,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
                 "move_2": raidPokemonMove2 ?? 0,
                 "ex_raid_eligible": exRaidEligible ?? 0,
                 "is_exclusive": raidIsExclusive ?? false,
+                "total_cp": totalCp ?? 0,
             ]
         } else {
             realType = "unkown"
