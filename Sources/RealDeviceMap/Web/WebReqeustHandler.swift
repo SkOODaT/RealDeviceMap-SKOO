@@ -131,9 +131,13 @@ class WebReqeustHandler {
             }
         }
         
-        /*if perms.contains(.viewStats) {
+        if perms.contains(.viewStats) {
             data["show_stats"] = true
-        }*/
+        }
+		
+        if  perms.contains(.viewMapPokemon) {
+            data["show_logo"] = true
+        }
  
         if  perms.contains(.admin) {
             data["show_dashboard"] = true
