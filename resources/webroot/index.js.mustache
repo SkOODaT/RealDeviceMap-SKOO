@@ -114,12 +114,8 @@ $(function() {
         i18n.translator.add(data);
     });
 
-    //$.getJSON( "/static/data/pokemon.json", function( data ) {
-     //   pokemonDb = data;
-    //});
-
-    $.getJSON('/static/data/pokemon.json').done(function (data) {
-        pokemonDb = data
+    $.getJSON( "/static/data/pokemon.json", function( data ) {
+        pokemonDb = data;
     });
 	
     avilableForms = JSON.parse('{{{avilable_forms_json}}}');
