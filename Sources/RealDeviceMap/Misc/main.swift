@@ -146,6 +146,17 @@ for formString in POGOProtos_Enums_Form.allFormsInString {
 }
 WebReqeustHandler.avilableFormsJson = try! avilableForms.jsonEncodedString()
 
+// Load Costumes
+Log.debug(message: "[MAIN] Loading Avilable Costumes")
+var avilableCostumes = [String]()
+for costumeString in POGOProtos_Enums_Costume.allCostumesInString {
+    let file = File("\(projectroot)/resources/webroot/static/img/pokemon/\(costumeString).png")
+    if file.exists {
+        avilableCostumes.append(costumeString)
+    }
+}
+WebReqeustHandler.avilableCostumesJson = try! avilableCostumes.jsonEncodedString()
+
 Log.debug(message: "[MAIN] Loading Avilable Items")
 var aviableItems = [-3, -2, -1]
 for itemId in POGOProtos_Inventory_Item_ItemId.allAvilable {

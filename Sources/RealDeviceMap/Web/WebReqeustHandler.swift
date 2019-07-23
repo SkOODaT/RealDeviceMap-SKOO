@@ -29,6 +29,7 @@ class WebReqeustHandler {
     static var maxPokemonId: Int = 493
     static var title: String = "RealDeviceMap"
     static var avilableFormsJson: String = ""
+    static var avilableCostumesJson: String = ""
     static var avilableItemJson: String = ""
     static var enableRegister: Bool = true
     static var tileservers = [String: [String: String]]()
@@ -1115,6 +1116,7 @@ class WebReqeustHandler {
             data["max_zoom"] = request.param(name: "max_zoom")?.toUInt8() ?? maxZoom
             data["max_pokemon_id"] = maxPokemonId
             data["avilable_forms_json"] = avilableFormsJson.replacingOccurrences(of: "\\\"", with: "\\\\\"").replacingOccurrences(of: "'", with: "\\'").replacingOccurrences(of: "\"", with: "\\\"")
+			data["avilable_costumes_json"] = avilableCostumesJson.replacingOccurrences(of: "\\\"", with: "\\\\\"").replacingOccurrences(of: "'", with: "\\'").replacingOccurrences(of: "\"", with: "\\\"")
             data["avilable_items_json"] = avilableItemJson.replacingOccurrences(of: "\\\"", with: "\\\\\"").replacingOccurrences(of: "'", with: "\\'").replacingOccurrences(of: "\"", with: "\\\"")
             data["avilable_tileservers_json"] = (tileservers.jsonEncodeForceTry() ?? "").replacingOccurrences(of: "\\\"", with: "\\\\\"").replacingOccurrences(of: "'", with: "\\'").replacingOccurrences(of: "\"", with: "\\\"")
         default:
