@@ -1819,6 +1819,7 @@ function addPokemonFilter(pokemonId, show) {
 function getPokestopPopupContent(pokestop) {
 	const now = new Date();
     const lureExpireDate = new Date(pokestop.lure_expire_timestamp * 1000);
+	const invasionExpireDate = new Date(pokestop.incident_expire_timestamp * 1000);
     const isActiveLure = lureExpireDate >= now;
 
     var stopBG = ''
@@ -1834,6 +1835,8 @@ function getPokestopPopupContent(pokestop) {
 		} else {
 			stopBG = 'regular'
 		}
+	} else if (invasionExpireDate >= now) {
+	    stopBG = 'rocket'
 	} else {
 	    stopBG = 'regular'
 	}
@@ -1940,6 +1943,10 @@ function getPokestopPopupContent(pokestop) {
 		if (isActiveLure) {
 			content += '<b>Lure Type:</b> ' + getLureTypeName(pokestop.lure_id) + '<br>';
 			content += '<b>Lure End Time:</b> ' + lureExpireDate.toLocaleTimeString() + ' (' + getTimeUntill(lureExpireDate) + ')<br>';
+		}
+		if (invasionExpireDate >= now) {
+			content += '<b>Team Rocket Invasion</b><br>';
+			content += '<b>End Time:</b> ' + invasionExpireDate.toLocaleTimeString() + ' (' + getTimeUntill(invasionExpireDate) + ')<br>';
 		}
 
 		if (pokestop.quest_type !== null) {
@@ -2439,18 +2446,19 @@ function getPokemonMarkerIcon(pokemon, ts) {
     return icon;
 }
 
-/* Define options of bouncing for all markers */
-L.Marker.setBouncingOptions({
-        bounceHeight : 30,   // height of the bouncing
-        bounceSpeed  : 54,   // bouncing speed coefficient
-});
-
 function getPokemonMarker(pokemon, ts) {
     const marker = L.marker([pokemon.lat, pokemon.lon], {
         icon: getPokemonMarkerIcon(pokemon, ts),
         forceZIndex: 40 + getPokemonIndex(pokemon.pokemon_id),
         virtual: true
     });
+	
+	/* Define options of bouncing for all markers */
+	marker.setBouncingOptions({
+			bounceHeight : 30,   // height of the bouncing
+			bounceSpeed  : 54,   // bouncing speed coefficient
+	});
+	
     marker.bindPopup('');
     marker.on('popupopen', function (popup) {
         openedPokemon = pokemon;
@@ -2570,11 +2578,27 @@ function getPokestopMarker(pokestop, ts) {
         forceZIndex: 20 + zIndex,
         virtual: true
     });
+	
+	/* Define options of bouncing for all markers */
+    marker.setBouncingOptions({
+        bounceHeight : 5,   // height of the bouncing
+        bounceSpeed  : 80,   // bouncing speed coefficient
+    });
+	
     marker.bindPopup(pokestop.name);
     marker.on('popupopen', function (popup) {
         openedPokestop = pokestop;
         marker._popup.setContent(getPokestopPopupContent(pokestop));
     });
+	
+    if (pokestop.incident_expire_timestamp >= ts) {
+        marker.bounce();
+    }
+
+	if (pokestop.lure_expire_timestamp >= ts) {
+        marker.bounce();
+    }
+
     return marker;
 }
 
