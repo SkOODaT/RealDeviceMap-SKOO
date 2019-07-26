@@ -9,20 +9,40 @@ import Foundation
 import PerfectLib
 import PerfectMySQL
 
-class Device {
+class Device : JSONConvertibleObject, Hashable {
+    
+    override func getJSONValues() -> [String : Any] {
+        return [
+            "uuid":uuid as Any,
+            "instance_name":instanceName as Any,
+            "last_host":lastHost as Any,
+            "last_seen":lastSeen as Any,
+            "account_username":accountUsername as Any,
+            "last_encounter_lat":lastEncounterLat as Any,
+            "last_encounter_lon":lastEncounterLon as Any
+        ]
+    }
+    
+    public var hashValue: Int {
+        return uuid.hashValue
+    }
     
     var uuid: String
     var instanceName: String?
     var lastHost: String?
     var lastSeen: UInt32
     var accountUsername: String?
+    var lastEncounterLat: Double?
+    var lastEncounterLon: Double?
 
-    init(uuid: String, instanceName: String?, lastHost: String?, lastSeen: UInt32, accountUsername: String?) {
+    init(uuid: String, instanceName: String?, lastHost: String?, lastSeen: UInt32, accountUsername: String?, lastEncounterLat: Double?, lastEncounterLon: Double?) {
         self.uuid = uuid
         self.instanceName = instanceName
         self.lastHost = lastHost
         self.lastSeen = lastSeen
         self.accountUsername = accountUsername
+        self.lastEncounterLat = lastEncounterLat;
+        self.lastEncounterLon = lastEncounterLon;
     }
     
     public static func touch(mysql: MySQL?=nil, uuid: String, host: String, seen: Int) throws {
@@ -110,8 +130,12 @@ class Device {
         }
         
         let sql = """
-            SELECT uuid, instance_name, last_host, last_seen, account_username
-            FROM device
+            SELECT uuid, instance_name, last_host, last_seen, account_username, last_encounter_lat, last_encounter_lon
+            FROM device AS devices
+            LEFT JOIN (
+              SELECT username, last_encounter_lat, last_encounter_lon
+              FROM account
+            ) AS acc ON (account_username = username)
         """
         
         let mysqlStmt = MySQLStmt(mysql)
@@ -130,8 +154,10 @@ class Device {
             let lastHost = result[2] as? String
             let lastSeen = result[3] as! UInt32
             let accountUsername = result[4] as? String
+            let lat = result[5] as? Double
+            let lon = result[6] as? Double
             
-            devices.append(Device(uuid: uuid, instanceName: instanceName, lastHost: lastHost, lastSeen: lastSeen, accountUsername: accountUsername))
+            devices.append(Device(uuid: uuid, instanceName: instanceName, lastHost: lastHost, lastSeen: lastSeen, accountUsername: accountUsername, lastEncounterLat: lat, lastEncounterLon: lon))
         }
         return devices
         
@@ -170,8 +196,11 @@ class Device {
         let lastSeen = result[2] as! UInt32
         let accountUsername = result[3] as? String
         
-        return Device(uuid: id, instanceName: instanceName, lastHost: lastHost, lastSeen: lastSeen, accountUsername: accountUsername)
+        return Device(uuid: id, instanceName: instanceName, lastHost: lastHost, lastSeen: lastSeen, accountUsername: accountUsername, lastEncounterLat: 0.0, lastEncounterLon: 0.0)
     }
     
+    static func == (lhs: Device, rhs: Device) -> Bool {
+        return lhs.uuid == rhs.uuid
+    }    
     
 }
