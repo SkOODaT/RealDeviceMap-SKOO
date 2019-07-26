@@ -36,7 +36,6 @@ let openedPokemon;
 let openedPokestop;
 let openedGym;
 let openedCell;
-let openedDevice;
 
 let showPokestops;
 let showQuests;
@@ -1019,6 +1018,7 @@ function initMap() {
 	setInterval(loadData, 5000);
 	setInterval(updateOpenedPopupLoop, 1000);
     setInterval(updateCellsLoop, 10000);
+    setInterval(updateDevicesLoop, 10000);
 }
 
 // MARK: - Date Loading
@@ -1634,6 +1634,13 @@ function updateCellsLoop() {
     const ts = Math.round((new Date()).getTime() / 1000);
     $.each(cellMarkers, function (index, cell) {
         cell.marker.setStyle(getCellStyle(cell, ts));
+    });
+}
+
+function updateDevicesLoop() {
+    $.each(deviceMarkers, function (index, device) {
+        var newLatLng = new L.LatLng(device.last_encounter_lat, device.last_encounter_lon);
+        device.marker.setLatLng(newLatLng);
     });
 }
 
@@ -2536,8 +2543,8 @@ function getDeviceMarkerIcon(device, ts) {
     var isOnline = device.last_seen > ts ? 1 : 0;
     const icon = L.icon({
         iconUrl:		'/static/img/device/' + isOnline + '.png',
-        iconSize: 		[30       , 30 ],
-        iconAnchor: 	[30 / 2   , 30  ],
+        iconSize: 		[30       , 30 * 1.667 ],
+        iconAnchor: 	[30 / 2   , 30 / 2 ],
         popupAnchor: 	[0        , 30 * -1.567 ]
     });
     return icon;
