@@ -1042,7 +1042,7 @@ class ApiRequestHandler {
                     deviceGroupData["devices"] = deviceGroup.devices.count
                     
                     if formatted {
-                        deviceGroupData["buttons"] = "<a href=\"/dashboard/devicegroup/edit/\(deviceGroup.name.encodeUrl()!)\" role=\"button\" class=\"btn btn-primary\">Edit</a><a href=\"/dashboard/devicegroup/delete/\(deviceGroup.name.encodeUrl()!)\" role=\"button\" class=\"btn btn-danger\">Delete</a>"
+                        deviceGroupData["buttons"] = "<a href=\"/dashboard/devicegroup/edit/\(deviceGroup.name.encodeUrl()!)\" role=\"button\" class=\"btn btn-primary\">Edit Device Group</a>"
                     }
 
                     jsonArray.append(deviceGroupData)
