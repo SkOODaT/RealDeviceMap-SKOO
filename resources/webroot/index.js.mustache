@@ -1943,7 +1943,7 @@ function getPokestopPopupContent(pokestop) {
 
     content += '<center><div class="main-label">';
 		if (isActiveLure) {
-			content += '<b>Lure Type:</b> ' + getLureTypeName(pokestop.lure_id) + '<br>';
+			content += '<b>Lure Type:</b> ' + getLureName(pokestop.lure_id) + '<br>';
 			content += '<b>Lure End Time:</b> ' + lureExpireDate.toLocaleTimeString() + ' (' + getTimeUntill(lureExpireDate) + ')<br><br>';
 		}
 		if (invasionExpireDate >= now) {
