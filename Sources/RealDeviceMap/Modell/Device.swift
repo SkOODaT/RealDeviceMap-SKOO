@@ -79,7 +79,7 @@ class Device : JSONConvertibleObject, Hashable {
         let mysqlStmt = MySQLStmt(mysql)
         let sql = """
                 UPDATE device
-                SET uuid = ?, instance_name = ?, last_host = ?, last_seen = ?, account_username = ?
+                SET uuid = ?, instance_name = ?, last_host = ?, last_seen = ?, account_username = ?, last_lat = ?, last_lon = ?
                 WHERE uuid = ?
             """
         _ = mysqlStmt.prepare(statement: sql)
@@ -88,6 +88,8 @@ class Device : JSONConvertibleObject, Hashable {
         mysqlStmt.bindParam(lastHost)
         mysqlStmt.bindParam(lastSeen)
         mysqlStmt.bindParam(accountUsername)
+        mysqlStmt.bindParam(lastLat)
+        mysqlStmt.bindParam(lastLon)
         mysqlStmt.bindParam(oldUUID)
         
         guard mysqlStmt.execute() else {
@@ -105,8 +107,8 @@ class Device : JSONConvertibleObject, Hashable {
 
         let mysqlStmt = MySQLStmt(mysql)
         let sql = """
-            INSERT INTO device (uuid, instance_name, last_host, last_seen, account_username)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO device (uuid, instance_name, last_host, last_seen, account_username, last_lat, last_lon)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
         """
         
         _ = mysqlStmt.prepare(statement: sql)
@@ -115,6 +117,8 @@ class Device : JSONConvertibleObject, Hashable {
         mysqlStmt.bindParam(lastHost)
         mysqlStmt.bindParam(lastSeen)
         mysqlStmt.bindParam(accountUsername)
+        mysqlStmt.bindParam(lastLat)
+        mysqlStmt.bindParam(lastLon)
         
         guard mysqlStmt.execute() else {
             Log.error(message: "[DEVICE] Failed to execute query. (\(mysqlStmt.errorMessage())")
