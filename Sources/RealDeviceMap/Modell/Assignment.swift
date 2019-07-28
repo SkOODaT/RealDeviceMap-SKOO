@@ -75,7 +75,7 @@ class Assignment: Equatable {
             throw DBController.DBError()
         }
     }
-
+    
     public func delete(mysql: MySQL?=nil) throws {
         
         guard let mysql = mysql ?? DBController.global.mysql else {

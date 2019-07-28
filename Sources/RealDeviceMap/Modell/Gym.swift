@@ -425,7 +425,6 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
             excludeLevelSQL = ""
             excludePokemonSQL = ""
         }
-
         if excludedTeams.isEmpty {
             excludeTeamSQL = ""
         } else {
