@@ -150,10 +150,10 @@ class Device : JSONConvertibleObject, Hashable {
             let lastHost = result[2] as? String
             let lastSeen = result[3] as! UInt32
             let accountUsername = result[4] as? String
-            let lat = result[5] as? Double
-            let lon = result[6] as? Double
+            let lastLat = result[5] as? Double
+            let lastLon = result[6] as? Double
             
-            devices.append(Device(uuid: uuid, instanceName: instanceName, lastHost: lastHost, lastSeen: lastSeen, accountUsername: accountUsername, lastLat: lat, lastLon: lon))
+            devices.append(Device(uuid: uuid, instanceName: instanceName, lastHost: lastHost, lastSeen: lastSeen, accountUsername: accountUsername, lastLat: lastLat, lastLon: lastLon))
         }
         return devices
         
@@ -167,7 +167,7 @@ class Device : JSONConvertibleObject, Hashable {
         }
         
         let sql = """
-            SELECT instance_name, last_host, last_seen, account_username
+            SELECT instance_name, last_host, last_seen, account_username, last_lat, last_lon
             FROM device
             WHERE uuid = ?
             LIMIT 1
@@ -191,8 +191,10 @@ class Device : JSONConvertibleObject, Hashable {
         let lastHost = result[1] as? String
         let lastSeen = result[2] as! UInt32
         let accountUsername = result[3] as? String
+        let lastLat = result[4] as? Double
+        let lastLon = result[5] as? Double
         
-        return Device(uuid: id, instanceName: instanceName, lastHost: lastHost, lastSeen: lastSeen, accountUsername: accountUsername, lastLat: 0.0, lastLon: 0.0)
+        return Device(uuid: id, instanceName: instanceName, lastHost: lastHost, lastSeen: lastSeen, accountUsername: accountUsername, lastLat: lastLat, lastLon: lastLon)
     }
     
     public static func setLastLocation(mysql: MySQL?=nil, uuid: String, lat: Double, lon: Double) throws {
