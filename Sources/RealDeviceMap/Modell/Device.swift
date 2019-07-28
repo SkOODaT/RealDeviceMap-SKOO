@@ -18,8 +18,8 @@ class Device : JSONConvertibleObject, Hashable {
             "last_host":lastHost as Any,
             "last_seen":lastSeen as Any,
             "account_username":accountUsername as Any,
-            "last_encounter_lat":lastEncounterLat as Any,
-            "last_encounter_lon":lastEncounterLon as Any
+            "last_lat":lastLat as Any,
+            "last_lon":lastLon as Any
         ]
     }
     
@@ -32,17 +32,17 @@ class Device : JSONConvertibleObject, Hashable {
     var lastHost: String?
     var lastSeen: UInt32
     var accountUsername: String?
-    var lastEncounterLat: Double?
-    var lastEncounterLon: Double?
+    var lastLat: Double?
+    var lastLon: Double?
 
-    init(uuid: String, instanceName: String?, lastHost: String?, lastSeen: UInt32, accountUsername: String?, lastEncounterLat: Double?, lastEncounterLon: Double?) {
+    init(uuid: String, instanceName: String?, lastHost: String?, lastSeen: UInt32, accountUsername: String?, lastLat: Double?, lastLon: Double?) {
         self.uuid = uuid
         self.instanceName = instanceName
         self.lastHost = lastHost
         self.lastSeen = lastSeen
         self.accountUsername = accountUsername
-        self.lastEncounterLat = lastEncounterLat;
-        self.lastEncounterLon = lastEncounterLon;
+        self.lastLat = lastLat;
+        self.lastLon = lastLon;
     }
     
     public static func touch(mysql: MySQL?=nil, uuid: String, host: String, seen: Int) throws {
@@ -130,12 +130,8 @@ class Device : JSONConvertibleObject, Hashable {
         }
         
         let sql = """
-            SELECT uuid, instance_name, last_host, last_seen, account_username, last_encounter_lat, last_encounter_lon
-            FROM device AS devices
-            LEFT JOIN (
-              SELECT username, last_encounter_lat, last_encounter_lon
-              FROM account
-            ) AS acc ON (account_username = username)
+            SELECT uuid, instance_name, last_host, last_seen, account_username, last_lat, last_lon
+            FROM device
         """
         
         let mysqlStmt = MySQLStmt(mysql)
@@ -157,7 +153,7 @@ class Device : JSONConvertibleObject, Hashable {
             let lat = result[5] as? Double
             let lon = result[6] as? Double
             
-            devices.append(Device(uuid: uuid, instanceName: instanceName, lastHost: lastHost, lastSeen: lastSeen, accountUsername: accountUsername, lastEncounterLat: lat, lastEncounterLon: lon))
+            devices.append(Device(uuid: uuid, instanceName: instanceName, lastHost: lastHost, lastSeen: lastSeen, accountUsername: accountUsername, lastLat: lat, lastLon: lon))
         }
         return devices
         
@@ -196,7 +192,30 @@ class Device : JSONConvertibleObject, Hashable {
         let lastSeen = result[2] as! UInt32
         let accountUsername = result[3] as? String
         
-        return Device(uuid: id, instanceName: instanceName, lastHost: lastHost, lastSeen: lastSeen, accountUsername: accountUsername, lastEncounterLat: 0.0, lastEncounterLon: 0.0)
+        return Device(uuid: id, instanceName: instanceName, lastHost: lastHost, lastSeen: lastSeen, accountUsername: accountUsername, lastLat: 0.0, lastLon: 0.0)
+    }
+    
+    public static func setLastLocation(mysql: MySQL?=nil, uuid: String, lat: Double, lon: Double) throws {
+        guard let mysql = mysql ?? DBController.global.mysql else {
+            Log.error(message: "[DEVICE] Failed to connect to database.")
+            throw DBController.DBError()
+        }
+        
+        let mysqlStmt = MySQLStmt(mysql)
+        let sql = """
+                UPDATE device
+                SET last_lat = ?, last_lon = ?
+                WHERE uuid = ?
+            """
+        _ = mysqlStmt.prepare(statement: sql)
+        mysqlStmt.bindParam(lat)
+        mysqlStmt.bindParam(lon)
+        mysqlStmt.bindParam(uuid)
+        
+        guard mysqlStmt.execute() else {
+            Log.error(message: "[DEVICE] Failed to execute query. (\(mysqlStmt.errorMessage())")
+            throw DBController.DBError()
+        }
     }
     
     static func == (lhs: Device, rhs: Device) -> Bool {

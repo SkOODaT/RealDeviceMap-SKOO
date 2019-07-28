@@ -1639,8 +1639,13 @@ function updateCellsLoop() {
 
 function updateDevicesLoop() {
     $.each(deviceMarkers, function (index, device) {
-        var newLatLng = new L.LatLng(device.last_encounter_lat, device.last_encounter_lon);
-        device.marker.setLatLng(newLatLng);
+        console.log("Device:", device);
+        try {
+            var newLatLng = new L.LatLng(device.last_lat, device.last_lon);
+            device.marker.setLatLng(newLatLng);
+        } catch (err) {
+            console.log("ERROR:", err);
+        }
     });
 }
 
@@ -2544,7 +2549,7 @@ function getDeviceMarkerIcon(device, ts) {
     var isOnline = (device.last_seen - delta) > ts ? 1 : 0;
     const icon = L.icon({
         iconUrl:		'/static/img/device/' + isOnline + '.png',
-        iconSize: 		[30       , 30 * 1.667 ],
+        iconSize: 		[30       , 30 /** 1.667*/ ],
         iconAnchor: 	[30 / 2   , 30 / 2 ],
         popupAnchor: 	[0        , 30 * -1.567 ]
     });
@@ -2552,7 +2557,7 @@ function getDeviceMarkerIcon(device, ts) {
 }
 
 function getDeviceMarker(device, ts) {
-    const marker = L.marker([device.last_encounter_lat || 1.0, device.last_encounter_lon || 1.0], {
+    const marker = L.marker([device.last_lat || 1.0, device.last_lon || 1.0], {
         icon: getDeviceMarkerIcon(device, ts),
         forceZIndex: 10,
         virtual: true
