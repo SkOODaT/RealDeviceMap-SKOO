@@ -729,8 +729,8 @@ function initMap() {
 
     $('#reset-spawnpoint-filter').on('click', function(event) {
         const defaultSpawnpointFilter = {};
-        defaultSpawnpointFilter["no-timer"] = {"show": true, "size": spawnpointFilterNew["no-timer"]["size"]};
-        defaultSpawnpointFilter["with-timer"] = {"show": true, "size": spawnpointFilterNew["with-timer"]["size"]};
+        defaultSpawnpointFilter["no-timer"] = {"show": true, "size": "normal"};
+        defaultSpawnpointFilter["with-timer"] = {"show": true, "size": "normal"};
 
         store('spawnpoint_filter', JSON.stringify(defaultSpawnpointFilter));
         spawnpointFilterNew = defaultSpawnpointFilter;
@@ -2227,7 +2227,7 @@ function getPokemonNameNoId(pokemonId) {
 }
 
 function getPokemonName(pokemonId) {
-	return i18n('poke_'+pokemonId) + ' (' + pokemonId + ')';
+	return i18n('poke_'+pokemonId) + ' (#' + pokemonId + ')';
 }
 
 function getThrowType(typeID) {
@@ -2268,6 +2268,18 @@ function getLureName(lureId) {
 
 function getGruntName(gruntId) {
     return i18n('grunt_'+gruntId);
+}
+
+function getTeamName(teamId) {
+    return i18n('filter_gym_team_'+teamId);
+}
+
+function getGenderIcon(genderId) {
+    return i18n('gender_icon_'+genderId);
+}
+
+function getWeatherIcon(weatherId) {
+    return i18n('weather_icon_'+weatherId);
 }
 
 function getQuestReward(reward) {
@@ -2560,7 +2572,7 @@ function getPokestopMarkerIcon(pokestop, ts) {
         icon = L.icon({
             iconUrl: '/static/img/pokestop/'+invasionString+lureId+'.png',
             iconSize: 		[size       , size /** 1.667*/  ],
-            iconAnchor: 	[size / 2   , size * 1.567  ],
+            iconAnchor: 	[size / 2   , size /** 1.567*/  ],
             popupAnchor: 	[0          , size * -1.567 ]
         });
     }
@@ -3458,6 +3470,14 @@ function getLureIconId(lureId) {
     return 1;
 }
 
+function getSize(size) {
+    if (size < 1.5) return "Tiny";
+    if (size <= 1.75) return "Small";
+    if (size < 2.25) return "Normal";
+    if (size <= 2.5) return "Large";
+    return "Big";
+}
+
 // MARK: - Init Filter
 
 function loadPokemonFilter() {
@@ -3987,6 +4007,7 @@ function loadSpawnpointFilter() {
         dataTable.columns.adjust();
     });
 }
+
 function loadFilterSettings(e) {
     var file = e.target.files[0];
     if (!file) {
@@ -4020,12 +4041,12 @@ function loadFilterSettings(e) {
         showPokestops = obj.show_pokestops;
         pokestopFilterNew = obj.pokestop;
         store('show_pokestops', showPokestops);
-        store('pokestop_filter', pokestopFilterNew);
+        store('pokestop_filter', JSON.stringify(pokestopFilterNew));
 
         showSpawnpoints = obj.show_spawnpoints;
         spawnpointFilterNew = obj.spawnpoint;
         store('show_spawnpoints', showSpawnpoints);
-        store('spawnpoint_filter', spawnpointFilterNew)
+        store('spawnpoint_filter', JSON.stringify(spawnpointFilterNew));
 
         showCells = obj.show_cells;
         store('show_cells', showCells);
@@ -4091,6 +4112,7 @@ function loadFilterSettings(e) {
         $('#table-filter-gym').DataTable().rows().invalidate('data').draw(false);
         $('#table-filter-pokestop').DataTable().rows().invalidate('data').draw(false);
         $('#table-filter-quest').DataTable().rows().invalidate('data').draw(false);
+        $('#table-filter-spawnpoint').DataTable().rows().invalidate('data').draw(false);
     };
     reader.readAsText(file);
 }

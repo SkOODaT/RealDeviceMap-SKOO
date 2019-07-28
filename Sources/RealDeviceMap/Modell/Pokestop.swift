@@ -438,7 +438,7 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
         }
     }
 
-    public static func getAll(mysql: MySQL?=nil, minLat: Double, maxLat: Double, minLon: Double, maxLon: Double, updated: UInt32, questsOnly: Bool, showQuests: Bool, questFilterExclude: [String]?=nil, pokestopFilterExclude: [String]?=nil) throws -> [Pokestop] {
+    public static func getAll(mysql: MySQL?=nil, minLat: Double, maxLat: Double, minLon: Double, maxLon: Double, updated: UInt32, questsOnly: Bool, showQuests: Bool, showLures: Bool, showInvasions: Bool, questFilterExclude: [String]?=nil, pokestopFilterExclude: [String]?=nil) throws -> [Pokestop] {
         
         guard let mysql = mysql ?? DBController.global.mysql else {
             Log.error(message: "[POKESTOP] Failed to connect to database.")
@@ -474,11 +474,11 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
             for filter in pokestopFilterExclude! {
                 if filter.contains(string: "normal") {
                     excludeNormal = true
-                } else if filter.contains(string: "l") {
+                } else if showLures && filter.contains(string: "l") {
                     if let id = filter.stringByReplacing(string: "l", withString: "").toInt() {
                         excludedLures.append(id + 500)
                     }
-                } else if filter.contains(string: "invasion") {
+                } else if showInvasions && filter.contains(string: "invasion") {
                     excludeInvasion = true
                 }
             }
@@ -529,6 +529,7 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
             excludeItemSQL = ""
         }
         
+        //TODO: showLures, showInvasions
         if excludeNormal || !excludedLures.isEmpty || excludeInvasion {
             if excludedLures.isEmpty {
                 excludeLureSQL = ""
@@ -611,7 +612,12 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
             let url = result[4] as? String
             let enabledInt = result[5] as? UInt8
             let enabled = enabledInt?.toBool()
-            let lureExpireTimestamp = result[6] as? UInt32
+            let lureExpireTimestamp: UInt32?
+            if showLures {
+                lureExpireTimestamp = result[6] as? UInt32
+            } else {
+                lureExpireTimestamp = nil
+            }
             let lastModifiedTimestamp = result[7] as? UInt32
             let updated = result[8] as! UInt32
             
@@ -639,11 +645,25 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
             }
             
             let cellId = result[15] as? UInt64
-            let lureId = result[16] as? Int16
-            let pokestopDisplay = result[17] as? UInt16
-            let incidentExpireTimestamp = result[18] as? UInt32
-            let gruntType = result[19] as? UInt16
-            
+            let lureId: Int16?
+            if showLures {
+                lureId = result[16] as? Int16
+            } else {
+                lureId = nil
+            }
+            let pokestopDisplay: UInt16?
+            let incidentExpireTimestamp: UInt32?
+            let gruntType: UInt16?
+            if showInvasions {
+                pokestopDisplay = result[17] as? UInt16
+                incidentExpireTimestamp = result[18] as? UInt32
+                gruntType = result[19] as? UInt16
+            } else {
+                pokestopDisplay = nil
+                incidentExpireTimestamp = nil
+                gruntType = nil
+            }
+
             pokestops.append(Pokestop(id: id, lat: lat, lon: lon, name: name, url: url, enabled: enabled, lureExpireTimestamp: lureExpireTimestamp, lastModifiedTimestamp: lastModifiedTimestamp, updated: updated, questType: questType, questTarget: questTarget, questTimestamp: questTimestamp, questConditions: questConditions, questRewards: questRewards, questTemplate: questTemplate, cellId: cellId, lureId: lureId, pokestopDisplay: pokestopDisplay, incidentExpireTimestamp: incidentExpireTimestamp, gruntType: gruntType))
         }
         return pokestops
@@ -862,7 +882,7 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
         let coords = Pokestop.flattenCoords(area: areaString)
         let sql = """
             UPDATE pokestop
-            SET quest_type = NULL, quest_timestamp = NULL, quest_target = NULL, quest_conditions = NULL, quest_rewards = NULL, quest_template = NULL
+            SET updated = UNIX_TIMESTAMP(), quest_type = NULL, quest_timestamp = NULL, quest_target = NULL, quest_conditions = NULL, quest_rewards = NULL, quest_template = NULL
             WHERE ST_CONTAINS(
                 ST_GEOMFROMTEXT('POLYGON((\(coords)))'),
                 POINT(pokestop.lat, pokestop.lon)
