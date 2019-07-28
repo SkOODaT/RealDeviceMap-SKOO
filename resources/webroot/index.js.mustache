@@ -1388,6 +1388,9 @@ function loadData() {
                         device.marker = getDeviceMarker(device, ts);
                         deviceMarkers.push(device);
                         device.marker.addTo(map);
+                    } else {
+                        oldDevice.last_lat = device.last_lat;
+                        oldDevice.last_lon = device.last_lon;
                     }
                 }
             });
@@ -1639,13 +1642,8 @@ function updateCellsLoop() {
 
 function updateDevicesLoop() {
     $.each(deviceMarkers, function (index, device) {
-        console.log("Device:", device);
-        try {
-            var newLatLng = new L.LatLng(device.last_lat, device.last_lon);
-            device.marker.setLatLng(newLatLng);
-        } catch (err) {
-            console.log("ERROR:", err);
-        }
+        var newLatLng = new L.LatLng(device.last_lat, device.last_lon);
+        device.marker.setLatLng(newLatLng);
     });
 }
 
