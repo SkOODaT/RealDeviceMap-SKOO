@@ -2841,8 +2841,11 @@ function getDeviceMarker(device, ts) {
         forceZIndex: 10,
         virtual: true
     });
+    const lastSeenDate = new Date(device.last_seen * 1000);
+    var lastSeen = lastSeenDate.toLocaleTimeString() + ' (' + getTimeSince(lastSeenDate) + ')<br>';
     var content = '<center><h6><b>' + device.uuid + '</b></h6></center><br>';
-    content += '<b>Instance:</b> ' + device.instance_name 
+    content += '<b>Instance:</b> ' + device.instance_name + '<br>';
+    content += '<b>Last Seen:</b> ' + lastSeen + '<br>';
     marker.bindPopup(content);
     return marker;
 }
