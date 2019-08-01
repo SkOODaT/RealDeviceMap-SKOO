@@ -146,7 +146,7 @@ class DeviceGroup: Hashable {
         }
         
         let sql = """
-            SELECT uuid, instance_name, last_host, last_seen, account_username, device_group
+            SELECT uuid, instance_name, last_host, last_seen, account_username, last_lat, last_lon, device_group
             FROM device
             WHERE device_group = ?
         """
@@ -168,9 +168,11 @@ class DeviceGroup: Hashable {
             let lastHost = result[2] as? String
             let lastSeen = result[3] as! UInt32
             let accountUsername = result[4] as? String
-            let deviceGroup = result[5] as? String
+            let lastLat = result[5] as? Double
+            let lastLon = result[6] as? Double
+            let deviceGroup = result[7] as? String
             
-            devices.append(Device(uuid: uuid, instanceName: instanceName, lastHost: lastHost, lastSeen: lastSeen, accountUsername: accountUsername, deviceGroup: deviceGroup))
+            devices.append(Device(uuid: uuid, instanceName: instanceName, lastHost: lastHost, lastSeen: lastSeen, accountUsername: accountUsername, lastLat: lastLat, lastLon: lastLon, deviceGroup: deviceGroup))
         }
         return devices
     }
