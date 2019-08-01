@@ -36,6 +36,7 @@ let openedPokemon;
 let openedPokestop;
 let openedGym;
 let openedCell;
+let openedDevice;
 
 let showPokestops;
 let showQuests;
@@ -57,6 +58,9 @@ let raidFilterLoaded = false;
 let gymFilterLoaded = false;
 let pokestopFilterLoaded = false;
 let spawnpointFilterLoaded = false;
+
+let deviceOnlineIcon;
+let deviceOfflineIcon;
 
 let tileLayer;
 
@@ -110,6 +114,19 @@ $(function() {
                   this._updateIconVisibility();
             }, this);
         }
+    });
+
+    deviceOnlineIcon = L.icon({
+        iconUrl:		'/static/img/device/0.png',
+        iconSize: 		[30       , 30 /** 1.667*/ ],
+        iconAnchor: 	[30 / 2   , 30 / 2 ],
+        popupAnchor: 	[0        , 30 * -1.567 ]
+    });
+    deviceOfflineIcon = L.icon({
+        iconUrl:		'/static/img/device/1.png',
+        iconSize: 		[30       , 30 /** 1.667*/ ],
+        iconAnchor: 	[30 / 2   , 30 / 2 ],
+        popupAnchor: 	[0        , 30 * -1.567 ]
     });
 
     $.getJSON( "/static/data/{{{locale}}}.json", {_: '{{{locale_last_modified}}}'}, function( data ) {
@@ -1393,8 +1410,11 @@ function loadData() {
                         deviceMarkers.push(device);
                         device.marker.addTo(map);
                     } else {
+                        var isOffline = isDeviceOffline(device, ts);
+                        oldDevice.marker.setIcon(isOffline ? deviceOfflineIcon : deviceOnlineIcon);
                         oldDevice.last_lat = device.last_lat;
                         oldDevice.last_lon = device.last_lon;
+                        oldDevice.last_seen = device.last_seen;
                     }
                 }
             });
@@ -1634,6 +1654,9 @@ function updateOpenedPopupLoop() {
 	}
     if (openedCell !== undefined) {
         openedCell.marker._popup.setContent(getCellPopupContent(openedCell));
+    }
+    if (openedDevice !== undefined) {
+        openedDevice.marker._popup.setContent(getDevicePopupContent(openedDevice));
     }
 }
 
@@ -2824,15 +2847,8 @@ function getGymMarker(gym, ts) {
 }
 
 function getDeviceMarkerIcon(device, ts) {
-    var delta = 15 * 60 * 1000;
-    var isOffline = device.last_seen < (ts - delta) ? 1 : 0;
-    const icon = L.icon({
-        iconUrl:		'/static/img/device/' + isOffline + '.png',
-        iconSize: 		[30       , 30 /** 1.667*/ ],
-        iconAnchor: 	[30 / 2   , 30 / 2 ],
-        popupAnchor: 	[0        , 30 * -1.567 ]
-    });
-    return icon;
+    var isOffline = isDeviceOffline(device, ts);
+    return isOffline ? deviceOfflineIcon : deviceOnlineIcon;
 }
 
 function getDeviceMarker(device, ts) {
@@ -2841,13 +2857,30 @@ function getDeviceMarker(device, ts) {
         forceZIndex: 10,
         virtual: true
     });
-    const lastSeenDate = new Date(device.last_seen * 1000);
-    var lastSeen = lastSeenDate.toLocaleTimeString() + ' (' + getTimeSince(lastSeenDate) + ')<br>';
-    var content = '<center><h6><b>' + device.uuid + '</b></h6></center><br>';
-    content += '<b>Instance:</b> ' + device.instance_name + '<br>';
-    content += '<b>Last Seen:</b> ' + lastSeen + '<br>';
-    marker.bindPopup(content);
+    marker.bindPopup('');
+    marker.on('popupopen', function (popup) {
+        openedDevice = device;
+        marker._popup.setContent(getDevicePopupContent(device));
+    });
     return marker;
+}
+
+function getDevicePopupContent(device) {
+    const lastSeenDate = new Date(device.last_seen * 1000);
+    var lastSeen = lastSeenDate.toLocaleTimeString() + ' (' + getTimeSince(lastSeenDate) + ')';
+    let ts = Math.round((new Date()).getTime() / 1000);
+    var isOffline = isDeviceOffline(device, ts);
+    var content = '<center><h6><b>' + device.uuid + '</b></h6></center><br>' +
+        '<b>Instance:</b> ' + device.instance_name + '<br>' +
+        '<b>Last Seen:</b> ' + lastSeen + '<br>' +
+        '<b>Status:</b> ' + (isOffline ? 'Offline' : 'Online');
+    return content;
+}
+
+function isDeviceOffline(device, ts) {
+    var delta = 15 * 60;
+    var isOffline = device.last_seen > (ts - delta) ? 0 : 1;
+    return isOffline;
 }
 
 // MARK: - Misc
