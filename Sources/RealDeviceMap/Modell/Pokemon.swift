@@ -102,7 +102,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
     var move1: UInt16?
     var move2: UInt16?
     var gender: UInt8?
-    var form: UInt8?
+    var form: UInt16?
     var costume: UInt8?
     var cp: UInt16?
     var level: UInt8?
@@ -118,7 +118,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
     var cellId: UInt64?
     var expireTimestampVerified: Bool
     
-    init(id: String, pokemonId: UInt16, lat: Double, lon: Double, spawnId: UInt64?, expireTimestamp: UInt32?, atkIv: UInt8?, defIv: UInt8?, staIv: UInt8?, move1: UInt16?, move2: UInt16?, gender: UInt8?, form: UInt8?, cp: UInt16?, level: UInt8?, weight: Double?, costume: UInt8?, size: Double?, weather: UInt8?, shiny: Bool?, username: String?, pokestopId: String?, firstSeenTimestamp: UInt32?, updated: UInt32?, changed: UInt32?, cellId: UInt64?, expireTimestampVerified: Bool) {
+    init(id: String, pokemonId: UInt16, lat: Double, lon: Double, spawnId: UInt64?, expireTimestamp: UInt32?, atkIv: UInt8?, defIv: UInt8?, staIv: UInt8?, move1: UInt16?, move2: UInt16?, gender: UInt8?, form: UInt16?, cp: UInt16?, level: UInt8?, weight: Double?, costume: UInt8?, size: Double?, weather: UInt8?, shiny: Bool?, username: String?, pokestopId: String?, firstSeenTimestamp: UInt32?, updated: UInt32?, changed: UInt32?, cellId: UInt64?, expireTimestampVerified: Bool) {
         self.id = id
         self.pokemonId = pokemonId
         self.lat = lat
@@ -156,7 +156,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
         lon = wildPokemon.longitude
         let spawnId = UInt64(wildPokemon.spawnPointID, radix: 16)
         gender = wildPokemon.pokemonData.pokemonDisplay.gender.rawValue.toUInt8()
-        form = wildPokemon.pokemonData.pokemonDisplay.form.rawValue.toUInt8()
+        form = wildPokemon.pokemonData.pokemonDisplay.form.rawValue.toUInt16()
         if wildPokemon.pokemonData.hasPokemonDisplay {
             costume = wildPokemon.pokemonData.pokemonDisplay.costume.rawValue.toUInt8()
             weather = wildPokemon.pokemonData.pokemonDisplay.weatherBoostedCondition.rawValue.toUInt8()
@@ -214,7 +214,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
         let pokemonId = nearbyPokemon.pokemonID.rawValue.toUInt16()
         let pokestopId = nearbyPokemon.fortID
         let gender = nearbyPokemon.pokemonDisplay.gender.rawValue.toUInt8()
-        let form = nearbyPokemon.pokemonDisplay.form.rawValue.toUInt8()
+        let form = nearbyPokemon.pokemonDisplay.form.rawValue.toUInt16()
         if nearbyPokemon.hasPokemonDisplay {
             costume = nearbyPokemon.pokemonDisplay.costume.rawValue.toUInt8()
             weather = nearbyPokemon.pokemonDisplay.weatherBoostedCondition.rawValue.toUInt8()
@@ -281,7 +281,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
         self.costume = UInt8(encounterData.wildPokemon.pokemonData.pokemonDisplay.costume.rawValue)
         self.shiny = encounterData.wildPokemon.pokemonData.pokemonDisplay.shiny
         self.username = username
-        self.form = UInt8(encounterData.wildPokemon.pokemonData.pokemonDisplay.form.rawValue)
+        self.form = UInt16(encounterData.wildPokemon.pokemonData.pokemonDisplay.form.rawValue)
         self.gender = UInt8(encounterData.wildPokemon.pokemonData.pokemonDisplay.gender.rawValue)
         let cpMultiplier = encounterData.wildPokemon.pokemonData.cpMultiplier
         let level: UInt8
@@ -681,7 +681,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             }
             
             let gender = result[11] as? UInt8
-            let form = result[12] as? UInt8
+            let form = result[12] as? UInt16
             let weather = result[15] as? UInt8
             let costume = result[16] as? UInt8
             let pokestopId = result[19] as? String
@@ -740,7 +740,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
         let move1 = result[9] as? UInt16
         let move2 = result[10] as? UInt16
         let gender = result[11] as? UInt8
-        let form = result[12] as? UInt8
+        let form = result[12] as? UInt16
         let cp = result[13] as? UInt16
         let level = result[14] as? UInt8
         let weather = result[15] as? UInt8
