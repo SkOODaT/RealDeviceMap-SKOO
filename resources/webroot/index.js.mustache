@@ -46,6 +46,7 @@ let showPokemon;
 let showSpawnpoints;
 let showCells;
 let showDevices;
+let showRaidTimers;
 
 let avilableForms = [];
 let avilableItems = [];
@@ -434,6 +435,9 @@ function loadStorage() {
     const raidFilterValue = retrieve('raid_filter');
     if (raidFilterValue === null) {
         const defaultRaidFilter = {};
+        if (defaultRaidFilter["timers"] === undefined) {
+            defaultRaidFilter["timers"] = {"show": true, "size": "normal"};
+        }
         let i;
         for (i = 1; i <= 5; i++) {
             if (defaultRaidFilter["l" + i] === undefined) {
@@ -450,6 +454,12 @@ function loadStorage() {
         raidFilter = defaultRaidFilter;
     } else {
         raidFilter = JSON.parse(raidFilterValue);
+        if (raidFilter["timers"] === undefined) {
+            raidFilter["timers"] = {"show": true, "size": "normal"};
+            showRaidTimers = true;
+        } else {
+            showRaidTimers = raidFilter["timers"]["show"];
+        }
         let i;
         for (i = 1; i <= 5; i++) {
             if (raidFilter["l" + i] === undefined) {
@@ -659,6 +669,7 @@ function initMap() {
 
     $('#reset-raid-filter').on('click', function(event) {
         const defaultRaidFilter = {};
+        defaultRaidFilter["timers"] = {"show": true, "size": "normal"};
         let i;
         for (i = 1; i <= 5; i++) {
             defaultRaidFilter["l" + i] = {"show": true, "size": "normal"};
@@ -675,6 +686,7 @@ function initMap() {
 
     $('#disable-all-raid-filter').on('click', function(event) {
         const defaultRaidFilter = {};
+        defaultRaidFilter["timers"] = {"show": false, "size": raidFilterNew["timers"]["size"]};
         let i;
         for (i = 1; i <= 5; i++) {
             defaultRaidFilter["l" + i] = {"show": false, "size": raidFilterNew["l" + i]["size"]};
@@ -818,13 +830,15 @@ function initMap() {
 				map.removeLayer(pokestop.marker);
 			});
 			pokestopMarkers = [];
-		}
+        }
+        /* :thinking:
         if (newShowRaids !== showRaids) {
             $.each(pokestopMarkers, function (index, pokestop) {
                 map.removeLayer(pokestop.marker);
             });
             pokestopMarkers = [];
         }
+        */
 		if (newShowQuests !== showQuests) {
             $.each(pokestopMarkers, function (index, pokestop) {
                 map.removeLayer(pokestop.marker);
@@ -907,6 +921,11 @@ function initMap() {
 
         });
         gymMarkers = newGymMarkers;
+
+        let newShowRaidTimers = raidFilter["timers"]["show"];
+        if (newShowRaidTimers !== showRaidTimers) {
+            showRaidTimers = newShowRaidTimers;
+        }
 
 		showGyms = newShowGyms;
 		store('show_gyms', newShowGyms);
@@ -1091,6 +1110,10 @@ function loadData() {
     
     const raidFilterExclude = [];
     if (showRaids) {
+        //REVIEW: Probably not needed
+        if (raidFilter["timers"]["show"] === false) {
+            raidFilterExclude.push("timers");
+        }
         let i;
         for (i = 1; i <= 5; i++) {
             if (raidFilter["l" + i]["show"] === false) {
@@ -1200,8 +1223,10 @@ function loadData() {
 						gym.marker.addTo(map);
 						if (gym.raid_end_timestamp >= ts) {
 							startRaidTimer(gym, ts);
-							gym.raidTimerSet = true;
-                            setDespawnTimer(gym.marker);
+                            gym.raidTimerSet = true;
+                            if (showRaidTimers) {
+                                setDespawnTimer(gym);
+                            }
 						} else {
 							gym.raidTimerSet = false;
 						}
@@ -1231,8 +1256,10 @@ function loadData() {
 							oldGym.marker.setIcon(getGymMarkerIcon(oldGym, ts));
 							if (oldGym.raid_end_timestamp >= ts && !oldGym.raidTimerSet) {
 								startRaidTimer(oldGym, ts);
-								oldGym.raidTimerSet = true;
-                                setDespawnTimer(oldGym.marker);
+                                oldGym.raidTimerSet = true;
+                                if (showRaidTimers) {
+                                    setDespawnTimer(oldGym);
+                                }
 							}
 						}
 					}
@@ -1674,7 +1701,11 @@ function updateDevicesLoop() {
 
 function updateMapTimers() {
     $.each(gymMarkers, function(index, marker) {
-        setDespawnTimer(marker.marker);
+        if (showRaidTimers) {
+            setDespawnTimer(marker);
+        } else {
+            marker.marker.unbindTooltip();
+        }
     });
 }
 
@@ -2610,28 +2641,30 @@ function isDeviceOffline(device, ts) {
     return isOffline;
 }
 
-function setDespawnTimer(marker) {
+function setDespawnTimer(gym) {
     var date = new Date();
-    var ts = date.getTime();
+    var ts = date.getTime() / 1000;
     var raidTimestamp = 0;
-    if (marker.raid_battle_timestamp <= ts && marker.raid_end_timestamp >= ts && showRaids && parseInt(gym.raid_level) > 0) {
-        raidTimestamp = marker.raid_end_timestamp;
-    } else if (marker.raid_end_timestamp >= ts && parseInt(marker.raid_level) > 0 && showRaids) {
-        raidTimestamp = marker.raid_battle_timestamp;
+    if (gym.raid_battle_timestamp <= ts && gym.raid_end_timestamp >= ts && parseInt(gym.raid_level) > 0 && showRaids) {
+        //Hatched
+        raidTimestamp = gym.raid_end_timestamp;
+    } else if (gym.raid_battle_timestamp >= ts && gym.raid_end_timestamp >= ts && parseInt(gym.raid_level) > 0 && showRaids) {
+        //Egg
+        raidTimestamp = gym.raid_battle_timestamp;
     } else {
-        marker.unbindTooltip();
-        marker.timerSet = false;
+        gym.marker.unbindTooltip();
+        gym.marker.timerSet = false;
     }
 
-    if (timestamp > 0) {
-        var timer = getTimeUntill(raidTimestamp);
-        if (marker.timerSet) {
-            var text = "<span>" + timer + "</span>";
-            marker.setTooltipContent(text);
+    if (raidTimestamp > 0) {
+        var timer = getTimeUntill(new Date(raidTimestamp * 1000));
+        if (gym.marker.timerSet) {
+            var text = "<div class='rounded raid-timer'><span class='p-1'>" + timer + "</span></div>";
+            gym.marker.setTooltipContent(text);
         } else {
-            var options = {permanent: true, className: "leaflet-tooltip", direction: "bottom", offset: [0, 10]};
-            var tooltip = marker.bindTooltip(timer, options);
-            marker.timerSet = true;
+            var options = {permanent: true, className: "leaflet-tooltip", direction: "bottom", offset: [0, 0]};
+            /*var tooltip =*/ gym.marker.bindTooltip(timer, options);
+            gym.marker.timerSet = true;
         }
     }
 }
@@ -2734,6 +2767,27 @@ function manageSelectButton(e, isNew) {
                 break;
             case "huge":
                 shouldShow = questFilterNew["p"+ id]["size"] === "huge";
+                break;
+        }
+    } else if (type === "raid-timers") {
+        switch (info) {
+            case "hide":
+                shouldShow = raidFilterNew[id]["show"] === false;
+                break;
+            case "show":
+                shouldShow = raidFilterNew[id]["show"] === true;
+                break;
+            case "small":
+                shouldShow = raidFilterNew[id]["size"] === "small";
+                break;
+            case "normal":
+                shouldShow = raidFilterNew[id]["size"] === "normal";
+                break;
+            case "large":
+                shouldShow = raidFilterNew[id]["size"] === "large";
+                break;
+            case "huge":
+                shouldShow = raidFilterNew[id]["size"] === "huge";
                 break;
         }
     } else if (type === "raid-level") {
@@ -3031,6 +3085,27 @@ function manageSelectButton(e, isNew) {
                         break;
                     case "huge":
                         questFilterNew["p" + id]["size"] = "huge";
+                        break;
+                }
+            } else if (type === "raid-timers") {
+                switch (info) {
+                    case "hide":
+                        raidFilterNew[id]["show"] = false;
+                        break;
+                    case "show":
+                        raidFilterNew[id]["show"] = true;
+                        break;
+                    case "small":
+                        raidFilterNew[id]["size"] = "small";
+                        break;
+                    case "normal":
+                        raidFilterNew[id]["size"] = "normal";
+                        break;
+                    case "large":
+                        raidFilterNew[id]["size"] = "large";
+                        break;
+                    case "huge":
+                        raidFilterNew[id]["size"] = "huge";
                         break;
                 }
             } else if (type === "raid-level") {
