@@ -1742,6 +1742,16 @@ function updateDevicesLoop() {
     });
 }
 
+function updateMapTimers() {
+    $.each(gymMarkers, function(index, marker) {
+        if (showRaidTimers) {
+            setDespawnTimer(marker);
+        } else {
+            marker.marker.unbindTooltip();
+        }
+    });
+}
+
 function getPokemonIconString(pokemonId, pokemonForm, pokemonCostume) {
     let pokemonIdString;
     if (pokemonForm !== 0 && pokemonForm !== null) {
