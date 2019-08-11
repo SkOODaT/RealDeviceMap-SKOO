@@ -15,12 +15,12 @@ import PerfectThread
 import PerfectCURL
 
 class WebReqeustHandler {
-    
+
     class CompletedEarly: Error {}
-    
+
     static var isSetup = false
     static var accessToken: String?
-    
+
     static var startLat: Double = 0
     static var startLon: Double = 0
     static var startZoom: Int = 14
@@ -36,23 +36,24 @@ class WebReqeustHandler {
     static var cities = [String: [String: Any]]()
     static var googleAnalyticsId: String?
     static var googleAdSenseId: String?
-    
+    static var statsUrl: String?
+
     static var oauthDiscordRedirectURL: String?
     static var oauthDiscordClientID: String?
     static var oauthDiscordClientSecret: String?
-    
+
     private static let sessionDriver = MySQLSessions()
-            
+
     static func handle(request: HTTPRequest, response: HTTPResponse, page: WebServer.Page, requiredPerms: [Group.Perm], requiredPermsCount:Int = -1, requiresLogin: Bool=false) {
-        
+
         response.setHeader(.accessControlAllowHeaders, value: "*")
         response.setHeader(.accessControlAllowMethods, value: "GET")
         if let host = request.header(.host) {
             response.setHeader(.accessControlAllowOrigin, value: "http://\(host), https://\(host)")
         }
-        
+
         let localizer = Localizer.global
-        
+
         let documentRoot = "\(projectroot)/resources/webroot"
         var data = MustacheEvaluationContext.MapType()
         data["csrf"] = request.session?.data["csrf"]
@@ -71,11 +72,11 @@ class WebReqeustHandler {
         for loc in navLoc {
             data[loc] = localizer.get(value: loc)
         }
-        
+
         let tmp = getPerms(request: request)
         let perms = tmp.perms
         let username = tmp.username
-        
+
         if username != nil && username != "" {
             data["username"] = username
             data["is_logged_in"] = true
@@ -86,7 +87,7 @@ class WebReqeustHandler {
             response.completed(status: .found)
             return
         }
-        
+
         var requiredPermsCountReal: Int
         if requiredPermsCount == -1 {
             requiredPermsCountReal = requiredPerms.count
@@ -103,7 +104,7 @@ class WebReqeustHandler {
             if username != nil && username != "" {
                 data["page"] = localizer.get(value: "title_unauthorized")
                 data["unauthorized_title"] = localizer.get(value: "unauthorized_title")
-                
+
                 do {
                     if let user = try User.get(username: username!) {
                         if user.discordId == nil && WebReqeustHandler.oauthDiscordClientSecret != nil && WebReqeustHandler.oauthDiscordRedirectURL != nil && WebReqeustHandler.oauthDiscordClientID != nil {
@@ -114,7 +115,7 @@ class WebReqeustHandler {
                         }
                     }
                 } catch {}
-                
+
                 mustacheRequest(
                     request: request,
                     response: response,
@@ -131,19 +132,20 @@ class WebReqeustHandler {
                 return
             }
         }
-        
+
         if perms.contains(.viewStats) {
-            data["show_stats"] = true
+            //data["show_stats"] = true
+            data["stats_url"] = WebReqeustHandler.statsUrl
         }
-		
+
         if  perms.contains(.viewMapPokemon) {
             data["show_logo"] = true
         }
- 
-        if  perms.contains(.admin) {
+
+        if perms.contains(.admin) {
             data["show_dashboard"] = true
         }
-        
+
         if (!isSetup && page != .setup) {
             response.setBody(string: "Setup required.")
             response.redirect(path: "/setup")
@@ -158,7 +160,7 @@ class WebReqeustHandler {
             response.completed(status: .movedPermanently)
             return
         }
-        
+
         switch page {
         case .home:
             data["page_is_home"] = true
@@ -181,9 +183,9 @@ class WebReqeustHandler {
                 if let tmpZoom = request.urlVariables["lon"]?.toInt() {
                     zoom = tmpZoom
                 }
-                
+
             }
-            
+
             if city != nil {
                 guard let citySetting = cities[city!.lowercased()] else {
                     response.setBody(string: "The city \(city!) was not found.")
@@ -197,13 +199,13 @@ class WebReqeustHandler {
                     zoom = citySetting["zoom"] as? Int
                 }
             }
-            
+
             if (zoom ?? startZoom) > maxZoom {
                 zoom = maxZoom
             } else if (zoom ?? startZoom) < minZoom {
                 zoom = minZoom
             }
-            
+
             data["lat"] = lat ?? self.startLat
             data["lon"] = lon ?? self.startLon
             data["zoom"] = zoom ?? self.startZoom
@@ -226,13 +228,13 @@ class WebReqeustHandler {
         case .confirmemail:
             data["page_is_profile"] = true
             data["page"] = localizer.get(value: "title_confirmmail")
-        
+
             // Localize
             let locs = ["confirmmail_title", "confirmmail_request"]
             for loc in locs {
                 data[loc] = localizer.get(value: loc)
             }
-            
+
             do {
                 if MailController.global.isSetup, let user = try User.get(username: username ?? "") {
                     if user.emailVerified {
@@ -257,15 +259,15 @@ class WebReqeustHandler {
         case .confirmemailToken:
             data["page_is_profile"] = true
             data["page"] = localizer.get(value: "title_confirmmail")
-            
+
             let token = ((request.urlVariables["token"] ?? "").decodeUrl() ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-            
+
             // Localize
             let locs = ["confirmmail_title"]
             for loc in locs {
                 data[loc] = localizer.get(value: loc)
             }
-            
+
             let host: String
             let ff = request.header(.xForwardedFor) ?? ""
             if ff.isEmpty {
@@ -273,7 +275,7 @@ class WebReqeustHandler {
             } else {
                 host = ff
             }
-            
+
             if !LoginLimiter.global.tokenAllowed(host: host) {
                 data["is_error"] = true
                 data["error"] = localizer.get(value: "confirmmail_error_limited")
@@ -308,18 +310,18 @@ class WebReqeustHandler {
         case .resetpassword:
             data["page_is_login"] = true
             data["page"] = localizer.get(value: "title_resetpassword")
-            
+
             // Localize
             let locs = ["resetpassword_title", "resetpassword_username_email", "resetpassword_request"]
             for loc in locs {
                 data[loc] = localizer.get(value: loc)
             }
-            
+
             if request.method == .post {
-                
+
                 let usernameEmail = request.param(name: "username-email") ?? ""
                 data["username-email"] = usernameEmail
-                
+
                 do {
                     if MailController.global.isSetup, let user = try User.get(usernameEmail: usernameEmail) {
                         try Token.delete(username: user.username, type: .resetPassword)
@@ -338,18 +340,18 @@ class WebReqeustHandler {
                     data["is_error"] = true
                     data["error"] = localizer.get(value: "resetmail_error_undefined")
                 }
-                
+
             }
         case .resetpasswordToken:
             data["page_is_login"] = true
             data["page"] = localizer.get(value: "title_resetpassword")
-            
+
             // Localize
             let locs = ["resetpassword_title", "resetpassword_password", "resetpassword_retype_password", "resetpassword_change"]
             for loc in locs {
                 data[loc] = localizer.get(value: loc)
             }
-            
+
             let host: String
             let ff = request.header(.xForwardedFor) ?? ""
             if ff.isEmpty {
@@ -357,7 +359,7 @@ class WebReqeustHandler {
             } else {
                 host = ff
             }
-            
+
             if !LoginLimiter.global.tokenAllowed(host: host) {
                 data["is_error"] = true
                 data["error"] = localizer.get(value: "resetpassword_error_limited")
@@ -366,9 +368,9 @@ class WebReqeustHandler {
                 data["error"] = localizer.get(value: "resetpassword_error_undefined")
             } else {
                 LoginLimiter.global.tokenTry(host: host)
-                
+
                 let token = ((request.urlVariables["token"] ?? "").decodeUrl() ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-                
+
                 let username: String?
                 do {
                     if let tokenDb = try Token.get(token: token), tokenDb.type == .resetPassword {
@@ -383,17 +385,17 @@ class WebReqeustHandler {
                     data["is_error"] = true
                     data["error"] = localizer.get(value: "resetpassword_error_undefined")
                 }
-                
+
                 if let username = username {
-                    
+
                     data["valid"] = true
                     data["username"] = username
-                    
+
                     let password = request.param(name: "password")?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
                     let passwordRetype = request.param(name: "password-retype")?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
                     data["password"] = password
                     data["password-retype"] = passwordRetype
-                    
+
                     if password != "" {
                         if password != passwordRetype {
                             data["is_password_retype_error"] = true
@@ -401,7 +403,7 @@ class WebReqeustHandler {
                             data["is_password_error"] = true
                             data["password_error"] = localizer.get(value: "register_error_password_retype")
                         }
-                        
+
                         let user: User?
                         do {
                             user = try User.get(username: username)
@@ -430,7 +432,7 @@ class WebReqeustHandler {
                                 } else {
                                     isUndefined = true
                                 }
-                                
+
                                 if isUndefined {
                                     data["is_error"] = true
                                     data["error"] = localizer.get(value: "resetpassword_error_undefined")
@@ -439,9 +441,9 @@ class WebReqeustHandler {
                         }
                     }
                 }
-                
+
             }
-            
+
         case .dashboard:
             data["page_is_dashboard"] = true
             data["page"] = "Dashboard"
@@ -487,18 +489,19 @@ class WebReqeustHandler {
             data["discord_redirect_url"] = WebReqeustHandler.oauthDiscordRedirectURL
             data["discord_client_id"] = WebReqeustHandler.oauthDiscordClientID
             data["discord_client_secret"] = WebReqeustHandler.oauthDiscordClientSecret
+            data["stats_url"] = WebReqeustHandler.statsUrl
 
             var tileserverString = ""
-            
+
             let tileserversSorted = tileservers.sorted { (rhs, lhs) -> Bool in
                 return rhs.key == "Default" || rhs.key < lhs.key
             }
-            
+
             for tileserver in tileserversSorted {
                 tileserverString += "\(tileserver.key);\(tileserver.value["url"] ?? "");\(tileserver.value["attribution"] ?? "")\n"
             }
             data["tileservers"] = tileserverString
-            
+
             var citiesString = ""
             for city in self.cities {
                 if let lat = city.value["lat"] as? Double, let lon = city.value["lon"] as? Double {
@@ -511,7 +514,7 @@ class WebReqeustHandler {
                 }
             }
             data["cities"] = citiesString
-            
+
         case .dashboardDevices:
             data["page_is_dashboard"] = true
             data["page"] = "Dashboard - Devices"
@@ -600,10 +603,10 @@ class WebReqeustHandler {
         case .dashboardAssignmentDelete:
             data["page_is_dashboard"] = true
             data["page"] = "Dashboard - Delete Assignment"
-            
+
             let uuid = (request.urlVariables["uuid"] ?? "").decodeUrl()!
             let tmp = uuid.replacingOccurrences(of: "\\\\-", with: "&tmp")
-            
+
             let split = tmp.components(separatedBy: "\\-")
             if split.count == 3 {
                 let instanceName = split[0].replacingOccurrences(of: "&tmp", with: "\\\\-").unscaped()
@@ -621,7 +624,7 @@ class WebReqeustHandler {
                 response.redirect(path: "/dashboard/assignments")
                 sessionDriver.save(session: request.session!)
                 response.completed(status: .seeOther)
-                
+
             } else {
                 response.setBody(string: "Bad Request")
                 sessionDriver.save(session: request.session!)
@@ -629,7 +632,7 @@ class WebReqeustHandler {
             }
         case .dashboardAssignmentsDeleteAll:
             data["page_is_dashboard"] = true
-            
+
             do {
                 try Assignment.deleteAll()
             } catch {
@@ -666,7 +669,7 @@ class WebReqeustHandler {
             data["page_is_dashboard"] = true
             data["old_name"] = instanceName
             data["page"] = "Dashboard - Edit Instance"
-            
+
             if request.param(name: "delete") == "true" {
                 do {
                     try Instance.delete(name: instanceName)
@@ -734,14 +737,14 @@ class WebReqeustHandler {
             data["page"] = "Dashboard - Edit User"
             let editUsername = (request.urlVariables["username"] ?? "").decodeUrl()!
             data["edit_username"] = editUsername
-            
+
             let userTmp: User?
             do {
                 userTmp = try User.get(username: editUsername)
             } catch {
                 userTmp = nil
             }
-            
+
             guard
                 let groups = try? Group.getAll(),
                 let user = userTmp
@@ -753,7 +756,7 @@ class WebReqeustHandler {
             }
             if request.method == .post {
                 let groupName = request.param(name: "group")
-                
+
                 var groupsData = [[String: Any]]()
                 for group in groups {
                     if group.name != "no_user" {
@@ -764,7 +767,7 @@ class WebReqeustHandler {
                     }
                 }
                 data["groups"] = groupsData
-                
+
                 if request.param(name: "delete")?.toBool() ?? false == true {
                     do {
                         try user.delete()
@@ -827,7 +830,7 @@ class WebReqeustHandler {
             }
             data["show_edit_name"] = nameRequired
             data["show_delete"] = nameRequired
-            
+
             if request.method == .post {
                 do {
                     data = try addEditGroup(data: data, request: request, response: response, groupName: groupName, nameRequired: nameRequired)
@@ -857,20 +860,20 @@ class WebReqeustHandler {
         case .dashboardDiscordRuleAdd:
             data["page_is_dashboard"] = true
             data["page"] = "Dashboard - Add Discord Rule"
-            
+
             guard let groups = try? Group.getAll() else {
                 response.setBody(string: "Internal Server Error")
                 sessionDriver.save(session: request.session!)
                 response.completed(status: .internalServerError)
                 return
             }
-            
+
             var guilds = [[String: Any]]()
             for guild in DiscordController.global.getAllGuilds() {
                 var guildJson = [String: Any]()
                 guildJson["id"] = guild.key.description
                 guildJson["name"] = guild.value.name
-                
+
                 var roles = [[String: Any]]()
                 for role in guild.value.roles {
                     roles.append([
@@ -888,13 +891,13 @@ class WebReqeustHandler {
                 return rhs["name"] as! String > lhs["name"] as! String
             }
             data["guilds"] = guilds.jsonEncodeForceTry()?.replacingOccurrences(of: "\\\"", with: "\\\\\"").replacingOccurrences(of: "'", with: "\\'").replacingOccurrences(of: "\"", with: "\\\"")
-            
+
             var groupsArray = [[String: Any]]()
             for group in groups {
                 groupsArray.append(["name": group.name, "selected": group.name == "default"])
             }
             data["groups"] = groupsArray
-            
+
             if request.method == .post {
                 do {
                     data = try addEditDiscordRule(data: data, request: request, response: response, groups: groups)
@@ -902,12 +905,12 @@ class WebReqeustHandler {
                     return
                 }
             }
-            
+
         case .dashboardDiscordRuleEdit:
-            
+
             let priority = (request.urlVariables["discordrule_priority"] ?? "").toInt32()
             data["priority_old"] = priority
-            
+
             if request.param(name: "delete") == "true" {
                 do {
                     try DiscordRule.delete(priority: priority ?? 0)
@@ -922,7 +925,7 @@ class WebReqeustHandler {
                     return
                 }
             } else {
-            
+
                 let discordRule: DiscordRule
                 let groups: [Group]
                 do {
@@ -942,13 +945,13 @@ class WebReqeustHandler {
                     response.completed(status: .internalServerError)
                     return
                 }
-                
+
                 var guilds = [[String: Any]]()
                 for guild in DiscordController.global.getAllGuilds() {
                     var guildJson = [String: Any]()
                     guildJson["id"] = guild.key.description
                     guildJson["name"] = guild.value.name
-                    
+
                     var roles = [[String: Any]]()
                     for role in guild.value.roles {
                         roles.append([
@@ -966,15 +969,15 @@ class WebReqeustHandler {
                     return rhs["name"] as! String > lhs["name"] as! String
                 }
                 data["guilds"] = guilds.jsonEncodeForceTry()?.replacingOccurrences(of: "\\\"", with: "\\\\\"").replacingOccurrences(of: "'", with: "\\'").replacingOccurrences(of: "\"", with: "\\\"")
-                
+
                 if request.method == .get {
-                    
+
                     var groupsArray = [[String: Any]]()
                     for group in groups {
                         groupsArray.append(["name": group.name, "selected": group.name == discordRule.groupName])
                     }
                     data["groups"] = groupsArray
-                    
+
                     data["selected_guild"] = discordRule.serverId
                     data["selected_role"] = discordRule.roleId
                     data["priority"] = discordRule.priority
@@ -986,26 +989,26 @@ class WebReqeustHandler {
                     }
                 }
             }
-            
+
         case .register:
-            
+
             if !enableRegister {
                 response.redirect(path: "/")
                 sessionDriver.save(session: request.session!)
                 response.completed(status: .found)
                 return
             }
-            
+
             data["page_is_register"] = true
             data["page"] = localizer.get(value: "title_register")
-            
+
             // Localize
             let homeLoc = ["register_username", "register_email", "register_password", "register_retype_password", "register_register", "register_login_info"]
             for loc in homeLoc {
                 data[loc] = localizer.get(value: loc)
             }
             data["register_title"] = localizer.get(value: "register_title", replace: ["name" : title])
-            
+
             if request.method == .post {
                 do {
                     data = try register(data: data, request: request, response: response, useAccessToken: false)
@@ -1016,7 +1019,7 @@ class WebReqeustHandler {
         case .login:
             data["page_is_login"] = true
             data["page"] = localizer.get(value: "title_login")
-            
+
             // Localize
             let homeLoc = ["login_username_email", "login_password", "login_login", "login_password_info", "login_register_info", "login_discord"]
             for loc in homeLoc {
@@ -1033,7 +1036,7 @@ class WebReqeustHandler {
                     data["error"] = localizer.get(value: "login_discord_not_linked")
                 }
             }
-            
+
             if request.method == .post {
                 do {
                     data = try login(data: data, request: request, response: response)
@@ -1066,22 +1069,22 @@ class WebReqeustHandler {
         case .profile:
             data["page_is_profile"] = true
             data["page"] = localizer.get(value: "title_profile")
-            
+
             data["has_discord_oauth"] = WebReqeustHandler.oauthDiscordClientSecret != nil && WebReqeustHandler.oauthDiscordRedirectURL != nil && WebReqeustHandler.oauthDiscordClientID != nil
-            
+
             if let success = request.param(name: "success") {
                 if success == "discord_linked" {
                     data["success"] = localizer.get(value: "profile_discord_linked_success")
                 }
             }
-            
+
             // Localize
             let homeLoc = ["profile_username", "profile_email", "profile_password", "profile_retype_password", "profile_update", "profile_update_heading", "profile_unverified_header", "profile_unverified_text", "profile_update_password_heading", "profile_old_password", "profile_password_info", "profile_discord_link", "profile_discord_linked"]
             for loc in homeLoc {
                 data[loc] = localizer.get(value: loc)
             }
             data["profile_title"] = localizer.get(value: "profile_title", replace: ["name" : title])
-            
+
             let user: User?
             do {
                 user = try User.get(username: username ?? "")
@@ -1094,9 +1097,9 @@ class WebReqeustHandler {
                 response.completed(status: .internalServerError)
                 return
             }
-            
+
             data["discord_oauth_set"] = user?.discordId != nil
-            
+
             if MailController.global.isSetup {
                 data["mail_verified"] = user!.emailVerified
             } else {
@@ -1104,7 +1107,7 @@ class WebReqeustHandler {
             }
             data["username_new"] = user!.username
             data["email"] = user!.email
-            
+
             if request.method == .post {
                 do {
                     data = try updateProfile(data: data, request: request, response: response, user: user!)
@@ -1126,7 +1129,7 @@ class WebReqeustHandler {
         default:
             break
         }
-        
+
         if page == .homeJs {
             response.setHeader(.contentType, value: "application/javascript")
         } else if page == .homeCss {
@@ -1145,7 +1148,7 @@ class WebReqeustHandler {
         }
         response.completed()
     }
-    
+
     static func logout(data: MustacheEvaluationContext.MapType, request: HTTPRequest, response: HTTPResponse) throws {
         request.session?.userid = ""
         request.session?.data["perms"] = nil
@@ -1155,19 +1158,19 @@ class WebReqeustHandler {
         response.completed(status: .found)
         throw CompletedEarly()
     }
-    
+
     static func register(data: MustacheEvaluationContext.MapType, request: HTTPRequest, response: HTTPResponse, useAccessToken: Bool) throws -> MustacheEvaluationContext.MapType {
-        
+
         var data = data
-        
+
         let username = request.param(name: "username")
         let password = request.param(name: "password")
         let passwordRetype = request.param(name: "password-retype")
         let email = request.param(name: "email")
         let accessToken = request.param(name: "access-token")
-        
+
         var noError = true
-        
+
         let localizer = Localizer.global
         if password != passwordRetype {
             data["is_password_retype_error"] = true
@@ -1191,7 +1194,7 @@ class WebReqeustHandler {
             data["email_error"] = localizer.get(value: "register_error_email_empty")
             noError = false
         }
-        
+
         if noError {
             var user: User?
             do {
@@ -1230,7 +1233,7 @@ class WebReqeustHandler {
                     }
                 }
             }
-            
+
             if user != nil {
                 request.session?.userid = user!.username
                 if user!.group != nil {
@@ -1253,7 +1256,7 @@ class WebReqeustHandler {
                 }
             }
         }
-        
+
         data["username"] = username
         data["password"] = password
         data["password-retype"] = passwordRetype
@@ -1261,17 +1264,17 @@ class WebReqeustHandler {
         if useAccessToken {
             data["access-token"] = accessToken
         }
-        
+
         return data
     }
-    
+
     static func login(data: MustacheEvaluationContext.MapType, request: HTTPRequest, response: HTTPResponse) throws -> MustacheEvaluationContext.MapType {
-        
+
         var data = data
-        
+
         let usernameEmail = request.param(name: "username-email") ?? ""
         let password = request.param(name: "password") ?? ""
-        
+
         var user: User?
         do {
             let host: String
@@ -1306,7 +1309,7 @@ class WebReqeustHandler {
                 }
             }
         }
-        
+
         if user != nil {
             request.session?.userid = user!.username
             let redirect = request.param(name: "redirect") ?? "/"
@@ -1315,15 +1318,15 @@ class WebReqeustHandler {
             response.completed(status: .seeOther)
             throw CompletedEarly()
         }
-        
+
         data["username-email"] = usernameEmail
         data["password"] = password
-        
+
         return data
     }
- 
+
     static func updateSettings(data: MustacheEvaluationContext.MapType, request: HTTPRequest, response: HTTPResponse) throws -> MustacheEvaluationContext.MapType {
-        
+
         var data = data
         guard
             let startLat = request.param(name: "start_lat")?.toDouble(),
@@ -1345,16 +1348,16 @@ class WebReqeustHandler {
             data["show_error"] = true
             return data
         }
-        
+
         let googleAnalyticsId = request.param(name: "google_analytics_id")
         let googleAdSenseId = request.param(name: "google_adsense_id")
-    
+
         let webhookDelay = request.param(name: "webhook_delay")?.toDouble() ?? 5.0
         let webhookUrlsString = request.param(name: "webhook_urls") ?? ""
         let webhookUrls = webhookUrlsString.components(separatedBy: ";")
         let enableRegister = request.param(name: "enable_register_new") != nil
         let enableClearing = request.param(name: "enable_clearing") != nil
-        
+
         let mailerBaseURI = request.param(name: "mailer_base_uri")
         let mailerName = request.param(name: "mailer_name")
         let mailerEmail = request.param(name: "mailer_email")
@@ -1369,7 +1372,8 @@ class WebReqeustHandler {
         let oauthDiscordRedirectURL = request.param(name: "discord_redirect_url")
         let oauthDiscordClientID = request.param(name: "discord_client_id")
         let oauthDiscordClientSecret = request.param(name: "discord_client_secret")
-        
+        let statsUrl = request.param(name: "stats_url")
+
         var tileservers = [String: [String: String]]()
         for tileserverString in tileserversString.trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: "\n") {
             let split = tileserverString.components(separatedBy: ";")
@@ -1380,7 +1384,7 @@ class WebReqeustHandler {
                 return data
             }
         }
-        
+
         var citySettings = [String: [String: Any]]()
         if cities != "" {
             for cityString in cities.trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: "\n") {
@@ -1414,7 +1418,7 @@ class WebReqeustHandler {
                 ]
             }
         }
-        
+
         do {
             try DBController.global.setValueForKey(key: "MAP_START_LAT", value: startLat.description)
             try DBController.global.setValueForKey(key: "MAP_START_LON", value: startLon.description)
@@ -1451,11 +1455,12 @@ class WebReqeustHandler {
             try DBController.global.setValueForKey(key: "DISCORD_CLIENT_ID", value: oauthDiscordClientID ?? "")
             try DBController.global.setValueForKey(key: "DISCORD_CLIENT_SECRET", value: oauthDiscordClientSecret ?? "")
             try DBController.global.setValueForKey(key: "CITIES", value: citySettings.jsonEncodeForceTry() ?? "")
+            try DBController.global.setValueForKey(key: "STATS_URL", value: statsUrl ?? "")
         } catch {
             data["show_error"] = true
             return data
         }
-        
+
         WebReqeustHandler.startLat = startLat
         WebReqeustHandler.startLon = startLon
         WebReqeustHandler.startZoom = startZoom
@@ -1489,15 +1494,16 @@ class WebReqeustHandler {
         WebReqeustHandler.oauthDiscordClientSecret = oauthDiscordClientSecret
         WebReqeustHandler.oauthDiscordRedirectURL = oauthDiscordRedirectURL
         WebReqeustHandler.oauthDiscordClientID = oauthDiscordClientID
-        
+        WebReqeustHandler.statsUrl = statsUrl
+
         data["title"] = title
         data["show_success"] = true
-        
+
         return data
     }
-    
+
     static func addEditInstance(data: MustacheEvaluationContext.MapType, request: HTTPRequest, response: HTTPResponse, instanceName: String? = nil) throws -> MustacheEvaluationContext.MapType {
-        
+
         var data = data
         guard
             let name = request.param(name: "name"),
@@ -1509,11 +1515,11 @@ class WebReqeustHandler {
             data["error"] = "Invalid Request."
             return data
         }
-        
+
         let timezoneOffset = Int(request.param(name: "timezone_offset") ?? "0" ) ?? 0
         let pokemonIDsText = request.param(name: "pokemon_ids")?.replacingOccurrences(of: "<br>", with: ",").replacingOccurrences(of: "\r\n", with: ",", options: .regularExpression)
         let scatterPokemonIDsText = request.param(name: "scatter_pokemon_ids")?.replacingOccurrences(of: "<br>", with: ",").replacingOccurrences(of: "\r\n", with: ",", options: .regularExpression)
-        
+
         var pokemonIDs = [UInt16]()
         if pokemonIDsText?.trimmingCharacters(in: .whitespacesAndNewlines) == "*" {
             pokemonIDs = Array(1...999)
@@ -1528,7 +1534,7 @@ class WebReqeustHandler {
                 }
             }
         }
-        
+
         var scatterPokemonIDs = [UInt16]()
         if scatterPokemonIDsText?.trimmingCharacters(in: .whitespacesAndNewlines) == "*" {
             scatterPokemonIDs = Array(1...999)
@@ -1543,10 +1549,10 @@ class WebReqeustHandler {
                 }
             }
         }
-        
+
         let type = Instance.InstanceType.fromString(request.param(name: "type") ?? "")
         let ivQueueLimit = Int(request.param(name: "iv_queue_limit") ?? "100" ) ?? 100
-        
+
         data["name"] = name
         data["area"] = area
         data["pokemon_ids"] = pokemonIDsText
@@ -1555,7 +1561,7 @@ class WebReqeustHandler {
         data["max_level"] = maxLevel
         data["timezone_offset"] = timezoneOffset
         data["iv_queue_limit"] = ivQueueLimit
-        
+
         if type == nil {
             data["nothing_selected"] = true
         } else if type! == .circlePokemon {
@@ -1569,21 +1575,21 @@ class WebReqeustHandler {
         } else if type! == .pokemonIV {
             data["pokemon_iv_selected"] = true
         }
-        
+
         if type == .pokemonIV && pokemonIDs.isEmpty {
             data["show_error"] = true
             data["error"] = "Failed to parse Pokemon IDs."
             return data
         }
-        
+
         if minLevel > maxLevel || minLevel < 0 || minLevel > 40 || maxLevel < 0 || maxLevel > 40 {
             data["show_error"] = true
             data["error"] = "Invalid Levels"
             return data
         }
-        
+
         var newCoords: [Any]
-        
+
         if type != nil && type! == .circlePokemon || type! == .circleRaid || type! == .circleSmartRaid {
             var coords = [Coord]()
             let areaRows = area.components(separatedBy: "\n")
@@ -1597,15 +1603,15 @@ class WebReqeustHandler {
                     }
                 }
             }
-            
+
             if coords.count == 0 {
                 data["show_error"] = true
                 data["error"] = "Failed to parse coords."
                 return data
             }
-            
+
             newCoords = coords
-            
+
         } else if type != nil && type! == .autoQuest || type! == .pokemonIV {
             var coordArray = [[Coord]]()
             let areaRows = area.components(separatedBy: "\n")
@@ -1626,20 +1632,20 @@ class WebReqeustHandler {
                     currentIndex += 1
                 }
             }
-            
+
             if coordArray.count == 0 {
                 data["show_error"] = true
                 data["error"] = "Failed to parse coords."
                 return data
             }
-            
+
             newCoords = coordArray
         } else {
             data["show_error"] = true
             data["error"] = "Invalid Request."
             return data
         }
-        
+
         if instanceName != nil {
             let oldInstance: Instance?
             do {
@@ -1697,17 +1703,17 @@ class WebReqeustHandler {
                 return data
             }
         }
-        
+
         response.redirect(path: "/dashboard/instances")
         sessionDriver.save(session: request.session!)
         response.completed(status: .seeOther)
         throw CompletedEarly()
     }
-    
+
     static func editInstanceGet(data: MustacheEvaluationContext.MapType, request: HTTPRequest, response: HTTPResponse, instanceName: String) throws -> MustacheEvaluationContext.MapType {
-        
+
         var data = data
-        
+
         let oldInstance: Instance?
         do {
             oldInstance = try Instance.getByName(name: instanceName)
@@ -1744,14 +1750,14 @@ class WebReqeustHandler {
                     }
                 }
             }
-            
+
             data["name"] = oldInstance!.name
             data["area"] = areaString
             data["min_level"] = (oldInstance!.data["min_level"] as? Int)?.toInt8() ?? 0
             data["max_level"] = (oldInstance!.data["max_level"] as? Int)?.toInt8() ?? 29
             data["timezone_offset"] = oldInstance!.data["timezone_offset"] as? Int ?? 0
             data["iv_queue_limit"] = oldInstance!.data["iv_queue_limit"] as? Int ?? 100
-            
+
             let pokemonIDs = oldInstance!.data["pokemon_ids"] as? [Int]
             if pokemonIDs != nil {
                 var text = ""
@@ -1760,7 +1766,7 @@ class WebReqeustHandler {
                 }
                 data["pokemon_ids"] = text
             }
-            
+
             let scatterPokemonIDs = oldInstance!.data["scatter_pokemon_ids"] as? [Int]
             if scatterPokemonIDs != nil {
                 var text = ""
@@ -1769,7 +1775,7 @@ class WebReqeustHandler {
                 }
                 data["scatter_pokemon_ids"] = text
             }
-            
+
             switch oldInstance!.type {
             case .circlePokemon:
                 data["circle_pokemon_selected"] = true
@@ -1782,11 +1788,11 @@ class WebReqeustHandler {
             case .pokemonIV:
                 data["pokemon_iv_selected"] = true
             }
-            
+
             return data
         }
     }
-    
+
     static func assignDevicePost(data: MustacheEvaluationContext.MapType, request: HTTPRequest, response: HTTPResponse, deviceUUID: String) throws -> MustacheEvaluationContext.MapType {
 
         var data = data
@@ -1795,7 +1801,7 @@ class WebReqeustHandler {
                 data["error"] = "Invalid Request."
                 return data
         }
-        
+
         let device: Device?
         let instances: [Instance]
         do {
@@ -1831,11 +1837,11 @@ class WebReqeustHandler {
         sessionDriver.save(session: request.session!)
         response.completed(status: .seeOther)
         throw CompletedEarly()
-        
+
     }
 
     static func assignDeviceGet(data: MustacheEvaluationContext.MapType, request: HTTPRequest, response: HTTPResponse, deviceUUID: String) throws -> MustacheEvaluationContext.MapType {
-        
+
         var data = data
         let instances: [Instance]
         let device: Device?
@@ -1854,18 +1860,18 @@ class WebReqeustHandler {
             response.completed(status: .notFound)
             throw CompletedEarly()
         }
-        
+
         var instancesData = [[String: Any]]()
         for instance in instances {
             instancesData.append(["name": instance.name, "selected": instance.name == device!.instanceName])
         }
         data["instances"] = instancesData
         return data
-        
+
     }
-    
+
     static func editAssignmentsGet(data: MustacheEvaluationContext.MapType, request: HTTPRequest, response: HTTPResponse) throws -> MustacheEvaluationContext.MapType {
-        
+
         var data = data
         let instances: [Instance]
         let devices: [Device]
@@ -1878,7 +1884,7 @@ class WebReqeustHandler {
             response.completed(status: .internalServerError)
             throw CompletedEarly()
         }
-        
+
         var instancesData = [[String: Any]]()
         for instance in instances {
             instancesData.append(["name": instance.name, "selected": false])
@@ -1890,17 +1896,17 @@ class WebReqeustHandler {
         }
         data["devices"] = devicesData
         return data
-        
+
     }
-    
+
     static func editAssignmentsPost(data: MustacheEvaluationContext.MapType, request: HTTPRequest, response: HTTPResponse) throws -> MustacheEvaluationContext.MapType {
-        
+
         let selectedDevice = request.param(name: "device")
         let selectedInstance = request.param(name: "instance")
         let time = request.param(name: "time")
         let enabled = request.param(name: "enabled")
         let onComplete = request.param(name: "oncomplete")
-        
+
         var data = data
         let instances: [Instance]
         let devices: [Device]
@@ -1913,7 +1919,7 @@ class WebReqeustHandler {
             response.completed(status: .internalServerError)
             throw CompletedEarly()
         }
-        
+
         var instancesData = [[String: Any]]()
         for instance in instances {
             instancesData.append(["name": instance.name, "selected": instance.name == selectedInstance])
@@ -1925,7 +1931,7 @@ class WebReqeustHandler {
         }
         data["devices"] = devicesData
         data["time"] = time
-        
+
         let timeInt: UInt32
         if time == nil || time == "" {
             timeInt = 0
@@ -1944,7 +1950,7 @@ class WebReqeustHandler {
                 return data
             }
         }
-        
+
         if selectedDevice == nil || selectedDevice == "" || selectedInstance == nil || selectedInstance == "" {
             data["show_error"] = true
             data["error"] = "Invalid Request."
@@ -1979,12 +1985,12 @@ class WebReqeustHandler {
         throw CompletedEarly()
 
     }
-   
+
     static func editAssignmentGet(data: MustacheEvaluationContext.MapType, request: HTTPRequest, response: HTTPResponse, instanceUUID: String) throws -> MustacheEvaluationContext.MapType {
-        
+
         let selectedUUID = (request.urlVariables["uuid"] ?? "").decodeUrl()!
         let tmp = selectedUUID.replacingOccurrences(of: "\\\\-", with: "\\-")
-        
+
         let split = tmp.components(separatedBy: "\\-")
         if split.count != 3 {
             response.setBody(string: "Bad Request")
@@ -1994,7 +2000,7 @@ class WebReqeustHandler {
             let selectedInstance = split[0].replacingOccurrences(of: "&tmp", with: "\\\\-").unscaped()
             let selectedDevice = split[1].replacingOccurrences(of: "&tmp", with: "\\\\-").unscaped()
             let time = UInt32(split[2]) ?? 0
-        
+
             var data = data
             let instances: [Instance]
             let devices: [Device]
@@ -2007,7 +2013,7 @@ class WebReqeustHandler {
                 response.completed(status: .internalServerError)
                 throw CompletedEarly()
             }
-        
+
             var instancesData = [[String: Any]]()
             for instance in instances {
                 instancesData.append(["name": instance.name, "selected": instance.name == selectedInstance])
@@ -2018,7 +2024,7 @@ class WebReqeustHandler {
                 devicesData.append(["uuid": device.uuid, "selected": device.uuid == selectedDevice])
             }
             data["devices"] = devicesData
-            
+
             let formattedTime: String
             if time == 0 {
                 formattedTime = ""
@@ -2038,7 +2044,7 @@ class WebReqeustHandler {
                 throw CompletedEarly()
             }
             data["enabled"] = assignment.enabled ? "checked" : ""
-            
+
             if selectedDevice == nil || selectedInstance == nil {
                 data["show_error"] = true
                 data["error"] = "Invalid Request."
@@ -2047,16 +2053,16 @@ class WebReqeustHandler {
 
             return data;
         }
-        
+
         throw CompletedEarly()
     }
-    
+
     static func editAssignmentPost(data: MustacheEvaluationContext.MapType, request: HTTPRequest, response: HTTPResponse) throws -> MustacheEvaluationContext.MapType {
         let selectedDevice = request.param(name: "device")
         let selectedInstance = request.param(name: "instance")
         let time = request.param(name: "time")
         let enabled = request.param(name: "enabled")
-        
+
         var data = data
 
         let timeInt: UInt32
@@ -2077,16 +2083,16 @@ class WebReqeustHandler {
                 return data
             }
         }
-        
+
         if selectedDevice == nil || selectedInstance == nil {
             data["show_error"] = true
             data["error"] = "Invalid Request."
             return data
         }
-        
+
         let selectedUUID = data["old_name"] as! String
         let tmp = selectedUUID.replacingOccurrences(of: "\\\\-", with: "\\-")
-        
+
         let split = tmp.components(separatedBy: "\\-")
         if split.count != 3 {
             response.setBody(string: "Bad Request")
@@ -2096,7 +2102,7 @@ class WebReqeustHandler {
             let oldInstanceName = split[0].replacingOccurrences(of: "&tmp", with: "\\\\-").unscaped()
             let oldDeviceUUID = split[1].replacingOccurrences(of: "&tmp", with: "\\\\-").unscaped()
             let oldTime = UInt32(split[2]) ?? 0
-        
+
             let oldAssignment: Assignment
             do {
                 oldAssignment = try Assignment.getByUUID(instanceName: oldInstanceName, deviceUUID: oldDeviceUUID, time: oldTime)!
@@ -2106,7 +2112,7 @@ class WebReqeustHandler {
                 response.completed(status: .internalServerError)
                 throw CompletedEarly()
             }
-        
+
             do {
                 let assignmentEnabled = enabled == "on";
                 let newAssignment = Assignment(instanceName: selectedInstance!, deviceUUID: selectedDevice!, time: timeInt, enabled: assignmentEnabled)
@@ -2118,17 +2124,17 @@ class WebReqeustHandler {
                 return data
             }
         }
-        
+
         response.redirect(path: "/dashboard/assignments")
         sessionDriver.save(session: request.session!)
         response.completed(status: .seeOther)
         throw CompletedEarly()
     }
-    
+
     static func addAccounts(data: MustacheEvaluationContext.MapType, request: HTTPRequest, response: HTTPResponse) throws -> MustacheEvaluationContext.MapType {
-        
+
         var data = data
-        
+
         guard
             let level = request.param(name: "level")?.toUInt8(),
             let accounts = request.param(name: "accounts")?.replacingOccurrences(of: "<br>", with: "").replacingOccurrences(of: "\r\n", with: "\n", options: .regularExpression).replacingOccurrences(of: ";", with: ",").replacingOccurrences(of: ":", with: ",")
@@ -2137,10 +2143,10 @@ class WebReqeustHandler {
                 data["error"] = "Invalid Request."
                 return data
         }
-        
+
         data["accounts"] = accounts
         data["level"] = level
-        
+
         var accs = [Account]()
         let accountsRows = accounts.components(separatedBy: "\n")
         for accountsRow in accountsRows {
@@ -2151,7 +2157,7 @@ class WebReqeustHandler {
                 accs.append(Account(username: username, password: password, level: level, firstWarningTimestamp: nil, failedTimestamp: nil, failed: nil, lastEncounterLat: nil, lastEncounterLon: nil, lastEncounterTime: nil, spins: 0))
             }
         }
-        
+
         if accs.count == 0 {
             data["show_error"] = true
             data["error"] = "Failed to parse accounts."
@@ -2172,23 +2178,23 @@ class WebReqeustHandler {
             throw CompletedEarly()
         }
     }
-    
+
     static func updateProfile(data: MustacheEvaluationContext.MapType, request: HTTPRequest, response: HTTPResponse, user: User) throws -> MustacheEvaluationContext.MapType {
-        
+
         var data = data
-        
+
         let section = request.param(name: "section")
 
         let localizer = Localizer.global
-        
+
         if section == "profile" {
-            
+
             let username = request.param(name: "username")
             let email = request.param(name: "email")
-            
+
             data["username_new"] = username
             data["email"] = email
-            
+
             if username == nil || email == nil {
                 data["is_undefined_error_profile"] = true
                 data["undefined_error_profile"] = localizer.get(value: "register_error_undefined")
@@ -2217,14 +2223,14 @@ class WebReqeustHandler {
                         } else {
                             isUndefined = true
                         }
-                        
+
                         if isUndefined {
                             data["is_undefined_error"] = true
                             data["undefined_error"] = localizer.get(value: "register_error_undefined")
                         }
                     }
                 }
-            
+
                 if email != user.email {
                     do {
                         try user.setEmail(email: email!)
@@ -2247,7 +2253,7 @@ class WebReqeustHandler {
                         } else {
                             isUndefined = true
                         }
-                        
+
                         if isUndefined {
                             data["is_undefined_error"] = true
                             data["undefined_error"] = localizer.get(value: "register_error_undefined")
@@ -2256,13 +2262,13 @@ class WebReqeustHandler {
                 }
             }
         }
-        
+
         if section == "password" {
-            
+
             let oldPassword = request.param(name: "old_password")?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
             let password = request.param(name: "password")?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
             let passwordRetype = request.param(name: "password-retype")?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-            
+
             data["old_password"] = oldPassword
             data["password"] = password
             data["password-retype"] = passwordRetype
@@ -2298,7 +2304,7 @@ class WebReqeustHandler {
                         } else {
                             isUndefined = true
                         }
-                        
+
                         if isUndefined {
                             data["is_undefined_error"] = true
                             data["undefined_error"] = localizer.get(value: "register_error_undefined")
@@ -2307,23 +2313,23 @@ class WebReqeustHandler {
                 }
             }
         }
-        
+
         return data
     }
-    
+
     static func addEditGroup(data: MustacheEvaluationContext.MapType, request: HTTPRequest, response: HTTPResponse, groupName: String? = nil, nameRequired: Bool) throws -> MustacheEvaluationContext.MapType {
-        
+
         var data = data
-        
+
         let delete = request.param(name: "delete") == "true"
-        
+
         let name = request.param(name: "name") ?? ""
         if !delete && name == "" && nameRequired {
             data["show_error"] = true
             data["error"] = "Invalid Request."
             return data
         }
-        
+
         let permAdmin = request.param(name: "perm_admin") != nil
         let permViewMap = request.param(name: "perm_view_map") != nil
         let permViewMapGym = request.param(name: "perm_view_map_gym") != nil
@@ -2339,7 +2345,7 @@ class WebReqeustHandler {
         let permViewMapDevice = request.param(name: "perm_view_map_device") != nil
         let permViewStats = request.param(name: "perm_view_stats") != nil
 
-        
+
         data["name"] = name
         data["perm_admin"] = permAdmin
         data["perm_view_map"] = permViewMap
@@ -2399,7 +2405,7 @@ class WebReqeustHandler {
         if permViewMapDevice {
             perms.append(.viewMapDevice)
         }
-        
+
         if groupName == nil { // New Group
             let group = Group(name: name, perms: perms)
             do {
@@ -2434,7 +2440,7 @@ class WebReqeustHandler {
                 return data
             }
         }
-        
+
         response.redirect(path: "/dashboard/groups")
         sessionDriver.save(session: request.session!)
         response.completed(status: .seeOther)
@@ -2442,18 +2448,18 @@ class WebReqeustHandler {
     }
 
     static func editGroupGet(data: MustacheEvaluationContext.MapType, request: HTTPRequest, response: HTTPResponse, groupName: String) throws -> MustacheEvaluationContext.MapType {
-        
+
         var data = data
-        
+
         guard let group = try Group.getWithName(name: groupName) else {
             response.setBody(string: "Group Not Found")
             sessionDriver.save(session: request.session!)
             response.completed(status: .notFound)
             throw CompletedEarly()
         }
-        
+
         let perms = group.perms
-        
+
         data["name"] = group.name
         data["perm_admin"] = perms.contains(.admin)
         data["perm_view_map"] = perms.contains(.viewMap)
@@ -2469,12 +2475,12 @@ class WebReqeustHandler {
         data["perm_view_map_cell"] = perms.contains(.viewMapCell)
         data["perm_view_map_device"] = perms.contains(.viewMapDevice)
         data["perm_view_stats"] = perms.contains(.viewStats)
-        
+
         return data
     }
-    
+
     static func addEditDiscordRule(data: MustacheEvaluationContext.MapType, request: HTTPRequest, response: HTTPResponse, oldPriority: Int32?=nil, discordRule: DiscordRule?=nil, groups: [Group]) throws -> MustacheEvaluationContext.MapType {
-        
+
         var data = data
         guard
             let priority = request.param(name: "priority")?.toInt32(),
@@ -2486,17 +2492,17 @@ class WebReqeustHandler {
                 data["error"] = "Invalid Request."
                 return data
         }
-        
+
         var groupsArray = [[String: Any]]()
         for group2 in groups {
             groupsArray.append(["name": group2.name, "selected": group2.name == group])
         }
         data["groups"] = groupsArray
-        
+
         data["selected_guild"] = guild
         data["selected_role"] = role
         data["priority"] = priority
-        
+
         let newDiscordRule = DiscordRule(priority: priority, serverId: guild, roleId: role, groupName: group)
         if discordRule != nil && oldPriority != nil {
             do {
@@ -2515,12 +2521,12 @@ class WebReqeustHandler {
                 return data
             }
         }
-        
+
         response.redirect(path: "/dashboard/discordrules")
         sessionDriver.save(session: request.session!)
         response.completed(status: .seeOther)
         throw CompletedEarly()
-        
+
     }
 
     static func oauthDiscord(data: MustacheEvaluationContext.MapType, request: HTTPRequest, response: HTTPResponse) throws -> MustacheEvaluationContext.MapType {
@@ -2531,7 +2537,7 @@ class WebReqeustHandler {
             response.completed(status: .seeOther)
             throw CompletedEarly()
         }
-        
+
         if let error = request.param(name: "error") {
             if error == "access_denied" {
                 response.redirect(path: "/login")
@@ -2542,14 +2548,14 @@ class WebReqeustHandler {
             response.completed(status: .seeOther)
             throw CompletedEarly()
         }
-        
+
         if let code = request.param(name: "code") {
-            
+
             let redirect: String
             let usernameNew: String?
             let isLogin: Bool
             let isLink: Bool
-            
+
             if let state = request.param(name: "state") {
                 let split = state.components(separatedBy: ";")
                 let oldSession = MySQLSessions().resume(token: split[0])
@@ -2560,13 +2566,13 @@ class WebReqeustHandler {
                 } else {
                     redirect = "/"
                 }
-                
+
                 if split.count >= 3 {
                     isLogin = split[2] == "true"
                 } else {
                     isLogin = false
                 }
-                
+
                 if split.count >= 4 {
                     isLink = split[3] == "true"
                 } else {
@@ -2578,7 +2584,7 @@ class WebReqeustHandler {
                 response.completed(status: .seeOther)
                 throw CompletedEarly()
             }
-            
+
             let curl = CURLRequest("https://discordapp.com/api/oauth2/token",
                                    options: [
                                     .addHeader(.userAgent, "RealDeviceMap"),
@@ -2607,7 +2613,7 @@ class WebReqeustHandler {
                 response.completed(status: .seeOther)
                 throw CompletedEarly()
             }
-            
+
             let curlUser = CURLRequest("https://discordapp.com/api/users/@me",
                                        options: [
                                         .addHeader(.userAgent, "RealDeviceMap"),
@@ -2623,14 +2629,14 @@ class WebReqeustHandler {
                 response.completed(status: .seeOther)
                 throw CompletedEarly()
             }
-            
+
             guard let idString = bodyJSONUser?["id"] as? String, let id = UInt64(idString) else {
                 response.redirect(path: "/oauth/discord?login=\(isLogin)&link=\(isLink)")
                 sessionDriver.save(session: request.session!)
                 response.completed(status: .seeOther)
                 throw CompletedEarly()
             }
-            
+
             let user: User?
             do {
                 user = try User.get(username: usernameNew ?? "")
@@ -2669,12 +2675,12 @@ class WebReqeustHandler {
                 response.completed(status: .seeOther)
                 throw CompletedEarly()
             }
-            
+
             data["url"] = redirect
         } else {
             let isLogin = request.param(name: "login") == "true"
             let isLink = request.param(name: "link") == "true"
-            
+
             let token = request.session?.token ?? ""
             let redirect = request.param(name: "redirect") ?? "/"
             let url = "https://discordapp.com/api/oauth2/authorize?client_id=\(oauthDiscordClientID!)&redirect_uri=\(oauthDiscordRedirectURL!.stringByEncodingURL)&response_type=code&scope=identify&state=\(token);\(redirect);\(isLogin);\(isLink)"
@@ -2685,12 +2691,12 @@ class WebReqeustHandler {
         }
         return data
     }
-    
+
     static func getPerms(request: HTTPRequest, fromCache: Bool=false) -> (perms: [Group.Perm], username: String?) {
 
         var username = request.session?.userid
         var perms = [Group.Perm]()
-        
+
         if username == nil || username == "" {
             let group = Group.getFromCache(groupName: "no_user")
             perms = group?.perms ?? []
@@ -2717,7 +2723,7 @@ class WebReqeustHandler {
         }
         return (perms, username)
     }
-    
+
 }
 
 struct Area {
