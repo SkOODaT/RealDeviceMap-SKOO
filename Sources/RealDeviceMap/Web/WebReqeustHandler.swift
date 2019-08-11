@@ -36,6 +36,7 @@ class WebReqeustHandler {
     static var cities = [String: [String: Any]]()
     static var googleAnalyticsId: String?
     static var googleAdSenseId: String?
+    static var logoUrl: String?
     static var statsUrl: String?
 
     static var oauthDiscordRedirectURL: String?
@@ -139,7 +140,8 @@ class WebReqeustHandler {
         }
 
         if  perms.contains(.viewMapPokemon) {
-            data["show_logo"] = true
+            //data["show_logo"] = true
+            data["logo_url"] = WebReqeustHandler.logoUrl
         }
 
         if perms.contains(.admin) {
@@ -489,6 +491,7 @@ class WebReqeustHandler {
             data["discord_redirect_url"] = WebReqeustHandler.oauthDiscordRedirectURL
             data["discord_client_id"] = WebReqeustHandler.oauthDiscordClientID
             data["discord_client_secret"] = WebReqeustHandler.oauthDiscordClientSecret
+            data["logo_url"] = WebReqeustHandler.logoUrl
             data["stats_url"] = WebReqeustHandler.statsUrl
 
             var tileserverString = ""
@@ -1372,6 +1375,7 @@ class WebReqeustHandler {
         let oauthDiscordRedirectURL = request.param(name: "discord_redirect_url")
         let oauthDiscordClientID = request.param(name: "discord_client_id")
         let oauthDiscordClientSecret = request.param(name: "discord_client_secret")
+        let logoUrl = request.param(name: "logo_url")
         let statsUrl = request.param(name: "stats_url")
 
         var tileservers = [String: [String: String]]()
@@ -1455,6 +1459,7 @@ class WebReqeustHandler {
             try DBController.global.setValueForKey(key: "DISCORD_CLIENT_ID", value: oauthDiscordClientID ?? "")
             try DBController.global.setValueForKey(key: "DISCORD_CLIENT_SECRET", value: oauthDiscordClientSecret ?? "")
             try DBController.global.setValueForKey(key: "CITIES", value: citySettings.jsonEncodeForceTry() ?? "")
+            try DBController.global.setValueForKey(key: "LOGO_URL", value: logoUrl ?? "")
             try DBController.global.setValueForKey(key: "STATS_URL", value: statsUrl ?? "")
         } catch {
             data["show_error"] = true
@@ -1494,6 +1499,7 @@ class WebReqeustHandler {
         WebReqeustHandler.oauthDiscordClientSecret = oauthDiscordClientSecret
         WebReqeustHandler.oauthDiscordRedirectURL = oauthDiscordRedirectURL
         WebReqeustHandler.oauthDiscordClientID = oauthDiscordClientID
+        WebReqeustHandler.logoUrl = logoUrl
         WebReqeustHandler.statsUrl = statsUrl
 
         data["title"] = title
