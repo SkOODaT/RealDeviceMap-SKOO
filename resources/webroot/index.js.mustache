@@ -2584,7 +2584,7 @@ function getPokemonMarker(pokemon, ts) {
     });
 
 	const ivPercent = Math.round( (pokemon.atk_iv + pokemon.def_iv + pokemon.sta_iv) / 45 * 1000 ) / 10;
-    if (ivPercent >= 80) {
+    if (ivPercent >= 90) {
         marker.bounce();
     }
 
@@ -2717,9 +2717,9 @@ function getPokestopMarker(pokestop, ts) {
         marker._popup.setContent(getPokestopPopupContent(pokestop));
     });
 
-    if (pokestop.incident_expire_timestamp >= ts) {
-        marker.bounce();
-    }
+    //if (pokestop.incident_expire_timestamp >= ts) {
+    //    marker.bounce();
+    //}
 
 	if (pokestop.lure_expire_timestamp >= ts) {
         marker.bounce();
