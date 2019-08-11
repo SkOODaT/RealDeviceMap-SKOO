@@ -456,10 +456,54 @@ class ApiRequestHandler {
             let largeString = Localizer.global.get(value: "filter_large")
             let hugeString = Localizer.global.get(value: "filter_huge")
             
+            let generalString = Localizer.global.get(value: "filter_general")
             let raidLevelsString = Localizer.global.get(value: "filter_raid_levels")
             let pokemonString = Localizer.global.get(value: "filter_pokemon")
             
             var raidData = [[String: Any]]()
+
+            let raidTimers = Localizer.global.get(value: "filter_raid_timers")
+            
+            let filter = """
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <label class="btn btn-sm btn-off select-button-new" data-id="timers" data-type="raid-timers" data-info="hide">
+            <input type="radio" name="options" id="hide" autocomplete="off">\(hideString)
+            </label>
+            <label class="btn btn-sm btn-on select-button-new" data-id="timers" data-type="raid-timers" data-info="show">
+            <input type="radio" name="options" id="show" autocomplete="off">\(showString)
+            </label>
+            </div>
+            """
+            
+            let size = """
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <label class="btn btn-sm btn-size select-button-new" data-id="timers" data-type="raid-timers" data-info="small" disabled>
+            <input type="radio" name="options" id="hide" autocomplete="off">\(smallString)
+            </label>
+            <label class="btn btn-sm btn-size select-button-new" data-id="timers" data-type="raid-timers" data-info="normal" disabled>
+            <input type="radio" name="options" id="show" autocomplete="off">\(normalString)
+            </label>
+            <label class="btn btn-sm btn-size select-button-new" data-id="timers" data-type="raid-timers" data-info="large" disabled>
+            <input type="radio" name="options" id="show" autocomplete="off">\(largeString)
+            </label>
+            <label class="btn btn-sm btn-size select-button-new" data-id="timers" data-type="raid-timers" data-info="huge" disabled>
+            <input type="radio" name="options" id="show" autocomplete="off">\(hugeString)
+            </label>
+            </div>
+            """
+            
+            raidData.append([
+                "id": [
+                    "formatted": String(format: "%03d", 0),
+                    "sort": 0
+                ],
+                "name": raidTimers,
+                "image": "<img class=\"lazy_load\" data-src=\"/static/img/misc/timer.png\" style=\"height:50px; width:50px;\">",
+                "filter": filter,
+                "size": size,
+                "type": generalString
+                ])
+            
             //Level
             for i in 1...5 {
                 
