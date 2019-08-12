@@ -78,6 +78,7 @@ WebReqeustHandler.oauthDiscordRedirectURL = try! DBController.global.getValueFor
 WebReqeustHandler.oauthDiscordClientID = try! DBController.global.getValueForKey(key: "DISCORD_CLIENT_ID")?.emptyToNil()
 WebReqeustHandler.oauthDiscordClientSecret = try! DBController.global.getValueForKey(key: "DISCORD_CLIENT_SECRET")?.emptyToNil()
 WebReqeustHandler.logoUrl = try! DBController.global.getValueForKey(key: "LOGO_URL") ?? ""
+WebReqeustHandler.imgUrl = try! DBController.global.getValueForKey(key: "IMG_URL") ?? ""
 WebReqeustHandler.statsUrl = try! DBController.global.getValueForKey(key: "STATS_URL") ?? ""
 
 if let tileserversOld = try! DBController.global.getValueForKey(key: "TILESERVERS")?.jsonDecodeForceTry() as? [String: String]  {
