@@ -1752,29 +1752,6 @@ function updateMapTimers() {
     });
 }
 
-function getPokemonIconString(pokemonId, pokemonForm, pokemonCostume) {
-    let pokemonIdString;
-    if (pokemonForm !== 0 && pokemonForm !== null) {
-        const pokemonIdStringTmp = '' + pokemonId + '-' + pokemonForm;
-        if ($.inArray(pokemonIdStringTmp, avilableForms) !== -1) {
-            pokemonIdString = pokemonIdStringTmp;
-        } else {
-            pokemonIdString = '' + pokemonId;
-        }
-    } else if (pokemonCostume !== 0 && pokemonCostume !== null) {
-        const pokemonIdStringTmp = '' + pokemonId + '-' + pokemonCostume;
-        if ($.inArray(pokemonIdStringTmp, avilableCostumes) !== -1) {
-            pokemonIdString = pokemonIdStringTmp;
-        } else {
-            pokemonIdString = '' + pokemonId;
-        }
-    } else {
-        pokemonIdString = '' + pokemonId;
-    }
-	//console.log("pokemonIdString:", pokemonIdString);
-    return pokemonIdString;
-}
-
 function getPokemonNameString(pokemonId, pokemonForm, pokemonCostume) {
     let pokemonNameString;
     if (pokemonForm !== 0 && pokemonForm !== null) {
@@ -3744,7 +3721,7 @@ function getSize(size) {
     return "Big";
 }
 
-function getPokemonIconString(pokemonId, pokemonForm) {
+function getPokemonIconString(pokemonId, pokemonForm, pokemonCostume) {
     let pokemonIdString;
     if (pokemonForm !== 0 && pokemonForm !== null) {
         const pokemonIdStringTmp = '' + pokemonId + '-' + pokemonForm;
@@ -3753,9 +3730,17 @@ function getPokemonIconString(pokemonId, pokemonForm) {
         } else {
             pokemonIdString = '' + pokemonId;
         }
+    } else if (pokemonCostume !== 0 && pokemonCostume !== null) {
+        const pokemonIdStringTmp = '' + pokemonId + '-' + pokemonCostume;
+        if ($.inArray(pokemonIdStringTmp, avilableCostumes) !== -1) {
+            pokemonIdString = pokemonIdStringTmp;
+        } else {
+            pokemonIdString = '' + pokemonId;
+        }
     } else {
         pokemonIdString = '' + pokemonId;
     }
+	//console.log("pokemonIdString:", pokemonIdString);
     return pokemonIdString;
 }
 
