@@ -46,7 +46,7 @@ class WebHookRequestHandler {
                 response.respondWithError(status: .badRequest)
                 return
             }
-			if jsonOpt["payload"] != nil { jsonOpt["contents"] = [jsonOpt] }
+			  if jsonOpt["payload"] != nil { jsonOpt["contents"] = [jsonOpt] }
             json = jsonOpt
         } catch {
             response.respondWithError(status: .badRequest)
