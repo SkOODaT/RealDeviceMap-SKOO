@@ -150,6 +150,10 @@ class WebReqeustHandler {
             data["show_dashboard"] = true
         }
 
+        if perms.contains(.viewMapIV) {
+            data["show_iv"] = true
+        }
+
         if (!isSetup && page != .setup) {
             response.setBody(string: "Setup required.")
             response.redirect(path: "/setup")

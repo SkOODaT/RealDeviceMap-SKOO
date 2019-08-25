@@ -87,7 +87,7 @@ class WebRoutes {
                 WebReqeustHandler.handle(request: request, response: response, page: .dashboardInstanceEdit, requiredPerms: [.admin])
             }),
             Route(method: .get, uri: "/dashboard/instance/ivqueue/{instance_name}", handler: { (request, response) in
-                WebReqeustHandler.handle(request: request, response: response, page: .dashboardInstanceIVQueue, requiredPerms: [.admin])
+                WebReqeustHandler.handle(request: request, response: response, page: .dashboardInstanceIVQueue, requiredPerms: [.viewMapIV])
             }),
             Route(method: .get, uri: "/dashboard/accounts", handler: { (request, response) in
                 WebReqeustHandler.handle(request: request, response: response, page: .dashboardAccounts, requiredPerms: [.admin])
