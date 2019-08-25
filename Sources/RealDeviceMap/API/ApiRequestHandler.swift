@@ -1107,7 +1107,7 @@ class ApiRequestHandler {
             
         }
         
-        if showIVQueue && perms.contains(.admin), let instance = instance {
+        if showIVQueue && perms.contains(.viewMapIV), let instance = instance {
            
             let queue = InstanceController.global.getIVQueue(name: instance.decodeUrl() ?? "")
             
