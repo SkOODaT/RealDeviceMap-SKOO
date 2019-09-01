@@ -500,6 +500,9 @@ class WebReqeustHandler {
             data["logo_url"] = WebReqeustHandler.logoUrl
             data["img_url"] = WebReqeustHandler.imgUrl
             data["stats_url"] = WebReqeustHandler.statsUrl
+            data["deviceapi_host_whitelist"] = WebHookRequestHandler.hostWhitelist?.joined(separator: ";")
+            data["deviceapi_host_whitelist_uses_proxy"] = WebHookRequestHandler.hostWhitelistUsesProxy
+            data["deviceapi_secret"] = WebHookRequestHandler.loginSecret
 
             var tileserverString = ""
 
@@ -1385,7 +1388,10 @@ class WebReqeustHandler {
         let logoUrl = request.param(name: "logo_url")
         let imgUrl = request.param(name: "img_url")
         let statsUrl = request.param(name: "stats_url")
-
+        let deviceAPIhostWhitelist = request.param(name: "deviceapi_host_whitelist")?.emptyToNil()?.components(separatedBy: ";")
+        let deviceAPIhostWhitelistUsesProxy = request.param(name: "deviceapi_host_whitelist_uses_proxy") != nil
+        let deviceAPIloginSecret = request.param(name: "deviceapi_secret")?.emptyToNil()
+        
         var tileservers = [String: [String: String]]()
         for tileserverString in tileserversString.trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: "\n") {
             let split = tileserverString.components(separatedBy: ";")
@@ -1470,6 +1476,9 @@ class WebReqeustHandler {
             try DBController.global.setValueForKey(key: "LOGO_URL", value: logoUrl ?? "")
             try DBController.global.setValueForKey(key: "IMG_URL", value: imgUrl ?? "")
             try DBController.global.setValueForKey(key: "STATS_URL", value: statsUrl ?? "")
+            try DBController.global.setValueForKey(key: "DEVICEAPI_HOST_WHITELIST", value: deviceAPIhostWhitelist?.joined(separator: ";") ?? "")
+            try DBController.global.setValueForKey(key: "DEVICEAPI_HOST_WHITELIST_USES_PROXY", value: deviceAPIhostWhitelistUsesProxy.description)
+            try DBController.global.setValueForKey(key: "DEVICEAPI_SECRET", value: deviceAPIloginSecret ?? "")
         } catch {
             data["show_error"] = true
             return data
@@ -1511,7 +1520,10 @@ class WebReqeustHandler {
         WebReqeustHandler.logoUrl = logoUrl
         WebReqeustHandler.imgUrl = imgUrl
         WebReqeustHandler.statsUrl = statsUrl
-
+        WebHookRequestHandler.hostWhitelist = deviceAPIhostWhitelist
+        WebHookRequestHandler.hostWhitelistUsesProxy = deviceAPIhostWhitelistUsesProxy
+        WebHookRequestHandler.loginSecret = deviceAPIloginSecret
+        
         data["title"] = title
         data["show_success"] = true
 

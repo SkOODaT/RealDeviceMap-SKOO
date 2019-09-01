@@ -80,6 +80,9 @@ WebReqeustHandler.oauthDiscordClientSecret = try! DBController.global.getValueFo
 WebReqeustHandler.logoUrl = try! DBController.global.getValueForKey(key: "LOGO_URL") ?? ""
 WebReqeustHandler.imgUrl = try! DBController.global.getValueForKey(key: "IMG_URL") ?? ""
 WebReqeustHandler.statsUrl = try! DBController.global.getValueForKey(key: "STATS_URL") ?? ""
+WebHookRequestHandler.hostWhitelist = try! DBController.global.getValueForKey(key: "DEVICEAPI_HOST_WHITELIST")?.emptyToNil()?.components(separatedBy: ";")
+WebHookRequestHandler.hostWhitelistUsesProxy = try! DBController.global.getValueForKey(key: "DEVICEAPI_HOST_WHITELIST_USES_PROXY")?.toBool() ?? false
+WebHookRequestHandler.loginSecret = try! DBController.global.getValueForKey(key: "DEVICEAPI_SECRET")?.emptyToNil()
 
 if let tileserversOld = try! DBController.global.getValueForKey(key: "TILESERVERS")?.jsonDecodeForceTry() as? [String: String]  {
     var tileservers = [String: [String: String]]()
