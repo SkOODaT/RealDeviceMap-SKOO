@@ -488,6 +488,7 @@ class WebReqeustHandler {
             data["deviceapi_host_whitelist"] = WebHookRequestHandler.hostWhitelist?.joined(separator: ";")
             data["deviceapi_host_whitelist_uses_proxy"] = WebHookRequestHandler.hostWhitelistUsesProxy
             data["deviceapi_secret"] = WebHookRequestHandler.loginSecret
+            data["ditto_disguises"] = WebHookRequestHandler.dittoDisguises
 
             var tileserverString = ""
             
@@ -1340,7 +1341,6 @@ class WebReqeustHandler {
             let exRaidBossId = request.param(name: "ex_raid_boss_id")?.toUInt16(),
             let exRaidBossForm = request.param(name: "ex_raid_boss_form")?.toUInt16(),
             let pokestopLureTime = request.param(name: "pokestop_lure_time")?.toUInt32(),
-            let dittoDisguises = request.param(name: "ditto_disguises")?.emptyToNil()?.components(separatedBy: ","),
             let cities = request.param(name: "cities")?.replacingOccurrences(of: "<br>", with: "").replacingOccurrences(of: "\r\n", with: "\n", options: .regularExpression)
             else {
             data["show_error"] = true
@@ -1374,6 +1374,9 @@ class WebReqeustHandler {
         let deviceAPIhostWhitelist = request.param(name: "deviceapi_host_whitelist")?.emptyToNil()?.components(separatedBy: ";")
         let deviceAPIhostWhitelistUsesProxy = request.param(name: "deviceapi_host_whitelist_uses_proxy") != nil
         let deviceAPIloginSecret = request.param(name: "deviceapi_secret")?.emptyToNil()
+        let dittoDisguises = request.param(name: "ditto_disguises")?.components(separatedBy: ",").map({ (s) -> UInt16 in
+            return s.toUInt16() ?? 0
+        }) ?? [UInt16]()
         
         var tileservers = [String: [String: String]]()
         for tileserverString in tileserversString.trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: "\n") {
@@ -1505,7 +1508,7 @@ class WebReqeustHandler {
         WebHookRequestHandler.hostWhitelist = deviceAPIhostWhitelist
         WebHookRequestHandler.hostWhitelistUsesProxy = deviceAPIhostWhitelistUsesProxy
         WebHookRequestHandler.loginSecret = deviceAPIloginSecret
-        WebHookRequestHandler.dittoDisguises = dittoDisguises //TODO: Convert to int array?
+        WebHookRequestHandler.dittoDisguises = dittoDisguises
         
         data["title"] = title
         data["show_success"] = true

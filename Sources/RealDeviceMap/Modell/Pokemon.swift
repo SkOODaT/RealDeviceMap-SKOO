@@ -738,7 +738,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
     }
     
     private func isDittoDisguised(pokemon: Pokemon) -> Bool {
-        let isDisguised =  WebHookRequestHandler.dittoDisguises?.contains(String(pokemon.pokemonId)) ?? false
+        let isDisguised =  WebHookRequestHandler.dittoDisguises?.contains(pokemon.pokemonId) ?? false
         let level = pokemon.level ?? 0
         let underLevel6 = level > UInt8(0) && level < UInt8(6)
         let isWeatherBoosted = pokemon.weather ?? 0 > UInt8(0)

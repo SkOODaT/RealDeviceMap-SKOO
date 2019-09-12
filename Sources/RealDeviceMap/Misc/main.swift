@@ -81,6 +81,9 @@ WebReqeustHandler.statsUrl = try! DBController.global.getValueForKey(key: "STATS
 WebHookRequestHandler.hostWhitelist = try! DBController.global.getValueForKey(key: "DEVICEAPI_HOST_WHITELIST")?.emptyToNil()?.components(separatedBy: ";")
 WebHookRequestHandler.hostWhitelistUsesProxy = try! DBController.global.getValueForKey(key: "DEVICEAPI_HOST_WHITELIST_USES_PROXY")?.toBool() ?? false
 WebHookRequestHandler.loginSecret = try! DBController.global.getValueForKey(key: "DEVICEAPI_SECRET")?.emptyToNil()
+WebHookRequestHandler.dittoDisguises = try! DBController.global.getValueForKey(key: "DITTO_DISGUISES")?.components(separatedBy: ",").map({ (s) -> UInt16 in
+    return s.toUInt16() ?? 0
+}) ?? [UInt16]()
 
 if let tileserversOld = try! DBController.global.getValueForKey(key: "TILESERVERS")?.jsonDecodeForceTry() as? [String: String]  {
     var tileservers = [String: [String: String]]()
