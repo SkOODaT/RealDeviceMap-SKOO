@@ -488,7 +488,7 @@ class WebReqeustHandler {
             data["deviceapi_host_whitelist"] = WebHookRequestHandler.hostWhitelist?.joined(separator: ";")
             data["deviceapi_host_whitelist_uses_proxy"] = WebHookRequestHandler.hostWhitelistUsesProxy
             data["deviceapi_secret"] = WebHookRequestHandler.loginSecret
-            data["ditto_disguises"] = WebHookRequestHandler.dittoDisguises
+            data["ditto_disguises"] = WebHookRequestHandler.dittoDisguises?.map({ $0.description }).joined(separator: ",")
 
             var tileserverString = ""
             
