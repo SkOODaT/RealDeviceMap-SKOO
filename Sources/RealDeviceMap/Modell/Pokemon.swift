@@ -46,7 +46,8 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             "weather": weather as Any,
             "pokestop_id": pokestopId as Any,
             "costume": costume as Any,
-            "updated": updated ?? 1
+            "updated": updated ?? 1,
+            "is_ditto": isDitto as Any
         ]
     }
     
@@ -74,7 +75,8 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             "move_2": move2 as Any,
             "weight": weight as Any,
             "height": size as Any,
-            "weather": weather as Any
+            "weather": weather as Any,
+            "is_ditto": isDitto as Any
         ]
         return [
             "type": "pokemon",
@@ -111,6 +113,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
     var changed: UInt32?
     var cellId: UInt64?
     var expireTimestampVerified: Bool
+    var isDitto: Bool?
     
     init(id: String, pokemonId: UInt16, lat: Double, lon: Double, spawnId: UInt64?, expireTimestamp: UInt32?, atkIv: UInt8?, defIv: UInt8?, staIv: UInt8?, move1: UInt16?, move2: UInt16?, gender: UInt8?, form: UInt16?, cp: UInt16?, level: UInt8?, weight: Double?, costume: UInt8?, size: Double?, weather: UInt8?, pokestopId: String?, firstSeenTimestamp: UInt32?, updated: UInt32?, changed: UInt32?, cellId: UInt64?, expireTimestampVerified: Bool) {
         self.id = id
@@ -308,6 +311,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                         depsawnOffset = Int(despawnSecond) - secondOfHour
                     }
                     
+                    //TODO: Remove -> self.isDitto = isDitto(pokemonId, level, self.weather)
                     self.expireTimestamp = UInt32(Int(date.timeIntervalSince1970) + depsawnOffset)
                     self.expireTimestampVerified = true
                 }
@@ -414,6 +418,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                 self.move1 = oldPokemon!.move1
                 self.move2 = oldPokemon!.move2
                 self.level = oldPokemon!.level
+                self.isDitto = isDittoDisguised(pokemon: oldPokemon!)
             }
             
             let ivSQL: String
@@ -730,6 +735,14 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
     
     static func == (lhs: Pokemon, rhs: Pokemon) -> Bool {
         return lhs.id == rhs.id
+    }
+    
+    private func isDittoDisguised(pokemon: Pokemon) -> Bool {
+        let isDisguised =  WebHookRequestHandler.dittoDisguises?.contains(String(pokemon.pokemonId)) ?? false
+        let level = pokemon.level ?? 0
+        let underLevel6 = level > UInt8(0) && level < UInt8(6)
+        let isWeatherBoosted = pokemon.weather ?? 0 > UInt8(0)
+        return isDisguised && underLevel6 && isWeatherBoosted
     }
     
     private static func sqlifyIvFilter(filter: String) -> String? {

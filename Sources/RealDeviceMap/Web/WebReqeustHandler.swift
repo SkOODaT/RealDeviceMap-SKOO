@@ -1340,6 +1340,7 @@ class WebReqeustHandler {
             let exRaidBossId = request.param(name: "ex_raid_boss_id")?.toUInt16(),
             let exRaidBossForm = request.param(name: "ex_raid_boss_form")?.toUInt16(),
             let pokestopLureTime = request.param(name: "pokestop_lure_time")?.toUInt32(),
+            let dittoDisguises = request.param(name: "ditto_disguises")?.emptyToNil()?.components(separatedBy: ","),
             let cities = request.param(name: "cities")?.replacingOccurrences(of: "<br>", with: "").replacingOccurrences(of: "\r\n", with: "\n", options: .regularExpression)
             else {
             data["show_error"] = true
@@ -1459,6 +1460,9 @@ class WebReqeustHandler {
             try DBController.global.setValueForKey(key: "DEVICEAPI_HOST_WHITELIST", value: deviceAPIhostWhitelist?.joined(separator: ";") ?? "")
             try DBController.global.setValueForKey(key: "DEVICEAPI_HOST_WHITELIST_USES_PROXY", value: deviceAPIhostWhitelistUsesProxy.description)
             try DBController.global.setValueForKey(key: "DEVICEAPI_SECRET", value: deviceAPIloginSecret ?? "")
+            try DBController.global.setValueForKey(key: "DITTO_DISGUISES", value: dittoDisguises.map({ (i) -> String in
+                return i.description
+            }).joined(separator: ","))
         } catch {
             data["show_error"] = true
             return data
@@ -1501,6 +1505,7 @@ class WebReqeustHandler {
         WebHookRequestHandler.hostWhitelist = deviceAPIhostWhitelist
         WebHookRequestHandler.hostWhitelistUsesProxy = deviceAPIhostWhitelistUsesProxy
         WebHookRequestHandler.loginSecret = deviceAPIloginSecret
+        WebHookRequestHandler.dittoDisguises = dittoDisguises //TODO: Convert to int array?
         
         data["title"] = title
         data["show_success"] = true
