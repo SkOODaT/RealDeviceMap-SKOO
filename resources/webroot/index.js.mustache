@@ -1681,7 +1681,7 @@ function getPokemonPopupContent(pokemon) {
         pokemonName = getPokemonName(pokemon.pokemon_id);
     }
     if (pokemon.is_ditto) {
-        pokemonName += " " + getPokemonNameNoId(132);
+        pokemonName += " (" + getPokemonNameNoId(132) + ")";
     }
 
     let pokemonId = pokemon.is_ditto ? 132 : pokemon.pokemon_id;
