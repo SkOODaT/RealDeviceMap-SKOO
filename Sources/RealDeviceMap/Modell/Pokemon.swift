@@ -80,7 +80,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             "weather": weather ?? 0,
             "shiny": shiny ?? 0,
             "username": username ?? 0,
-            "is_ditto": isDitto as Any
+            "is_ditto": isDitto ?? 0
         ]
         return [
             "type": "pokemon",
@@ -121,7 +121,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
     var expireTimestampVerified: Bool
     var isDitto: Bool?
 
-    init(id: String, pokemonId: UInt16, lat: Double, lon: Double, spawnId: UInt64?, expireTimestamp: UInt32?, atkIv: UInt8?, defIv: UInt8?, staIv: UInt8?, move1: UInt16?, move2: UInt16?, gender: UInt8?, form: UInt16?, cp: UInt16?, level: UInt8?, weight: Double?, costume: UInt8?, size: Double?, weather: UInt8?, shiny: Bool?, username: String?, pokestopId: String?, firstSeenTimestamp: UInt32?, updated: UInt32?, changed: UInt32?, cellId: UInt64?, expireTimestampVerified: Bool) {
+    init(id: String, pokemonId: UInt16, lat: Double, lon: Double, spawnId: UInt64?, expireTimestamp: UInt32?, atkIv: UInt8?, defIv: UInt8?, staIv: UInt8?, move1: UInt16?, move2: UInt16?, gender: UInt8?, form: UInt16?, cp: UInt16?, level: UInt8?, weight: Double?, costume: UInt8?, size: Double?, isDitto: Bool?, weather: UInt8?, shiny: Bool?, username: String?, pokestopId: String?, firstSeenTimestamp: UInt32?, updated: UInt32?, changed: UInt32?, cellId: UInt64?, expireTimestampVerified: Bool) {
 
         self.id = id
         self.pokemonId = pokemonId
@@ -376,7 +376,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
 
             let sql = """
                 INSERT INTO pokemon (id, pokemon_id, lat, lon, spawn_id, expire_timestamp, atk_iv, def_iv, sta_iv, move_1, move_2, cp, level, weight, size, is_ditto, shiny, username, gender, form, weather, costume, pokestop_id, updated, first_seen_timestamp, changed, cell_id, expire_timestamp_verified)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), ?, ?)
             """
             _ = mysqlStmt.prepare(statement: sql)
             mysqlStmt.bindParam(id)
@@ -698,14 +698,14 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             let form = result[12] as? UInt16
             let weather = result[15] as? UInt8
             let costume = result[16] as? UInt8
-            let pokestopId = result[19] as? String
-            let updated = result[20] as! UInt32
-            let firstSeenTimestamp = result[21] as! UInt32
-            let changed = result[22] as! UInt32
-            let cellId = result[23] as? UInt64
-            let expireTimestampVerified = (result[24] as? UInt8)!.toBool()
-            let shiny = (result[25] as? UInt8)?.toBool()
-            let username = result[26] as? String
+            let pokestopId = result[20] as? String
+            let updated = result[21] as! UInt32
+            let firstSeenTimestamp = result[22] as! UInt32
+            let changed = result[23] as! UInt32
+            let cellId = result[24] as? UInt64
+            let expireTimestampVerified = (result[25] as? UInt8)!.toBool()
+            let shiny = (result[26] as? UInt8)?.toBool()
+            let username = result[27] as? String
 
             pokemons.append(Pokemon(id: id, pokemonId: pokemonId, lat: lat, lon: lon, spawnId: spawnId, expireTimestamp: expireTimestamp, atkIv: atkIv, defIv: defIv, staIv: staIv, move1: move1, move2: move2, gender: gender, form: form, cp: cp, level: level, weight: weight, costume: costume, size: size, isDitto: isDitto, weather: weather, shiny: shiny, username: username, pokestopId: pokestopId, firstSeenTimestamp: firstSeenTimestamp, updated: updated, changed: changed, cellId: cellId, expireTimestampVerified: expireTimestampVerified))
 
@@ -762,14 +762,14 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
         let weight = result[17] as? Double
         let size = result[18] as? Double
         let isDitto = (result[19] as? UInt8)!.toBool()
-        let pokestopId = result[19] as? String
-        let updated = result[20] as! UInt32
-        let firstSeenTimestamp = result[21] as! UInt32
-        let changed = result[22] as! UInt32
-        let cellId = result[23] as? UInt64
-        let expireTimestampVerified = (result[24] as? UInt8)!.toBool()
-        let shiny = (result[25] as? UInt8)?.toBool()
-        let username = result[26] as? String
+        let pokestopId = result[20] as? String
+        let updated = result[21] as! UInt32
+        let firstSeenTimestamp = result[22] as! UInt32
+        let changed = result[23] as! UInt32
+        let cellId = result[24] as? UInt64
+        let expireTimestampVerified = (result[25] as? UInt8)!.toBool()
+        let shiny = (result[26] as? UInt8)?.toBool()
+        let username = result[27] as? String
 
         return Pokemon(id: id, pokemonId: pokemonId, lat: lat, lon: lon, spawnId: spawnId, expireTimestamp: expireTimestamp, atkIv: atkIv, defIv: defIv, staIv: staIv, move1: move1, move2: move2, gender: gender, form: form, cp: cp, level: level, weight: weight, costume: costume, size: size, isDitto: isDitto, weather: weather, shiny: shiny, username: username, pokestopId: pokestopId, firstSeenTimestamp: firstSeenTimestamp, updated: updated, changed: changed, cellId: cellId, expireTimestampVerified: expireTimestampVerified)
 
