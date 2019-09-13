@@ -1680,8 +1680,12 @@ function getPokemonPopupContent(pokemon) {
     } else {
         pokemonName = getPokemonName(pokemon.pokemon_id);
     }
+    if (pokemon.is_ditto) {
+        pokemonName += " " + getPokemonNameNoId(132);
+    }
 
-    let pokemonIcon = getPokemonIconString(pokemon.pokemon_id, pokemon.form);
+    let pokemonId = pokemon.is_ditto ? 132 : pokemon.pokemon_id;
+    let pokemonIcon = getPokemonIconString(pokemonId, pokemon.form);
 
     content += 
     '<div class="row">' + //START 1ST ROW
@@ -1690,7 +1694,7 @@ function getPokemonPopupContent(pokemon) {
         '</div>' +
         '<div class="col-6 col-md-4 center-vertical">' + 
             '<div style="float:right; margin-right:5px;">';
-        if (pokemon.weather !== 0 && pokemon.weather !== null) {
+        if (!pokemon.is_ditto && pokemon.weather !== 0 && pokemon.weather !== null) {
             content += '<img src="/static/img/weather/' + pokemon.weather + '.png" height="32" width="32">';
         }
         content += 
@@ -2330,8 +2334,10 @@ function getCellStyle(cell, ts) {
 
 function getPokemonMarkerIcon(pokemon, ts) {
 	const size = getPokemonSize(pokemon.pokemon_id);
+    var pokemonId = pokemon.is_ditto ? 132 /*Ditto*/ : pokemon.pokemon_id
+    //pokemon.pokemon_id = pokemonId;
 
-    let pokemonIdString = getPokemonIconString(pokemon.pokemon_id, pokemon.form);
+    let pokemonIdString = getPokemonIconString(pokemonId, pokemon.form);
     const icon = L.icon({
         iconUrl: 		'/static/img/pokemon/' + pokemonIdString + '.png',
         iconSize:    	[size, size],
@@ -2347,6 +2353,7 @@ function getPokemonMarker(pokemon, ts) {
         forceZIndex: 40 + getPokemonIndex(pokemon.pokemon_id),
         virtual: true
     });
+    if (pokemon.is_ditto !== false) { console.log("pokemon:", pokemon); }
     marker.bindPopup('');
     marker.on('popupopen', function (popup) {
         openedPokemon = pokemon;
