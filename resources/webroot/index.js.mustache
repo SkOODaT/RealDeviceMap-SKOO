@@ -1785,8 +1785,6 @@ function getPokemonPopupContent(pokemon) {
 
     let content = '';
 
-
-
     let weatherIcon;
 	if (pokemon.weather !== 0 && pokemon.weather !== null) {
 		weatherIcon = '<img src="' + imageURL + 'weather/' + pokemon.weather + '.png" height="25" width="25">';
@@ -2596,6 +2594,8 @@ function getCellStyle(cell, ts) {
 
 function getPokemonMarkerIcon(pokemon, ts) {
 	const size = getPokemonSize(pokemon.pokemon_id);
+    var pokemonId = pokemon.is_ditto ? 132 /*Ditto*/ : pokemon.pokemon_id
+    //pokemon.pokemon_id = pokemonId;
 
     let pokemonIdString = getPokemonIconString(pokemon.pokemon_id, pokemon.form, pokemon.costume);
     let IconClass;
@@ -2629,6 +2629,8 @@ function getPokemonMarker(pokemon, ts) {
 			bounceHeight : 30,   // height of the bouncing
 			bounceSpeed  : 54,   // bouncing speed coefficient
 	});
+
+    if (pokemon.is_ditto !== false) { console.log("pokemon:", pokemon); }
 
     marker.bindPopup('');
     marker.on('popupopen', function (popup) {
