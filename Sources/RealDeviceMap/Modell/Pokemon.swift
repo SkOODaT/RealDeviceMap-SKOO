@@ -119,7 +119,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
     var changed: UInt32?
     var cellId: UInt64?
     var expireTimestampVerified: Bool
-    var isDitto: Bool?
+    var isDitto: Bool = false
 
     init(id: String, pokemonId: UInt16, lat: Double, lon: Double, spawnId: UInt64?, expireTimestamp: UInt32?, atkIv: UInt8?, defIv: UInt8?, staIv: UInt8?, move1: UInt16?, move2: UInt16?, gender: UInt8?, form: UInt16?, cp: UInt16?, level: UInt8?, weight: Double?, costume: UInt8?, size: Double?, isDitto: Bool?, weather: UInt8?, shiny: Bool?, username: String?, pokestopId: String?, firstSeenTimestamp: UInt32?, updated: UInt32?, changed: UInt32?, cellId: UInt64?, expireTimestampVerified: Bool) {
 
@@ -330,8 +330,6 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                     } else {
                         depsawnOffset = Int(despawnSecond) - secondOfHour
                     }
-                    
-                    //TODO: Remove -> self.isDitto = isDitto(pokemonId, level, self.weather)
 
                     self.expireTimestamp = UInt32(Int(date.timeIntervalSince1970) + depsawnOffset)
                     self.expireTimestampVerified = true
