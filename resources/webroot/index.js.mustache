@@ -47,6 +47,7 @@ let showSpawnpoints;
 let showCells;
 let showDevices;
 let showRaidTimers;
+let showRocketTimers;
 
 let avilableForms = [];
 let avilableCostumes = [];
@@ -518,6 +519,9 @@ function loadStorage() {
     const pokestopFilterValue = retrieve('pokestop_filter');
     if (pokestopFilterValue === null) {
         const defaultPokestopFilter = {};
+        if (defaultPokestopFilter["timers"] === undefined) {
+            defaultPokestopFilter["timers"] = {"show": true, "size": "normal"};
+        }
         if (defaultPokestopFilter["normal"] === undefined) {
             defaultPokestopFilter["normal"] = {"show": true, "size": "normal"};
         }
@@ -534,6 +538,12 @@ function loadStorage() {
         pokestopFilter = defaultPokestopFilter;
     } else {
         pokestopFilter = JSON.parse(pokestopFilterValue);
+        if (pokestopFilter["timers"] === undefined) {
+            pokestopFilter["timers"] = {"show": true, "size": "normal"};
+            showRocketTimers = true;
+        } else {
+            showRocketTimers = pokestopFilter["timers"]["show"];
+        }
         if (pokestopFilter["normal"] === undefined) {
             pokestopFilter["normal"] = {"show": true, "size": "normal"};
         }
@@ -741,6 +751,7 @@ function initMap() {
 
     $('#reset-pokestop-filter').on('click', function(event) {
         const defaultPokestopFilter = {};
+        defaultPokestopFilter["timers"] = {"show": true, "size": "normal"};
         defaultPokestopFilter["normal"] = {"show": true, "size": "normal"};
         for (var i = 1; i < 5; i++) {
             defaultPokestopFilter["l" + i] = {"show": true, "size": "normal"};
@@ -755,6 +766,7 @@ function initMap() {
 
     $('#disable-all-pokestop-filter').on('click', function(event) {
         const defaultPokestopFilter = {};
+        defaultPokestopFilter["timers"] = {"show": false, "size": raidFilterNew["timers"]["size"]};
         defaultPokestopFilter["normal"] = {"show": false, "size": pokestopFilterNew["normal"]["size"]};
         for (var i = 1; i < 5; i++) {
             defaultPokestopFilter["l" + i] = {"show": false, "size": pokestopFilterNew["l" + i]["size"]};
@@ -916,6 +928,11 @@ function initMap() {
 
         gymFilter = gymFilterNew;
         pokestopFilter = pokestopFilterNew;
+        let newShowRocketTimers = pokestopFilter["timers"]["show"];
+        if (newShowRocketTimers !== showRocketTimers) {
+            showRocketTimers = newShowRocketTimers;
+        }
+
         raidFilter = raidFilterNew;
         spawnpointFilter = spawnpointFilterNew;
         //const raidFilterOld = $.extend(true, {}, raidFilter);
@@ -1151,6 +1168,10 @@ function loadData() {
 
     const pokestopFilterExclude = [];
     if (showPokestops) {
+        //REVIEW: Probably not needed
+        if (pokestopFilter["timers"]["show"] === false) {
+            pokestopFilterExclude.push("timers");
+        }
         if (pokestopFilter["normal"]["show"] === false) {
             pokestopFilterExclude.push("normal");
         }
@@ -1304,6 +1325,7 @@ function loadData() {
                         }
                         if (pokestop.incident_expire_timestamp >= ts) {
                             pokestop.willUpdate = true;
+                            setPokestopMarker(pokestop);
                             startPokestopTimer(pokestop, pokestop.incident_expire_timestamp, ts);
                         } else {
                             pokestop.willUpdate = false
@@ -1339,6 +1361,7 @@ function loadData() {
                         }
                         if (oldPokestop.willUpdate === false && oldPokestop.incident_expire_timestamp >= ts) {
                             oldPokestop.willUpdate = true;
+                            setPokestopMarker(pokestop);
                             startPokestopTimer(oldPokestop, oldPokestop.incident_expire_timestamp, ts);
                         }
 					}
@@ -1749,6 +1772,9 @@ function updateMapTimers() {
         } else {
             marker.marker.unbindTooltip();
         }
+    });
+    $.each(pokestopMarkers, function(index, marker) {
+        setPokestopMarker(marker);
     });
 }
 
@@ -2971,6 +2997,38 @@ function setDespawnTimer(gym) {
     }
 }
 
+function setPokestopMarker(pokestop) {
+    var date = new Date();
+    var ts = date.getTime() / 1000;
+    var rocketTimestamp = 0;
+    if (pokestop.incident_expire_timestamp >= ts && showPokestops) {
+        //Rocket Stop
+        rocketTimestamp = pokestop.incident_expire_timestamp;
+    } else {
+        pokestop.marker.unbindTooltip();
+        pokestop.marker.timerSet = false;
+    }
+
+
+    if (rocketTimestamp > 0) {
+        var timer = getTimeUntill(new Date(rocketTimestamp * 1000));
+        var type = "<img src='/static/img/grunttype/"+pokestop.grunt_type+".png' height='25' width='25'>"
+        if (pokestop.marker.timerSet) {
+			var text = "";
+			if (pokestopFilter["invasion"]["show"] === true) {
+				text += "<div class='type-tip'><span class='p-1'>" + type + "</span></div>";
+			}
+			if (showRocketTimers) {
+                text += "<div class='rounded pokestop-timer'><span class='p-1'>" + timer + "</span></div>";
+			}
+            pokestop.marker.setTooltipContent(text);
+        } else {
+			var options = {permanent: true, className: "leaflet-tooltip", direction: "center", offset: [-15, 25]};
+            /*var tooltip =*/ pokestop.marker.bindTooltip(text, options);
+            pokestop.marker.timerSet = true;
+        }
+    }
+}
 // MARK: - Misc
 
 function manageSelectButton(e, isNew) {
@@ -3195,6 +3253,27 @@ function manageSelectButton(e, isNew) {
                 break;
             case "huge":
                 shouldShow = gymFilterNew["s" + id]["size"] === "huge";
+                break;
+        }
+    } else if (type === "rocket-timers") {
+        switch (info) {
+            case "hide":
+                shouldShow = pokestopFilterNew[id]["show"] === false;
+                break;
+            case "show":
+                shouldShow = pokestopFilterNew[id]["show"] === true;
+                break;
+            case "small":
+                shouldShow = pokestopFilterNew[id]["size"] === "small";
+                break;
+            case "normal":
+                shouldShow = pokestopFilterNew[id]["size"] === "normal";
+                break;
+            case "large":
+                shouldShow = pokestopFilterNew[id]["size"] === "large";
+                break;
+            case "huge":
+                shouldShow = pokestopFilterNew[id]["size"] === "huge";
                 break;
         }
     } else if (type === "pokestop-normal") {
@@ -3513,6 +3592,27 @@ function manageSelectButton(e, isNew) {
                         break;
                     case "huge":
                         gymFilterNew["s" + id]["size"] = "huge";
+                        break;
+                }
+            } else if (type === "rocket-timers") {
+                switch (info) {
+                    case "hide":
+                        pokestopFilterNew[id]["show"] = false;
+                        break;
+                    case "show":
+                        pokestopFilterNew[id]["show"] = true;
+                        break;
+                    case "small":
+                        pokestopFilterNew[id]["size"] = "small";
+                        break;
+                    case "normal":
+                        pokestopFilterNew[id]["size"] = "normal";
+                        break;
+                    case "large":
+                        pokestopFilterNew[id]["size"] = "large";
+                        break;
+                    case "huge":
+                        pokestopFilterNew[id]["size"] = "huge";
                         break;
                 }
             } else if (type === "pokestop-normal") {

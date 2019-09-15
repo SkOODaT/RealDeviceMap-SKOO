@@ -750,6 +750,8 @@ class ApiRequestHandler {
         if permViewMap && showPokestopFilter {
             let hideString = Localizer.global.get(value: "filter_hide")
             let showString = Localizer.global.get(value: "filter_show")
+
+            let generalString = Localizer.global.get(value: "filter_general") 
             
             let smallString = Localizer.global.get(value: "filter_small")
             let normalString = Localizer.global.get(value: "filter_normal")
@@ -760,6 +762,48 @@ class ApiRequestHandler {
             
             var pokestopData = [[String: Any]]()
             
+			let rocketTimers = Localizer.global.get(value: "filter_rocket_timers")
+            
+            let rfilter = """
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <label class="btn btn-sm btn-off select-button-new" data-id="timers" data-type="rocket-timers" data-info="hide">
+            <input type="radio" name="options" id="hide" autocomplete="off">\(hideString)
+            </label>
+            <label class="btn btn-sm btn-on select-button-new" data-id="timers" data-type="rocket-timers" data-info="show">
+            <input type="radio" name="options" id="show" autocomplete="off">\(showString)
+            </label>
+            </div>
+            """
+            
+            let rsize = """
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <label class="btn btn-sm btn-size select-button-new" data-id="timers" data-type="rocket-timers" data-info="small" disabled>
+            <input type="radio" name="options" id="hide" autocomplete="off">\(smallString)
+            </label>
+            <label class="btn btn-sm btn-size select-button-new" data-id="timers" data-type="rocket-timers" data-info="normal" disabled>
+            <input type="radio" name="options" id="show" autocomplete="off">\(normalString)
+            </label>
+            <label class="btn btn-sm btn-size select-button-new" data-id="timers" data-type="rocket-timers" data-info="large" disabled>
+            <input type="radio" name="options" id="show" autocomplete="off">\(largeString)
+            </label>
+            <label class="btn btn-sm btn-size select-button-new" data-id="timers" data-type="rocket-timers" data-info="huge" disabled>
+            <input type="radio" name="options" id="show" autocomplete="off">\(hugeString)
+            </label>
+            </div>
+            """
+            
+            pokestopData.append([
+                "id": [
+                    "formatted": String(format: "%03d", 0),
+                    "sort": 0
+                ],
+                "name": rocketTimers,
+                "image": "<img class=\"lazy_load\" data-src=\"/static/img/misc/timer.png\" style=\"height:50px; width:50px;\">",
+                "filter": rfilter,
+                "size": rsize,
+                "type": generalString
+                ])
+			
             let pokestopNormal = Localizer.global.get(value: "filter_pokestop_normal")
             let pokestopInvasion = Localizer.global.get(value: "filter_pokestop_invasion")
             
