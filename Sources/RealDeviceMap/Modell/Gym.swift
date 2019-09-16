@@ -136,7 +136,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
     var raidPokemonMove1: UInt16?
     var raidPokemonMove2: UInt16?
     var raidPokemonForm: UInt16?
-    var raidPokemonCp: UInt16?
+    var raidPokemonCp: UInt32?
     var availbleSlots: UInt16?
     var updated: UInt32?
     var exRaidEligible: Bool?
@@ -145,7 +145,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
     var cellId: UInt64?
     var totalCp: UInt32?
     
-    init(id: String, lat: Double, lon: Double, name: String?, url: String?, guardPokemonId: UInt16?, enabled: Bool?, lastModifiedTimestamp: UInt32?, teamId: UInt8?, raidEndTimestamp: UInt32?, raidSpawnTimestamp: UInt32?, raidBattleTimestamp: UInt32?, raidPokemonId: UInt16?, raidLevel: UInt8?, availbleSlots:UInt16?, updated:UInt32?, exRaidEligible: Bool?, inBattle: Bool?, raidPokemonMove1: UInt16?, raidPokemonMove2: UInt16?, raidPokemonForm: UInt16?, raidPokemonCp: UInt16?, raidIsExclusive: Bool?, cellId: UInt64?, totalCp: UInt32?) {
+    init(id: String, lat: Double, lon: Double, name: String?, url: String?, guardPokemonId: UInt16?, enabled: Bool?, lastModifiedTimestamp: UInt32?, teamId: UInt8?, raidEndTimestamp: UInt32?, raidSpawnTimestamp: UInt32?, raidBattleTimestamp: UInt32?, raidPokemonId: UInt16?, raidLevel: UInt8?, availbleSlots:UInt16?, updated:UInt32?, exRaidEligible: Bool?, inBattle: Bool?, raidPokemonMove1: UInt16?, raidPokemonMove2: UInt16?, raidPokemonForm: UInt16?, raidPokemonCp: UInt32?, raidIsExclusive: Bool?, cellId: UInt64?, totalCp: UInt32?) {
         self.id = id
         self.lat = lat
         self.lon = lon
@@ -203,7 +203,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
             self.raidPokemonMove1 = UInt16(fortData.raidInfo.raidPokemon.move1.rawValue)
             self.raidPokemonMove2 = UInt16(fortData.raidInfo.raidPokemon.move2.rawValue)
             self.raidPokemonForm = UInt16(fortData.raidInfo.raidPokemon.pokemonDisplay.form.rawValue)
-            self.raidPokemonCp = UInt16(fortData.raidInfo.raidPokemon.cp)
+            self.raidPokemonCp = UInt32(fortData.raidInfo.raidPokemon.cp)
             self.raidIsExclusive = fortData.raidInfo.isExclusive
         }
         
@@ -528,7 +528,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
             let raidPokemonMove1 = result[18] as? UInt16
             let raidPokemonMove2 = result[19] as? UInt16
             let raidPokemonForm = result[20] as? UInt16
-            let raidPokemonCp = result[21] as? UInt16
+            let raidPokemonCp = result[21] as? UInt32
             let raidIsExclusive = (result[22] as? UInt8)?.toBool()
             let cellId = result[23] as? UInt64
             let totalCp = result[24] as? UInt32
@@ -593,7 +593,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
         let raidPokemonMove1 = result[18] as? UInt16
         let raidPokemonMove2 = result[19] as? UInt16
         let raidPokemonForm = result[20] as? UInt16
-        let raidPokemonCp = result[21] as? UInt16
+        let raidPokemonCp = result[21] as? UInt32
         let raidIsExclusive = (result[22] as? UInt8)?.toBool()
         let cellId = result[23] as? UInt64
         let totalCp = result[24] as? UInt32
@@ -672,7 +672,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
             let raidPokemonMove1 = result[18] as? UInt16
             let raidPokemonMove2 = result[19] as? UInt16
             let raidPokemonForm = result[20] as? UInt16
-            let raidPokemonCp = result[21] as? UInt16
+            let raidPokemonCp = result[21] as? UInt32
             let raidIsExclusive = (result[22] as? UInt8)?.toBool()
             let cellId = result[23] as? UInt64
             let totalCp = result[24] as? UInt32
@@ -753,7 +753,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
             let raidPokemonMove1 = result[18] as? UInt16
             let raidPokemonMove2 = result[19] as? UInt16
             let raidPokemonForm = result[20] as? UInt16
-            let raidPokemonCp = result[21] as? UInt16
+            let raidPokemonCp = result[21] as? UInt32
             let raidIsExclusive = (result[22] as? UInt8)?.toBool()
             let cellId = result[23] as? UInt64
             let totalCp = result[24] as? UInt32
