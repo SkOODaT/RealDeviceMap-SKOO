@@ -80,7 +80,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             "weather": weather ?? 0,
             "shiny": shiny ?? 0,
             "username": username ?? 0,
-            "is_ditto": isDitto ?? 0
+            "is_ditto": isDitto as Any
         ]
         return [
             "type": "pokemon",
@@ -480,8 +480,8 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             mysqlStmt.bindParam(level)
             mysqlStmt.bindParam(weight)
             mysqlStmt.bindParam(size)
-            mysqlStmt.bindParam(shiny)
             mysqlStmt.bindParam(isDitto)
+            mysqlStmt.bindParam(shiny)
         }
         mysqlStmt.bindParam(username)
         mysqlStmt.bindParam(gender)
