@@ -2253,6 +2253,9 @@ const now = new Date();
 							content += '<b>Level:</b> ' + gym.raid_level + '<br>';
 						}
 					}
+					if (gym.raid_pokemon_cp !== null) {
+						content += '<b>CP:</b> ' + gym.raid_pokemon_cp + '<br>';
+					}
 					if (gym.raid_pokemon_move_1 !== null) {
 						content += '<b>Fast:</b> ' + getMoveName(gym.raid_pokemon_move_1) + '<br>';
 					}
