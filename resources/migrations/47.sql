@@ -1,2 +1,2 @@
 ALTER TABLE `pokemon`
-ADD COLUMN `is_ditto` tinyint unsigned DEFAULT 0;
+ADD COLUMN `display_pokemon_id` smallint unsigned DEFAULT 0;

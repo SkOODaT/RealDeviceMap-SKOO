@@ -1806,18 +1806,17 @@ function getPokemonPopupContent(pokemon) {
 	const hasIV = pokemon.atk_iv !== null;
 	const costume = pokemon.costume !== null;
 
-    let pokemonId = pokemon.is_ditto ? 132 : pokemon.pokemon_id;
-    let pokemonIcon = getPokemonIconString(pokemonId, pokemon.form, pokemon.costume);
+    let pokemonIcon = getPokemonIconString(pokemon.pokemon_id, pokemon.form, pokemon.costume);
     let pokemonName = getPokemonNameString(pokemon.pokemon_id, pokemon.form, pokemon.costume);
-
-    if (pokemon.is_ditto) {
-        pokemonName += " (" + getPokemonNameNoId(132) + ")";
+    //console.log(pokemon.display_pokemon_id)
+    if (pokemon.display_pokemon_id > 0) {
+        pokemonName += " (" + getPokemonNameNoId(pokemon.display_pokemon_id) + ")";
     }
 
     let content = '';
 
     let weatherIcon;
-	if (!pokemon.is_ditto && pokemon.weather !== 0 && pokemon.weather !== null) {
+	if (!(pokemon.display_pokemon_id > 0) && pokemon.weather !== 0 && pokemon.weather !== null) {
 		weatherIcon = '<img src="' + imageURL + 'weather/' + pokemon.weather + '.png" height="25" width="25">';
 	} else {
 	    weatherIcon = ''
@@ -2625,9 +2624,8 @@ function getCellStyle(cell, ts) {
 
 function getPokemonMarkerIcon(pokemon, ts) {
 	const size = getPokemonSize(pokemon.pokemon_id);
-    var pokemonId = pokemon.is_ditto ? 132 /*Ditto*/ : pokemon.pokemon_id
 
-    let pokemonIdString = getPokemonIconString(pokemonId, pokemon.form, pokemon.costume);
+    let pokemonIdString = getPokemonIconString(pokemon.pokemon_id, pokemon.form, pokemon.costume);
     let IconClass;
 	//const ivPercent = Math.round( (pokemon.atk_iv + pokemon.def_iv + pokemon.sta_iv) / 45 * 1000 ) / 10;
     if (pokemon.expire_timestamp_verified) {
