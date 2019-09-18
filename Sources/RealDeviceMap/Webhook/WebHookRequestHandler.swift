@@ -131,15 +131,14 @@ class WebHookRequestHandler {
         
         var wildPokemons = [(cell: UInt64, data: POGOProtos_Map_Pokemon_WildPokemon, timestampMs: UInt64)]()
         var nearbyPokemons = [(cell: UInt64, data: POGOProtos_Map_Pokemon_NearbyPokemon)]()
+        var clientWeathers =  [(cell: Int64, data: POGOProtos_Map_Weather_ClientWeather)]()
         var forts = [(cell: UInt64, data: POGOProtos_Map_Fort_FortData)]()
         var fortDetails = [POGOProtos_Networking_Responses_FortDetailsResponse]()
         var gymInfos = [POGOProtos_Networking_Responses_GymGetInfoResponse]()
         var quests = [POGOProtos_Data_Quests_Quest]()
         var encounters = [POGOProtos_Networking_Responses_EncounterResponse]()
         var cells = [UInt64]()
-        
-        //TODO: Set device last_lat and last_lon
-        
+
         var isEmtpyGMO = true
         var isInvalidGMO = true
         var containsGMO = false
@@ -204,6 +203,7 @@ class WebHookRequestHandler {
                     
                     var newWildPokemons = [(cell: UInt64, data: POGOProtos_Map_Pokemon_WildPokemon, timestampMs: UInt64)]()
                     var newNearbyPokemons = [(cell: UInt64, data: POGOProtos_Map_Pokemon_NearbyPokemon)]()
+                    var newClientWeathers = [(cell: Int64, data: POGOProtos_Map_Weather_ClientWeather)]()
                     var newForts = [(cell: UInt64, data: POGOProtos_Map_Fort_FortData)]()
                     var newCells = [UInt64]()
                     
@@ -220,7 +220,11 @@ class WebHookRequestHandler {
                         }
                         newCells.append(mapCell.s2CellID)
                     }
-                    
+
+                    for wmapCell in gmo.clientWeather {
+                        newClientWeathers.append((cell: wmapCell.s2CellID, data: wmapCell))
+                    }
+
                     if newWildPokemons.isEmpty && newNearbyPokemons.isEmpty && newForts.isEmpty {
                         for cell in newCells {
                             emptyCellsLock.lock()
@@ -249,6 +253,7 @@ class WebHookRequestHandler {
                         nearbyPokemons += newNearbyPokemons
                         forts += newForts
                         cells += newCells
+                        clientWeathers += newClientWeathers
                     }
                 } else {
                     Log.info(message: "[WebHookRequestHandler] Malformed GetMapObjectsResponse")
@@ -410,7 +415,18 @@ class WebHookRequestHandler {
                 }
                 
             }
-            
+
+            let startclientWeathers = Date()
+			for conditions in clientWeathers {
+				let ws2cell = S2Cell(cellId: S2CellId(id: conditions.cell))
+				let wlat = ws2cell.capBound.rectBound.center.lat.degrees
+				let wlon = ws2cell.capBound.rectBound.center.lng.degrees
+				let wlevel = ws2cell.level
+                let weather = Weather(mysql: mysql, id: ws2cell.cellId.id, level: UInt8(wlevel), latitude: wlat, longitude: wlon, conditions: conditions.data, updated: nil)
+				try? weather.save(mysql: mysql, update: true)
+			}
+			Log.debug(message: "[WebHookRequestHandler] Weather Detail Count: \(clientWeathers.count) parsed in \(String(format: "%.3f", Date().timeIntervalSince(startclientWeathers)))s")
+
             let startWildPokemon = Date()
             for wildPokemon in wildPokemons {
                 let pokemon = Pokemon(mysql: mysql, wildPokemon: wildPokemon.data, cellId: wildPokemon.cell, timestampMs: wildPokemon.timestampMs)
