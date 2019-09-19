@@ -1,2 +1,2 @@
-ALTER TABLE `pokemon`
-ADD COLUMN `display_pokemon_id` smallint unsigned DEFAULT 0;
+ALTER TABLE `gym`
+MODIFY COLUMN `raid_pokemon_cp` int unsigned;
