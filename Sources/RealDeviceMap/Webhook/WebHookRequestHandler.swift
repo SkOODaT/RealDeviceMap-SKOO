@@ -440,21 +440,21 @@ class WebHookRequestHandler {
                 let pokemon = Pokemon(mysql: mysql, wildPokemon: wildPokemon.data, cellId: wildPokemon.cell, timestampMs: wildPokemon.timestampMs, username: username)
                 try? pokemon.save(mysql: mysql)
             }
-            Log.debug(message: "[WebHookRequestHandler] Pokemon Count: \(wildPokemons.count) parsed in \(String(format: "%.3f", Date().timeIntervalSince(startWildPokemon)))s")
+            Log.debug(message: "[WebHookRequestHandler] Wild Pokemon Count: \(wildPokemons.count) parsed in \(String(format: "%.3f", Date().timeIntervalSince(startWildPokemon)))s")
 
             let startPokemon = Date()
             for nearbyPokemon in nearbyPokemons {
                 let pokemon = try? Pokemon(mysql: mysql, nearbyPokemon: nearbyPokemon.data, cellId: nearbyPokemon.cell, username: username)
                 try? pokemon?.save(mysql: mysql)
             }
-            Log.debug(message: "[WebHookRequestHandler] NearbyPokemon Count: \(nearbyPokemons.count) parsed in \(String(format: "%.3f", Date().timeIntervalSince(startPokemon)))s")
+            Log.debug(message: "[WebHookRequestHandler] Nearby Pokemon Count: \(nearbyPokemons.count) parsed in \(String(format: "%.3f", Date().timeIntervalSince(startPokemon)))s")
 
             let startMapPokemon = Date()
             for mapPokemon in mapPokemons {
                 let pokemon = Pokemon(mysql: mysql, fortData: mapPokemon.fortData, mapPokemon: mapPokemon.pokeData, cellId: mapPokemon.cell, timestampMs: mapPokemon.timestampMs, username: username)
                 try? pokemon.save(mysql: mysql)
             }
-            Log.debug(message: "[WebHookRequestHandler] LuredPokemon Count: \(mapPokemons.count) parsed in \(String(format: "%.3f", Date().timeIntervalSince(startMapPokemon)))s")
+            Log.debug(message: "[WebHookRequestHandler] Lured Pokemon Count: \(mapPokemons.count) parsed in \(String(format: "%.3f", Date().timeIntervalSince(startMapPokemon)))s")
 			
             let startForts = Date()
             for fort in forts {
