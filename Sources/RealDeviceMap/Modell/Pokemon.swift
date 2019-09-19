@@ -273,6 +273,34 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
 
     }
 
+    init(mysql: MySQL?=nil, fortData: POGOProtos_Map_Fort_FortData, mapPokemon: POGOProtos_Map_Pokemon_MapPokemon, cellId: UInt64, timestampMs: UInt64, username: String?) {
+		
+        id = mapPokemon.encounterID.description
+        pokemonId = mapPokemon.pokedexTypeID.rawValue.toUInt16()
+        pokestopId = fortData.id
+        self.lat = fortData.latitude
+        self.lon = fortData.longitude
+        self.gender = mapPokemon.pokemonDisplay.gender.rawValue.toUInt8()
+        self.form = mapPokemon.pokemonDisplay.form.rawValue.toUInt16()
+        if mapPokemon.hasPokemonDisplay {
+            self.costume = mapPokemon.pokemonDisplay.costume.rawValue.toUInt8()
+            self.weather = mapPokemon.pokemonDisplay.weatherBoostedCondition.rawValue.toUInt8()
+            //The mapPokemon and nearbyPokemon GMOs don't contain actual shininess.
+            //shiny = mapPokemon.pokemonDisplay.shiny
+        }
+        self.username = username
+
+        if mapPokemon.expirationTimeMs > 0 {
+            expireTimestamp = UInt32((0 + UInt64(mapPokemon.expirationTimeMs)) / 1000)
+            expireTimestampVerified = true
+        } else {
+            expireTimestampVerified = false
+        }
+		
+        self.cellId = cellId
+
+    }
+
     public func addEncounter(encounterData: POGOProtos_Networking_Responses_EncounterResponse, username: String?) {
 
         self.pokemonId = UInt16(encounterData.wildPokemon.pokemonData.pokemonID.rawValue)
