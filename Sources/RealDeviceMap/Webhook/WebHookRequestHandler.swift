@@ -131,6 +131,7 @@ class WebHookRequestHandler {
         
         var wildPokemons = [(cell: UInt64, data: POGOProtos_Map_Pokemon_WildPokemon, timestampMs: UInt64)]()
         var nearbyPokemons = [(cell: UInt64, data: POGOProtos_Map_Pokemon_NearbyPokemon)]()
+        var mapPokemons = [(cell: UInt64, fortData: POGOProtos_Map_Fort_FortData, pokeData: POGOProtos_Map_Pokemon_MapPokemon, timestampMs: UInt64)]()
         var forts = [(cell: UInt64, data: POGOProtos_Map_Fort_FortData)]()
         var fortDetails = [POGOProtos_Networking_Responses_FortDetailsResponse]()
         var gymInfos = [POGOProtos_Networking_Responses_GymGetInfoResponse]()
@@ -204,6 +205,7 @@ class WebHookRequestHandler {
                     
                     var newWildPokemons = [(cell: UInt64, data: POGOProtos_Map_Pokemon_WildPokemon, timestampMs: UInt64)]()
                     var newNearbyPokemons = [(cell: UInt64, data: POGOProtos_Map_Pokemon_NearbyPokemon)]()
+                    var newMapPokemons = [(cell: UInt64, fortData: POGOProtos_Map_Fort_FortData, pokeData: POGOProtos_Map_Pokemon_MapPokemon, timestampMs: UInt64)]()
                     var newForts = [(cell: UInt64, data: POGOProtos_Map_Fort_FortData)]()
                     var newCells = [UInt64]()
                     
@@ -217,6 +219,9 @@ class WebHookRequestHandler {
                         }
                         for fort in mapCell.forts {
                             newForts.append((cell: mapCell.s2CellID, data: fort))
+							if fort.hasActivePokemon {
+							   newMapPokemons.append((cell: mapCell.s2CellID, fortData: fort, pokeData: fort.activePokemon, timestampMs: timestampMs))
+							}
                         }
                         newCells.append(mapCell.s2CellID)
                     }
@@ -247,6 +252,7 @@ class WebHookRequestHandler {
                         isEmtpyGMO = false
                         wildPokemons += newWildPokemons
                         nearbyPokemons += newNearbyPokemons
+                        mapPokemons += newMapPokemons
                         forts += newForts
                         cells += newCells
                     }
@@ -425,6 +431,13 @@ class WebHookRequestHandler {
             }
             Log.debug(message: "[WebHookRequestHandler] NearbyPokemon Count: \(nearbyPokemons.count) parsed in \(String(format: "%.3f", Date().timeIntervalSince(startPokemon)))s")
 
+            let startMapPokemon = Date()
+            for mapPokemon in mapPokemons {
+                let pokemon = Pokemon(mysql: mysql, fortData: mapPokemon.fortData, mapPokemon: mapPokemon.pokeData, cellId: mapPokemon.cell, timestampMs: mapPokemon.timestampMs, username: username)
+                try? pokemon.save(mysql: mysql)
+            }
+            Log.debug(message: "[WebHookRequestHandler] LuredPokemon Count: \(mapPokemons.count) parsed in \(String(format: "%.3f", Date().timeIntervalSince(startMapPokemon)))s")
+			
             let startForts = Date()
             for fort in forts {
                 if fort.data.type == .gym {
