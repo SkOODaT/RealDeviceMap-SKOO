@@ -1774,7 +1774,13 @@ function updateMapTimers() {
         }
     });
     $.each(pokestopMarkers, function(index, marker) {
-        setPokestopMarker(marker);
+		if (pokestopFilter["invasion"]["show"] === true) {
+            setPokestopMarker(marker);
+		} else if (showRocketTimers) {
+			setPokestopMarker(marker);
+		} else {
+		    marker.marker.unbindTooltip();	
+		}
     });
 }
 
