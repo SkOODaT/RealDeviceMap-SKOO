@@ -1694,13 +1694,13 @@ function updateDevicesLoop() {
 
 function updateMapTimers() {
     $.each(pokestopMarkers, function(index, marker) {
-		if (pokestopFilter["invasion"]["show"] === true) {
+        if (pokestopFilter["invasion"]["show"] === true) {
             setPokestopMarker(marker);
-		} else if (showRocketTimers) {
-			setPokestopMarker(marker);
-		} else {
-		    marker.marker.unbindTooltip();	
-		}
+        } else if (showRocketTimers) {
+            setPokestopMarker(marker);
+        } else {
+            marker.marker.unbindTooltip();	
+        }
     });
 }
 
