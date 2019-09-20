@@ -466,29 +466,21 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             }
 
             if updateIV && oldPokemon!.atkIv != nil && self.atkIv == nil {
-                if oldPokemon!.pokemonId != self.pokemonId {
-                    /*
-                     Since pokemon changed, can't reuse old IVs.
-                     We'd like to do this for weather change as well, but
-                     not sure if weather is always reported in all GMOs.
-                     Leave updateIV true since we will set columns (correctly) to NULL
-                     */
-                } else {
-                    self.atkIv = oldPokemon!.atkIv
-                    self.defIv = oldPokemon!.defIv
-                    self.staIv = oldPokemon!.staIv
-                    self.cp = oldPokemon!.cp
-                    self.weight = oldPokemon!.weight
-                    self.size = oldPokemon!.size
-                    self.move1 = oldPokemon!.move1
-                    self.move2 = oldPokemon!.move2
-                    self.level = oldPokemon!.level
-                    self.shiny = oldPokemon!.shiny
-                    if self.isDitto {
-                        self.displayPokemonId = oldPokemon!.pokemonId
-                        self.pokemonId = 132
-                    }
-				}
+                self.atkIv = oldPokemon!.atkIv
+                self.defIv = oldPokemon!.defIv
+                self.staIv = oldPokemon!.staIv
+                self.cp = oldPokemon!.cp
+                self.weight = oldPokemon!.weight
+                self.size = oldPokemon!.size
+                self.move1 = oldPokemon!.move1
+                self.move2 = oldPokemon!.move2
+                self.level = oldPokemon!.level
+                self.shiny = oldPokemon!.shiny
+                self.isDitto = Pokemon.isDittoDisguised(pokemon: oldPokemon!)
+                if self.isDitto {
+                    self.displayPokemonId = oldPokemon!.pokemonId
+                    self.pokemonId = 132
+                }
             }
 
             let ivSQL: String
