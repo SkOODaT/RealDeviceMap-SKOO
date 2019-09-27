@@ -2268,6 +2268,9 @@ const now = new Date();
 					if (gym.raid_pokemon_move_2 !== null) {
 						content += '<b>Charge:</b> ' + getMoveName(gym.raid_pokemon_move_2) + '<br>';
 					}
+					if (gym.raid_pokemon_gender !== null && gym.raid_pokemon_gender > 0) {
+						content += '<b>Gender:</b> ' + getGenderIcon(gym.raid_pokemon_gender) + '<br>';
+					}
 					if (gym.raid_pokemon_form !== null && gym.raid_pokemon_form > 0) {
 						content += '<b>Form:</b> ' + getFormName(gym.raid_pokemon_form) + '<br>';
 					}
