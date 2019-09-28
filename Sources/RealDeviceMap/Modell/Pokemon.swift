@@ -334,7 +334,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             self.capture1 = Double(encounterData.captureProbability.captureProbability[0])
             self.capture2 = Double(encounterData.captureProbability.captureProbability[1])
             self.capture3 = Double(encounterData.captureProbability.captureProbability[2])
-		}
+        }
 		
         let level: UInt8
         if cpMultiplier < 0.734 {

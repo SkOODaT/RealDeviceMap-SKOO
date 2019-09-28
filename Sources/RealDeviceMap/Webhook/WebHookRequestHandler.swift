@@ -32,7 +32,6 @@ class WebHookRequestHandler {
 
     private static var emptyCellsLock = Threading.Lock()
     private static var emptyCells = [UInt64: Int]()
-    private static var wemptyCells = [Int64: Int]()
 
     static func handle(request: HTTPRequest, response: HTTPResponse, type: WebHookServer.Action) {
         
