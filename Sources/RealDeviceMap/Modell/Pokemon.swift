@@ -330,9 +330,11 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
         self.form = UInt16(encounterData.wildPokemon.pokemonData.pokemonDisplay.form.rawValue)
         self.gender = UInt8(encounterData.wildPokemon.pokemonData.pokemonDisplay.gender.rawValue)
         let cpMultiplier = encounterData.wildPokemon.pokemonData.cpMultiplier
-        self.capture1 = Double(encounterData.captureProbability.captureProbability[0])
-        self.capture2 = Double(encounterData.captureProbability.captureProbability[1])
-        self.capture3 = Double(encounterData.captureProbability.captureProbability[2])
+        if encounterData.hasCaptureProbability {
+            self.capture1 = Double(encounterData.captureProbability.captureProbability[0])
+            self.capture2 = Double(encounterData.captureProbability.captureProbability[1])
+            self.capture3 = Double(encounterData.captureProbability.captureProbability[2])
+		}
 		
         let level: UInt8
         if cpMultiplier < 0.734 {
