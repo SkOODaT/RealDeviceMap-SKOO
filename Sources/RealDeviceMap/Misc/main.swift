@@ -85,7 +85,7 @@ WebHookRequestHandler.hostWhitelistUsesProxy = try! DBController.global.getValue
 WebHookRequestHandler.loginSecret = try! DBController.global.getValueForKey(key: "DEVICEAPI_SECRET")?.emptyToNil()
 WebHookRequestHandler.dittoDisguises = try! DBController.global.getValueForKey(key: "DITTO_DISGUISES")?.components(separatedBy: ",").map({ (s) -> UInt16 in
     return s.toUInt16() ?? 0
-}) ?? [46, 48, 163, 165, 223, 293, 316] //Default ditto disguises
+}) ?? [13, 46, 48, 163, 165, 167, 187, 223, 273, 293, 300, 316, 322, 399] //Default ditto disguises
 
 if let tileserversOld = try! DBController.global.getValueForKey(key: "TILESERVERS")?.jsonDecodeForceTry() as? [String: String]  {
     var tileservers = [String: [String: String]]()

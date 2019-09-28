@@ -350,7 +350,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                                                 defIv:     self.defIv ?? 0,
                                                 staIv:     self.staIv ?? 0
         )
-        if self.isDitto && self.displayPokemonId == nil {
+        if self.isDitto {
             self.displayPokemonId = self.pokemonId
             self.pokemonId = 132
         }
@@ -858,10 +858,10 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
     
     private static func isDittoDisguised(pokemonId: UInt16, level: UInt8, weather: UInt8, atkIv: UInt8, defIv: UInt8, staIv: UInt8) -> Bool {
         let isDisguised =  WebHookRequestHandler.dittoDisguises?.contains(pokemonId) ?? false
-        let underLevel6 = level > 0 && level < 6
+        let isUnderLevel6 = level > 0 && level < 6
         let isUnderStat4 = atkIv < 4 || defIv < 4 || staIv < 4
         let isWeatherBoosted = weather > 0
-        return isDisguised && (underLevel6 || isUnderStat4) && isWeatherBoosted
+        return isDisguised && (isUnderLevel6 || isUnderStat4) && isWeatherBoosted
     }
 
     private static func sqlifyIvFilter(filter: String) -> String? {
