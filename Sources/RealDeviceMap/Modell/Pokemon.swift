@@ -49,7 +49,10 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             "pokestop_id": pokestopId as Any,
             "costume": costume as Any,
             "updated": updated ?? 1,
-            "display_pokemon_id": displayPokemonId as Any
+            "display_pokemon_id": displayPokemonId as Any,
+            "capture_1": capture1 as Any,
+            "capture_2": capture2 as Any,
+            "capture_3": capture3 as Any
         ]
     }
 
@@ -80,7 +83,10 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             "weather": weather ?? 0,
             "shiny": shiny ?? 0,
             "username": username ?? 0,
-            "display_pokemon_id": displayPokemonId as Any
+            "display_pokemon_id": displayPokemonId as Any,
+            "capture_1": capture1 ?? 0,
+            "capture_2": capture2 ?? 0,
+            "capture_3": capture3 ?? 0
         ]
         return [
             "type": "pokemon",
@@ -121,8 +127,11 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
     var expireTimestampVerified: Bool
     var isDitto: Bool = false
     var displayPokemonId: UInt16?
+    var capture1: Double?
+    var capture2: Double?
+    var capture3: Double?
 
-    init(id: String, pokemonId: UInt16, lat: Double, lon: Double, spawnId: UInt64?, expireTimestamp: UInt32?, atkIv: UInt8?, defIv: UInt8?, staIv: UInt8?, move1: UInt16?, move2: UInt16?, gender: UInt8?, form: UInt16?, cp: UInt16?, level: UInt8?, weight: Double?, costume: UInt8?, size: Double?, displayPokemonId: UInt16?, weather: UInt8?, shiny: Bool?, username: String?, pokestopId: String?, firstSeenTimestamp: UInt32?, updated: UInt32?, changed: UInt32?, cellId: UInt64?, expireTimestampVerified: Bool) {
+    init(id: String, pokemonId: UInt16, lat: Double, lon: Double, spawnId: UInt64?, expireTimestamp: UInt32?, atkIv: UInt8?, defIv: UInt8?, staIv: UInt8?, move1: UInt16?, move2: UInt16?, gender: UInt8?, form: UInt16?, cp: UInt16?, level: UInt8?, weight: Double?, costume: UInt8?, size: Double?, displayPokemonId: UInt16?, capture1: Double?, capture2: Double?, capture3: Double?, weather: UInt8?, shiny: Bool?, username: String?, pokestopId: String?, firstSeenTimestamp: UInt32?, updated: UInt32?, changed: UInt32?, cellId: UInt64?, expireTimestampVerified: Bool) {
 
         self.id = id
         self.pokemonId = pokemonId
@@ -152,6 +161,9 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
         self.cellId = cellId
         self.expireTimestampVerified = expireTimestampVerified
         self.displayPokemonId = displayPokemonId
+        self.capture1 = capture1
+        self.capture2 = capture2
+        self.capture3 = capture3
     }
 
     init(mysql: MySQL?=nil, wildPokemon: POGOProtos_Map_Pokemon_WildPokemon, cellId: UInt64, timestampMs: UInt64, username: String?) {
@@ -318,6 +330,10 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
         self.form = UInt16(encounterData.wildPokemon.pokemonData.pokemonDisplay.form.rawValue)
         self.gender = UInt8(encounterData.wildPokemon.pokemonData.pokemonDisplay.gender.rawValue)
         let cpMultiplier = encounterData.wildPokemon.pokemonData.cpMultiplier
+        self.capture1 = Double(encounterData.captureProbability.captureProbability[0])
+        self.capture2 = Double(encounterData.captureProbability.captureProbability[1])
+        self.capture3 = Double(encounterData.captureProbability.captureProbability[2])
+		
         let level: UInt8
         if cpMultiplier < 0.734 {
             level = UInt8(round(58.35178527 * cpMultiplier * cpMultiplier - 2.838007664 * cpMultiplier + 0.8539209906))
@@ -411,8 +427,8 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             firstSeenTimestamp = updated
 
             let sql = """
-                INSERT INTO pokemon (id, pokemon_id, lat, lon, spawn_id, expire_timestamp, atk_iv, def_iv, sta_iv, move_1, move_2, cp, level, weight, size, display_pokemon_id, shiny, username, gender, form, weather, costume, pokestop_id, updated, first_seen_timestamp, changed, cell_id, expire_timestamp_verified)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), ?, ?)
+                INSERT INTO pokemon (id, pokemon_id, lat, lon, spawn_id, expire_timestamp, atk_iv, def_iv, sta_iv, move_1, move_2, cp, level, weight, size, display_pokemon_id, capture_1, capture_2, capture_3, shiny, username, gender, form, weather, costume, pokestop_id, updated, first_seen_timestamp, changed, cell_id, expire_timestamp_verified)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), ?, ?)
             """
             _ = mysqlStmt.prepare(statement: sql)
             mysqlStmt.bindParam(id)
@@ -477,6 +493,9 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                 self.level = oldPokemon!.level
                 self.shiny = oldPokemon!.shiny
                 self.isDitto = Pokemon.isDittoDisguised(pokemon: oldPokemon!)
+                self.capture1 = oldPokemon!.capture1
+                self.capture2 = oldPokemon!.capture2
+                self.capture3 = oldPokemon!.capture3
                 if self.isDitto {
                     self.displayPokemonId = oldPokemon!.pokemonId
                     self.pokemonId = 132
@@ -485,7 +504,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
 
             let ivSQL: String
             if updateIV {
-                ivSQL = "atk_iv = ?, def_iv = ?, sta_iv = ?, move_1 = ?, move_2 = ?, cp = ?, level = ?, weight = ?, size = ?, display_pokemon_id = ?, shiny = ?,"
+                ivSQL = "atk_iv = ?, def_iv = ?, sta_iv = ?, move_1 = ?, move_2 = ?, cp = ?, level = ?, weight = ?, size = ?, display_pokemon_id = ?, capture_1 = ?, capture_2 = ?, capture_3 = ?, shiny = ?,"
             } else {
                 ivSQL = ""
             }
@@ -514,6 +533,9 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             mysqlStmt.bindParam(weight)
             mysqlStmt.bindParam(size)
             mysqlStmt.bindParam(displayPokemonId)
+            mysqlStmt.bindParam(capture1)
+            mysqlStmt.bindParam(capture2)
+            mysqlStmt.bindParam(capture3)
             mysqlStmt.bindParam(shiny)
         }
         mysqlStmt.bindParam(username)
@@ -659,7 +681,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
         }
 
         let sql = """
-            SELECT id, pokemon_id, lat, lon, spawn_id, expire_timestamp, atk_iv, def_iv, sta_iv, move_1, move_2, gender, form, cp, level, weather, costume, weight, size, display_pokemon_id, pokestop_id, updated, first_seen_timestamp, changed, cell_id, expire_timestamp_verified, shiny, username
+            SELECT id, pokemon_id, lat, lon, spawn_id, expire_timestamp, atk_iv, def_iv, sta_iv, move_1, move_2, gender, form, cp, level, weather, costume, weight, size, display_pokemon_id, capture_1, capture_2, capture_3, pokestop_id, updated, first_seen_timestamp, changed, cell_id, expire_timestamp_verified, shiny, username
             FROM pokemon
             WHERE expire_timestamp >= UNIX_TIMESTAMP() AND lat >= ? AND lat <= ? AND lon >= ? AND lon <= ? AND updated > ? \(sqlAdd)
         """
@@ -701,6 +723,9 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             let weight: Double?
             let size: Double?
             let displayPokemonId: UInt16?
+            let capture1: Double?
+            let capture2: Double?
+            let capture3: Double?
             if showIV {
                 atkIv = result[6] as? UInt8
                 defIv = result[7] as? UInt8
@@ -712,6 +737,9 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                 weight = result[17] as? Double
                 size = result[18] as? Double
                 displayPokemonId = result[19] as? UInt16
+                capture1 = result[20] as? Double
+                capture2 = result[21] as? Double
+                capture3 = result[22] as? Double
             } else {
                 atkIv = nil
                 defIv = nil
@@ -723,22 +751,25 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                 weight = nil
                 size = nil
                 displayPokemonId = nil
+                capture1 = nil
+                capture2 = nil
+                capture3 = nil
             }
 
             let gender = result[11] as? UInt8
             let form = result[12] as? UInt16
             let weather = result[15] as? UInt8
             let costume = result[16] as? UInt8
-            let pokestopId = result[20] as? String
-            let updated = result[21] as! UInt32
-            let firstSeenTimestamp = result[22] as! UInt32
-            let changed = result[23] as! UInt32
-            let cellId = result[24] as? UInt64
-            let expireTimestampVerified = (result[25] as? UInt8)!.toBool()
-            let shiny = (result[26] as? UInt8)?.toBool()
-            let username = result[27] as? String
+            let pokestopId = result[23] as? String
+            let updated = result[24] as! UInt32
+            let firstSeenTimestamp = result[25] as! UInt32
+            let changed = result[26] as! UInt32
+            let cellId = result[27] as? UInt64
+            let expireTimestampVerified = (result[28] as? UInt8)!.toBool()
+            let shiny = (result[29] as? UInt8)?.toBool()
+            let username = result[30] as? String
             
-            pokemons.append(Pokemon(id: id, pokemonId: pokemonId, lat: lat, lon: lon, spawnId: spawnId, expireTimestamp: expireTimestamp, atkIv: atkIv, defIv: defIv, staIv: staIv, move1: move1, move2: move2, gender: gender, form: form, cp: cp, level: level, weight: weight, costume: costume, size: size, displayPokemonId: displayPokemonId, weather: weather, shiny: shiny, username: username, pokestopId: pokestopId, firstSeenTimestamp: firstSeenTimestamp, updated: updated, changed: changed, cellId: cellId, expireTimestampVerified: expireTimestampVerified))
+            pokemons.append(Pokemon(id: id, pokemonId: pokemonId, lat: lat, lon: lon, spawnId: spawnId, expireTimestamp: expireTimestamp, atkIv: atkIv, defIv: defIv, staIv: staIv, move1: move1, move2: move2, gender: gender, form: form, cp: cp, level: level, weight: weight, costume: costume, size: size, displayPokemonId: displayPokemonId, capture1: capture1, capture2: capture2, capture3: capture3, weather: weather, shiny: shiny, username: username, pokestopId: pokestopId, firstSeenTimestamp: firstSeenTimestamp, updated: updated, changed: changed, cellId: cellId, expireTimestampVerified: expireTimestampVerified))
 
         }
         return pokemons
@@ -753,7 +784,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
         }
 
         let sql = """
-            SELECT id, pokemon_id, lat, lon, spawn_id, expire_timestamp, atk_iv, def_iv, sta_iv, move_1, move_2, gender, form, cp, level, weather, costume, weight, size, display_pokemon_id, pokestop_id, updated, first_seen_timestamp, changed, cell_id, expire_timestamp_verified, shiny, username
+            SELECT id, pokemon_id, lat, lon, spawn_id, expire_timestamp, atk_iv, def_iv, sta_iv, move_1, move_2, gender, form, cp, level, weather, costume, weight, size, display_pokemon_id, capture_1, capture_2, capture_3, pokestop_id, updated, first_seen_timestamp, changed, cell_id, expire_timestamp_verified, shiny, username
             FROM pokemon
             WHERE id = ?
         """
@@ -793,16 +824,19 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
         let weight = result[17] as? Double
         let size = result[18] as? Double
         let displayPokemonId = result[19] as? UInt16
-        let pokestopId = result[20] as? String
-        let updated = result[21] as! UInt32
-        let firstSeenTimestamp = result[22] as! UInt32
-        let changed = result[23] as! UInt32
-        let cellId = result[24] as? UInt64
-        let expireTimestampVerified = (result[25] as? UInt8)!.toBool()
-        let shiny = (result[26] as? UInt8)?.toBool()
-        let username = result[27] as? String
+        let capture1 = result[20] as? Double
+        let capture2 = result[21] as? Double
+        let capture3 = result[22] as? Double
+        let pokestopId = result[23] as? String
+        let updated = result[24] as! UInt32
+        let firstSeenTimestamp = result[25] as! UInt32
+        let changed = result[26] as! UInt32
+        let cellId = result[27] as? UInt64
+        let expireTimestampVerified = (result[28] as? UInt8)!.toBool()
+        let shiny = (result[29] as? UInt8)?.toBool()
+        let username = result[30] as? String
 
-        return Pokemon(id: id, pokemonId: pokemonId, lat: lat, lon: lon, spawnId: spawnId, expireTimestamp: expireTimestamp, atkIv: atkIv, defIv: defIv, staIv: staIv, move1: move1, move2: move2, gender: gender, form: form, cp: cp, level: level, weight: weight, costume: costume, size: size, displayPokemonId: displayPokemonId, weather: weather, shiny: shiny, username: username, pokestopId: pokestopId, firstSeenTimestamp: firstSeenTimestamp, updated: updated, changed: changed, cellId: cellId, expireTimestampVerified: expireTimestampVerified)
+        return Pokemon(id: id, pokemonId: pokemonId, lat: lat, lon: lon, spawnId: spawnId, expireTimestamp: expireTimestamp, atkIv: atkIv, defIv: defIv, staIv: staIv, move1: move1, move2: move2, gender: gender, form: form, cp: cp, level: level, weight: weight, costume: costume, size: size, displayPokemonId: displayPokemonId, capture1: capture1, capture2: capture2, capture3: capture3, weather: weather, shiny: shiny, username: username, pokestopId: pokestopId, firstSeenTimestamp: firstSeenTimestamp, updated: updated, changed: changed, cellId: cellId, expireTimestampVerified: expireTimestampVerified)
 
     }
 

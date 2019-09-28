@@ -1888,6 +1888,12 @@ function getPokemonPopupContent(pokemon) {
 					if (pokemon.height !== null && pokemon.weight !== null) {
 						content += '<b>Size:</b> ' + getSize(pokemon.size) + ' | <b>Weight:</b> ' + Math.round(pokemon.weight) + 'kg<br>';
 					}
+					if (pokemon.catch_1 !== null && pokemon.catch_1 !== null) {
+						content += '<b>Catch Chances:</b><br>';
+						content += '<img src="/static/img/item/1.png" height="14" width="14"> ' + (pokemon.capture_1 * 100).toFixed(1) + '%   ';
+						content += '<img src="/static/img/item/2.png" height="14" width="14"> ' + (pokemon.capture_2 * 100).toFixed(1) + '%<br>';
+						content += '<img src="/static/img/item/3.png" height="14" width="14"> ' + (pokemon.capture_3 * 100).toFixed(1) + '%<br>';
+					}
 					content += '</div>'
 				}
 				//if (pokemon.shiny !== null && pokemon.shiny === 1) {
