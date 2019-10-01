@@ -65,6 +65,7 @@ let deviceOfflineIcon;
 let tileLayer;
 
 let pokemonDb = {};
+let weatherTypes = {};
 
 $(function() {
 
@@ -133,6 +134,10 @@ $(function() {
 
     $.getJSON( "/static/data/pokemon.json", function( data ) {
         pokemonDb = data;
+    });
+	
+    $.getJSON( "/static/data/weathertypes.json", function( data ) {
+        weatherTypes = data;
     });
 
     avilableForms = JSON.parse('{{{avilable_forms_json}}}');
@@ -1919,6 +1924,15 @@ function getPokestopPopupContent(pokestop) {
 
 }
 
+
+function isWeatherBoosted(pokeTypes, weatherTypes) {
+	for (var i = 0; i < pokeTypes.length; i++) {
+		if (weatherTypes.includes(pokeTypes[i].type))
+		return true;
+	}
+	return false;
+}
+
 function getGymPopupContent(gym) {
 	const now = new Date();
 	const raidBattleDate = new Date(gym.raid_battle_timestamp*1000);
@@ -1933,6 +1947,24 @@ function getGymPopupContent(gym) {
     } else {
         gymName = gym.name;
     }
+
+	let wtypes = ''
+	let wname = ''
+	let WeatherBoosted = ''
+	let compare = false
+	if (gym.gym_weather !== null) {
+		wtypes = weatherTypes[gym.gym_weather].types;
+		wname = weatherTypes[gym.gym_weather].name;
+		if (hasRaidBoss) {
+			let ptypes = pokemonDb[gym.raid_pokemon_id].types;
+			compare = isWeatherBoosted(ptypes, wtypes)
+		}
+		if (compare !== false) {
+			WeatherBoosted += '<b>Boosted</b><br>'
+		}
+		//console.log("PTypes:", ptypes);
+		//console.log("WTypes:", wtypes);
+	}
 
     var content = 
     '<div class="row">' + //START 1ST ROW
@@ -1951,9 +1983,9 @@ function getGymPopupContent(gym) {
         var pokemonName;
         if (hasRaidBoss && isRaidBattle) {
             if (gym.raid_pokemon_form !== 0 && gym.raid_pokemon_form !== null) {
-                pokemonName = getFormName(gym.raid_pokemon_form) + ' ' + getPokemonName(gym.raid_pokemon_id);
+                pokemonName = WeatherBoosted + '' + getFormName(gym.raid_pokemon_form) + ' ' + getPokemonName(gym.raid_pokemon_id);
             } else {
-                pokemonName = getPokemonName(gym.raid_pokemon_id);
+                pokemonName = WeatherBoosted + '' + getPokemonName(gym.raid_pokemon_id);
             }
     	} else if (isRaidBattle) {
             pokemonName = "Unknown Raid Boss";
