@@ -46,6 +46,7 @@ class ApiRequestHandler {
         let spawnpointFilterExclude = request.param(name: "spawnpoint_filter_exclude")?.jsonDecodeForceTry() as? [String]
         let showSpawnpoints =  request.param(name: "show_spawnpoints")?.toBool() ?? false
         let showCells = request.param(name: "show_cells")?.toBool() ?? false
+        let showWeathers = request.param(name: "show_weathers")?.toBool() ?? false
         let showDevices =  request.param(name: "show_devices")?.toBool() ?? false
         let showActiveDevices = request.param(name: "show_active_devices")?.toBool() ?? false
         let showInstances =  request.param(name: "show_instances")?.toBool() ?? false
@@ -63,7 +64,7 @@ class ApiRequestHandler {
         let showIVQueue = request.param(name: "show_ivqueue")?.toBool() ?? false
         let showDiscordRules = request.param(name: "show_discordrules")?.toBool() ?? false
         
-        if (showGyms || showRaids || showPokestops || showPokemon || showSpawnpoints || showCells) &&
+        if (showGyms || showRaids || showPokestops || showPokemon || showSpawnpoints || showCells || showWeathers) &&
             (minLat == nil || maxLat == nil || minLon == nil || maxLon == nil) {
             response.respondWithError(status: .badRequest)
             return
@@ -158,6 +159,9 @@ class ApiRequestHandler {
         }
         if isPost && showCells && perms.contains(.viewMapCell) {
             data["cells"] = try? Cell.getAll(mysql: mysql, minLat: minLat!, maxLat: maxLat!, minLon: minLon!, maxLon: maxLon!, updated: lastUpdate)
+        }
+        if isPost && showWeathers && perms.contains(.viewMapWeather) {
+			data["weather"] = try? Weather.getAll(mysql: mysql, minLat: minLat!, maxLat: maxLat!, minLon: minLon!, maxLon: maxLon!, updated: lastUpdate)
         }
         if permViewMap && showPokemonFilter {
             
@@ -1161,6 +1165,8 @@ class ApiRequestHandler {
                                 permName = "IV"
                             case .viewMapCell:
                                 permName = "Cell"
+                            case .viewMapWeather:
+                                permName = "Weather"
                             case .viewMapLure:
                                 permName = "Lure"
                             case .viewMapInvasion:

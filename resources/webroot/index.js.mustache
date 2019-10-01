@@ -10,6 +10,7 @@ let gymMarkers = [];
 let pokemonMarkers = [];
 let spawnpointMarkers = [];
 let cellMarkers = [];
+let weatherMarkers = [];
 let deviceMarkers = [];
 
 let pokemonFilter = {};
@@ -36,6 +37,7 @@ let openedPokemon;
 let openedPokestop;
 let openedGym;
 let openedCell;
+let openedWeather;
 let openedDevice;
 
 let showPokestops;
@@ -45,6 +47,7 @@ let showRaids;
 let showPokemon;
 let showSpawnpoints;
 let showCells;
+let showWeathers;
 let showDevices;
 
 let avilableForms = [];
@@ -240,6 +243,7 @@ $(function() {
             show_pokestops: showPokestops,
             show_spawnpoints: showSpawnpoints,
             show_cells: showCells,
+            show_weathers: showWeathers,
             gym: gymFilterNew,
             raid: raidFilterNew,
             pokemon: pokemonFilterNew,
@@ -365,6 +369,14 @@ function loadStorage() {
         showCells = (showCellsValue === 'true');
     }
 
+    const showWeathersValue = retrieve('show_weathers');
+    if (showWeathersValue === null) {
+        store('show_weathers', false);
+        showWeathers = false;
+    } else {
+        showWeathers = (showWeathersValue === 'true');
+    }
+	
     const showDevicesValue = retrieve('show_devices');
     if (showDevicesValue === null) {
         store('show_devices', false);
@@ -785,6 +797,7 @@ function initMap() {
         const newShowPokemon = $('#show-pokemon').hasClass('active');
         const newShowSpawnpoints = $('#show-spawnpoints').hasClass('active');
         const newShowCells = $('#show-cells').hasClass('active');
+        const newShowWeathers = $('#show-weathers').hasClass('active');
         const newShowDevices = $('#show-devices').hasClass('active');
 
         const ts = Math.round((new Date()).getTime() / 1000);
@@ -842,6 +855,12 @@ function initMap() {
                 map.removeLayer(cell.marker);
             });
             cellMarkers = [];
+        }
+        if (newShowWeathers !== showWeathers && newShowWeathers === false) {
+            $.each(weatherMarkers, function (index, weather) {
+                map.removeLayer(weather.marker);
+            });
+            weatherMarkers = [];
         }
         if (newShowDevices !== showDevices && newShowDevices === false) {
             $.each(deviceMarkers, function (index, device) {
@@ -928,6 +947,8 @@ function initMap() {
         store('spawnpoint_filter', JSON.stringify(spawnpointFilter));
         store('show_cells', newShowCells);
         showCells = newShowCells;
+        store('show_weathers', newShowWeathers);
+        showWeathers = newShowWeathers;
         showDevices = newShowDevices;
         store('show_devices', newShowDevices);
 
@@ -1004,6 +1025,14 @@ function initMap() {
                     $('#show-cells').removeClass('active');
                 }
 
+                if (retrieve('show_weathers') == 'true') {
+                    $('#show-weathers').addClass('active');
+                    $('#hide-weathers').removeClass('active');
+                } else {
+                    $('#hide-weathers').addClass('active');
+                    $('#show-weathers').removeClass('active');
+                }
+				
                 if (retrieve('show_devices') == 'true') {
                     $('#show-devices').addClass('active');
                     $('#hide-devices').removeClass('active');
@@ -1167,6 +1196,7 @@ function loadData() {
         'spawnpoint_filter_exclude': JSON.stringify(spawnpointFilterExclude),
         'show_spawnpoints': showSpawnpoints,
         'show_cells': showCells,
+        'show_weathers': showWeathers,
         'show_active_devices': showDevices,
         'last_update': lastUpdateServer,
         '_csrf': "{{csrf}}"
@@ -1435,6 +1465,27 @@ function loadData() {
                 }
             });
 
+            const weathers = data.data.weather;
+            $.each(weathers, function (index, weather) {
+                if (showWeathers) {
+                    if (weather.updated > lastUpdateServer) {
+                        lastUpdateServer = weather.updated;
+                    }
+                    const oldWeather = weatherMarkers.find(function (value) {
+                        return weather.id === value.id ;
+                    });
+
+                    if (oldWeather === undefined) {
+                        weather.marker = getWeatherMarker(weather, ts);
+                        weatherMarkers.push(weather);
+                        weather.marker.addTo(map);
+                    } else {
+                        oldWeather.updated = weather.updated;
+                        oldWeather.marker.setStyle(getWeatherStyle(weather, ts));
+                    }
+                }
+            });
+			
             lastUpdate = new Date();
 			isLoading = false;
 		}
@@ -1650,6 +1701,9 @@ function updateOpenedPopupLoop() {
     if (openedCell !== undefined) {
         openedCell.marker._popup.setContent(getCellPopupContent(openedCell));
     }
+    if (openedWeather !== undefined) {
+        openedWeather.marker._popup.setContent(getWeatherPopupContent(openedWeather));
+    }
     if (openedDevice !== undefined) {
         openedDevice.marker._popup.setContent(getDevicePopupContent(openedDevice));
     }
@@ -1659,6 +1713,9 @@ function updateCellsLoop() {
     const ts = Math.round((new Date()).getTime() / 1000);
     $.each(cellMarkers, function (index, cell) {
         cell.marker.setStyle(getCellStyle(cell, ts));
+    });
+    $.each(weatherMarkers, function (index, weather) {
+        weather.marker.setStyle(getWeatherStyle(weather, ts));
     });
 }
 
@@ -2122,6 +2179,34 @@ function getCellPopupContent(cell) {
     return content;
 }
 
+function getWeatherPopupContent(weather) {
+
+    weatherName = weatherTypes[weather.gameplay_condition].name;
+
+    let content = '<center>';
+	content += '<b>'+weatherName+'</b><br>';
+	content += '<h6><b>Level '+weather.level+' S2 Cell</b></h6>';
+	content += '<b>Id:</b> '+weather.id+'<br>';
+	content += '<b>Lat:</b> '+weather.latitude+'<br>';
+	content += '<b>Lon:</b> '+weather.longitude+'<br>';
+	content += '<b>Gameplay Condition:</b> '+weather.gameplay_condition+'<br>';
+	content += '<b>Wind Direction:</b> '+weather.wind_direction+'°<br>';
+	content += '<b>Cloud Level:</b> '+weather.cloud_level+'<br>';
+	content += '<b>Rain Level:</b> '+weather.rain_level+'<br>';
+	content += '<b>Wind Level:</b> '+weather.wind_level+'<br>';
+	content += '<b>Snow Level:</b> '+weather.snow_level+'<br>';
+	content += '<b>Fog Level:</b> '+weather.fog_level+'<br>';
+	content += '<b>Special Effects Level:</b> '+weather.special_effect_level+'<br>';
+	content += '<b>Severity:</b> '+weather.severity+'<br>';	
+	content += '<b>Weather Warning:</b> '+weather.warn_weather+'<br>';
+
+    const updatedDate = new Date(weather.updated * 1000);
+
+    content += '<b>Last Updated:</b> '+ updatedDate.toLocaleTimeString() + ' (' + getTimeSince(updatedDate) + ')';
+    content += '</center>';
+    return content;
+}
+
 // MARK: - Translation
 
 function getPokemonNameNoId(pokemonId) {
@@ -2318,6 +2403,29 @@ function getCellMarker(cell, ts) {
 
 function getCellStyle(cell, ts) {
     let ago = ts - cell.updated;
+    let value;
+    if (ago <= 150) {
+        value = 0;
+    } else {
+        value = Math.min((ago - 150) / 750, 1);
+    }
+    const hue = ((1-value)*120).toString(10);
+    return {fillColor: ["hsl(",hue,",100%,50%)"].join(""), color: "black", opacity: 0.75, fillOpacity: 0.5};
+}
+
+function getWeatherMarker(weather, ts) {
+    const polygon = L.polygon(weather.polygon);
+    polygon.setStyle(getWeatherStyle(weather, ts));
+    polygon.bindPopup(getWeatherPopupContent(weather));
+    polygon.on('popupopen', function (popup) {
+        openedWeather = weather;
+        polygon._popup.setContent(getWeatherPopupContent(weather));
+    });
+    return polygon;
+}
+
+function getWeatherStyle(weather, ts) {
+    let ago = ts - weather.updated;
     let value;
     if (ago <= 150) {
         value = 0;
@@ -3918,6 +4026,9 @@ function loadFilterSettings(e) {
         showCells = obj.show_cells;
         store('show_cells', showCells);
 
+        showWeathers = obj.show_weathers;
+        store('show_weathers', showWeathers);
+		
         if (showGyms) {
             $('#show-gyms').addClass('active');
             $('#hide-gyms').removeClass('active');
@@ -3974,6 +4085,14 @@ function loadFilterSettings(e) {
             $('#show-cells').removeClass('active');
         }
 
+        if (showWeathers) {
+            $('#show-weathers').addClass('active');
+            $('#hide-weathers').removeClass('active');
+        } else {
+            $('#hide-weathers').addClass('active');
+            $('#show-weathers').removeClass('active');
+        }
+		
         $('#table-filter-pokemon').DataTable().rows().invalidate('data').draw(false);
         $('#table-filter-raid').DataTable().rows().invalidate('data').draw(false);
         $('#table-filter-gym').DataTable().rows().invalidate('data').draw(false);
