@@ -239,7 +239,7 @@ class Weather: JSONConvertibleObject, WebHookEvent {
             let fogLevel = result[10] as! UInt8
             let SELevel = result[11] as! UInt8
             let Severity = result[12] as! UInt8
-            let warnWeather = result[13] as! Bool
+            let warnWeather = (result[13] as? UInt8)!.toBool()
             let updated = result[14] as! UInt32
             
             weather.append(Weather(id: id, level: level, latitude: latitude, longitude: longitude, gameplayCondition: gameplayCondition, windDirection: windDirection, cloudLevel: cloudLevel, rainLevel: rainLevel, windLevel: windLevel, snowLevel: snowLevel, fogLevel: fogLevel, SELevel: SELevel, Severity: Severity, warnWeather: warnWeather, updated: updated))
@@ -312,7 +312,7 @@ class Weather: JSONConvertibleObject, WebHookEvent {
             let fogLevel = result[10] as! UInt8
             let SELevel = result[11] as! UInt8
             let Severity = result[12] as! UInt8
-            let warnWeather = result[13] as! Bool
+            let warnWeather = (result[13] as? UInt8)!.toBool()
             let updated = result[14] as! UInt32
             
             weather.append(Weather(id: id, level: level, latitude: latitude, longitude: longitude, gameplayCondition: gameplayCondition, windDirection: windDirection, cloudLevel: cloudLevel, rainLevel: rainLevel, windLevel: windLevel, snowLevel: snowLevel, fogLevel: fogLevel, SELevel: SELevel, Severity: Severity, warnWeather: warnWeather, updated: updated))
