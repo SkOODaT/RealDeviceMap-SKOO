@@ -2204,6 +2204,7 @@ function getGymPopupContent(gym) {
     const isRaidBattle = raidBattleDate <= now && isRaid;
 
 	const hasRaidBoss = gym.raid_pokemon_id !== 0 && gym.raid_pokemon_id !== null;
+	const hasGuard = gym.guard_pokemon_id !== 0 && gym.guard_pokemon_id !== null;
 
     let content = '';
 
@@ -2233,7 +2234,7 @@ function getGymPopupContent(gym) {
 	}
 
 	let guardtypesIcon = '';
-	if (!hasRaidBoss) {
+	if (hasGuard && !hasRaidBoss) {
 		let types = pokemonDb[gym.guard_pokemon_id].types;
 		if (types !== null && types.length > 0) {
 			if (types.length === 2) {
@@ -2371,7 +2372,7 @@ function getGymPopupContent(gym) {
 			    '<div class="iv-label">' +
                 '<b>Team:</b> ' + getTeam(gym.team_id) + '<br>' +
                 '<b>Slots Available:</b> ' + (gym.availble_slots === 0 ? "Full" : gym.availble_slots === 6 ? "Empty" : gym.availble_slots) + '<br>';
-                if (gym.guard_pokemon_id !== null) {
+                if (hasGuard) {
                     content += '<b>Guard:</b> ' + getPokemonName(gym.guard_pokemon_id) + '<br>';
                 }
                 if (guardtypesIcon) {
