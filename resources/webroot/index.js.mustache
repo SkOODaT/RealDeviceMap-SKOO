@@ -2233,15 +2233,17 @@ function getGymPopupContent(gym) {
 	}
 
 	let guardtypesIcon = '';
-	let types = pokemonDb[gym.guard_pokemon_id].types;
-	if (types !== null && types.length > 0) {
-		if (types.length === 2) {
-			guardtypesIcon += '<b>' + types[0].type + '</b><img src="' + imageURL + 'type/' + types[0].type.toLowerCase() + '.png" height="16" width="16">&nbsp;';
-			guardtypesIcon += '<b>' + types[1].type + '</b><img src="' + imageURL + 'type/' + types[1].type.toLowerCase() + '.png" height="16" width="16">';
-		} else if (types.length === 1) {
-			guardtypesIcon += '<b>' + types[0].type + '</b><img src="' + imageURL + 'type/' + types[0].type.toLowerCase() + '.png" height="16" width="16">';
-		} else {
-			guardtypesIcon = '';
+	if (!hasRaidBoss) {
+		let types = pokemonDb[gym.guard_pokemon_id].types;
+		if (types !== null && types.length > 0) {
+			if (types.length === 2) {
+				guardtypesIcon += '<b>' + types[0].type + '</b><img src="' + imageURL + 'type/' + types[0].type.toLowerCase() + '.png" height="16" width="16">&nbsp;';
+				guardtypesIcon += '<b>' + types[1].type + '</b><img src="' + imageURL + 'type/' + types[1].type.toLowerCase() + '.png" height="16" width="16">';
+			} else if (types.length === 1) {
+				guardtypesIcon += '<b>' + types[0].type + '</b><img src="' + imageURL + 'type/' + types[0].type.toLowerCase() + '.png" height="16" width="16">';
+			} else {
+				guardtypesIcon = '';
+			}
 		}
 	}
 	
