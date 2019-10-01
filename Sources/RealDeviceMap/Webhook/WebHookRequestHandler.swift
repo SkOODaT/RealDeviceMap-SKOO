@@ -424,15 +424,15 @@ class WebHookRequestHandler {
             }
 
             let startclientWeathers = Date()
-			var raidWeather = UInt8()
-			for conditions in clientWeathers {
-				let ws2cell = S2Cell(cellId: S2CellId(id: conditions.cell))
-				let wlat = ws2cell.capBound.rectBound.center.lat.degrees
-				let wlon = ws2cell.capBound.rectBound.center.lng.degrees
-				let wlevel = ws2cell.level
+            var raidWeather = UInt8()
+            for conditions in clientWeathers {
+                let ws2cell = S2Cell(cellId: S2CellId(id: conditions.cell))
+                let wlat = ws2cell.capBound.rectBound.center.lat.degrees
+                let wlon = ws2cell.capBound.rectBound.center.lng.degrees
+                let wlevel = ws2cell.level
                 let weather = Weather(mysql: mysql, id: ws2cell.cellId.id, level: UInt8(wlevel), latitude: wlat, longitude: wlon, conditions: conditions.data, updated: nil)
-				try? weather.save(mysql: mysql, update: true)
-				raidWeather = conditions.data.gameplayWeather.gameplayCondition.rawValue.toUInt8()
+                try? weather.save(mysql: mysql, update: true)
+                raidWeather = conditions.data.gameplayWeather.gameplayCondition.rawValue.toUInt8()
 			}
 			Log.debug(message: "[WebHookRequestHandler] Weather Detail Count: \(clientWeathers.count) parsed in \(String(format: "%.3f", Date().timeIntervalSince(startclientWeathers)))s")
 

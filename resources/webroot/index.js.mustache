@@ -68,6 +68,7 @@ let deviceOfflineIcon;
 let tileLayer;
 
 let pokemonDb = {};
+let weatherTypes = {};
 
 let imageURL = "{{img_url}}"
 
@@ -138,6 +139,10 @@ $(function() {
 
     $.getJSON( "/static/data/pokemon.json", function( data ) {
         pokemonDb = data;
+    });
+	
+    $.getJSON( "/static/data/weathertypes.json", function( data ) {
+        weatherTypes = data;
     });
 
     avilableForms = JSON.parse('{{{avilable_forms_json}}}');
@@ -2181,8 +2186,17 @@ function getPokestopPopupContent(pokestop) {
     return content;
 }
 
+
+function isWeatherBoosted(pokeTypes, weatherTypes) {
+	for (var i = 0; i < pokeTypes.length; i++) {
+		if (weatherTypes.includes(pokeTypes[i].type))
+		return true;
+	}
+	return false;
+}
+
 function getGymPopupContent(gym) {
-const now = new Date();
+	const now = new Date();
 	const raidBattleDate = new Date(gym.raid_battle_timestamp*1000);
 	const raidEndDate = new Date(gym.raid_end_timestamp*1000);
 
@@ -2200,17 +2214,48 @@ const now = new Date();
         gymName = gym.name;
     }
 
-    let typesIcon = '';
+	let wtypes = ''
+	let wname = ''
+	let WeatherBoosted = ''
+	let compare = false
+	if (gym.gym_weather !== null) {
+		wtypes = weatherTypes[gym.gym_weather].types;
+		wname = weatherTypes[gym.gym_weather].name;
+		if (hasRaidBoss) {
+			let ptypes = pokemonDb[gym.raid_pokemon_id].types;
+			compare = isWeatherBoosted(ptypes, wtypes)
+		}
+		if (compare !== false) {
+			WeatherBoosted += '<b>Boosted</b><br>'
+		}
+		//console.log("PTypes:", ptypes);
+		//console.log("WTypes:", wtypes);
+	}
+
+	let guardtypesIcon = '';
+	let types = pokemonDb[gym.guard_pokemon_id].types;
+	if (types !== null && types.length > 0) {
+		if (types.length === 2) {
+			guardtypesIcon += '<b>' + types[0].type + '</b><img src="' + imageURL + 'type/' + types[0].type.toLowerCase() + '.png" height="16" width="16">&nbsp;';
+			guardtypesIcon += '<b>' + types[1].type + '</b><img src="' + imageURL + 'type/' + types[1].type.toLowerCase() + '.png" height="16" width="16">';
+		} else if (types.length === 1) {
+			guardtypesIcon += '<b>' + types[0].type + '</b><img src="' + imageURL + 'type/' + types[0].type.toLowerCase() + '.png" height="16" width="16">';
+		} else {
+			guardtypesIcon = '';
+		}
+	}
+	
+	let raidtypesIcon = '';
 	if (hasRaidBoss) {
 		let types = pokemonDb[gym.raid_pokemon_id].types;
 		if (types !== null && types.length > 0) {
 			if (types.length === 2) {
-				typesIcon += '<b>' + types[0].type + '</b><img src="' + imageURL + 'type/' + types[0].type.toLowerCase() + '.png" height="16" width="16">&nbsp;';
-				typesIcon += '<b>' + types[1].type + '</b><img src="' + imageURL + 'type/' + types[1].type.toLowerCase() + '.png" height="16" width="16">';
+				raidtypesIcon += '<b>' + types[0].type + '</b><img src="' + imageURL + 'type/' + types[0].type.toLowerCase() + '.png" height="16" width="16">&nbsp;';
+				raidtypesIcon += '<b>' + types[1].type + '</b><img src="' + imageURL + 'type/' + types[1].type.toLowerCase() + '.png" height="16" width="16">';
 			} else if (types.length === 1) {
-				typesIcon += '<b>' + types[0].type + '</b><img src="' + imageURL + 'type/' + types[0].type.toLowerCase() + '.png" height="16" width="16">';
+				raidtypesIcon += '<b>' + types[0].type + '</b><img src="' + imageURL + 'type/' + types[0].type.toLowerCase() + '.png" height="16" width="16">';
 			} else {
-				typesIcon = '';
+				raidtypesIcon = '';
 			}
 		}
 	}
@@ -2230,9 +2275,9 @@ const now = new Date();
 		var pokemonName;
 		if (hasRaidBoss) {
 			if (gym.raid_pokemon_form !== 0 && gym.raid_pokemon_form !== null) {
-				pokemonName = getFormName(gym.raid_pokemon_form) + ' ' + getPokemonName(gym.raid_pokemon_id);
+				pokemonName = WeatherBoosted + '' + getFormName(gym.raid_pokemon_form) + ' ' + getPokemonName(gym.raid_pokemon_id);
 			} else {
-				pokemonName = getPokemonName(gym.raid_pokemon_id);
+				pokemonName = WeatherBoosted + '' +getPokemonName(gym.raid_pokemon_id);
 			}
 		} else if (isRaidBattle) {
 			pokemonName = "Unknown Raid Boss";
@@ -2258,15 +2303,15 @@ const now = new Date();
 				if (hasRaidBoss) {
 					content += '<div class="iv-label">' +
 					'<h7><b>' + pokemonName + '</b></h7><br>';
+                    if (raidtypesIcon) {
+                        content += '' + raidtypesIcon + '<br>';
+                    }
 					if (gym.raid_pokemon_cp !== null) {
 						if (gym.raid_is_exclusive) {
 							content += '<b>Level:</b> EX<br>';
 						} else {
 							content += '<b>Level:</b> ' + gym.raid_level + '<br>';
 						}
-					}
-					if (gym.gym_weather !== null) {
-						content += '<b>WEATHER:</b> ' + gym.gym_weather + '<br>';
 					}
 					if (gym.raid_pokemon_cp !== null) {
 						content += '<b>CP:</b> ' + gym.raid_pokemon_cp + '<br>';
@@ -2283,11 +2328,11 @@ const now = new Date();
 					if (gym.raid_pokemon_form !== null && gym.raid_pokemon_form > 0) {
 						content += '<b>Form:</b> ' + getFormName(gym.raid_pokemon_form) + '<br>';
 					}
-					if (typesIcon) {
-						content += ''+typesIcon+'<br>';
-					}
 					if (gym.ex_raid_eligible) {
-						content += '<img src="' + imageURL + 'egg/ex.png" height="24" width="32">';
+						content += '<img src="' + imageURL + 'egg/ex.png" height="24" width="32"><br>';
+					}
+					if (gym.gym_weather !== null && gym.gym_weather > 0) {
+					     content += '<b>'+ wname +':</b> ' + wtypes;
 					}
 					content += '</div>' ;
 				}
@@ -2327,6 +2372,9 @@ const now = new Date();
                 if (gym.guard_pokemon_id !== null) {
                     content += '<b>Guard:</b> ' + getPokemonName(gym.guard_pokemon_id) + '<br>';
                 }
+                if (guardtypesIcon) {
+                    content += '' + guardtypesIcon + '<br>';
+                }
                 if (gym.total_cp !== null) {
                     content += '<b>Total CP:</b> ' + gym.total_cp.toLocaleString() + '<br>';
                 }
@@ -2335,7 +2383,10 @@ const now = new Date();
                 }
                 if (gym.ex_raid_eligible) {
                     //content += '<b>Gym is EX-Raid eligible</b>';
-                    content += '<img src="' + imageURL + 'egg/ex.png" height="24" width="32">';
+                    content += '<img src="' + imageURL + 'egg/ex.png" height="24" width="32"><br>';
+                }
+                if (gym.gym_weather !== null && gym.gym_weather > 0) {
+                    content += '<b>'+ wname +':</b> ' + wtypes;
                 }
         content +=
             '</div></div>' + //END 2ND COL

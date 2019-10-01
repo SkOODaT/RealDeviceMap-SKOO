@@ -177,11 +177,10 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
         self.raidIsExclusive = raidIsExclusive
         self.cellId = cellId
         self.totalCp = totalCp
-		self.gymWeather = gymWeather
+        self.gymWeather = gymWeather
     }
     
     init(fortData: POGOProtos_Map_Fort_FortData, cellId: UInt64, weatherData: UInt8) {
-        //Log.debug(message: "[GYM] \(weatherData) ")
         self.id = fortData.id
         self.lat = fortData.latitude
         self.lon = fortData.longitude
@@ -192,9 +191,9 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
         self.lastModifiedTimestamp = UInt32(fortData.lastModifiedTimestampMs / 1000)
         self.exRaidEligible = fortData.isExRaidEligible
         self.inBattle = fortData.isInBattle
-		if weatherData > 0 {
-			self.gymWeather = weatherData
-		}
+        if weatherData > 0 {
+            self.gymWeather = weatherData
+        }
 
         if fortData.imageURL != "" {
             self.url = fortData.imageURL
@@ -282,12 +281,9 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
             if oldGym!.cellId != nil && self.cellId == nil {
                 self.cellId = oldGym!.cellId
             }
-			
-			if oldGym!.gymWeather != nil && self.gymWeather == nil {
+            if oldGym!.gymWeather != nil && self.gymWeather == nil {
                 self.gymWeather = oldGym!.gymWeather
             }
-			
-			
             if oldGym!.name != nil && self.name == nil {
                 self.name = oldGym!.name
             }
