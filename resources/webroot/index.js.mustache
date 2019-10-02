@@ -1541,6 +1541,15 @@ function loadData() {
 
                     if (oldWeather === undefined) {
                         weather.marker = getWeatherMarker(weather, ts);
+						let weatherIcon;
+						if (weather.gameplay_condition !== 0 && weather.gameplay_condition !== null) {
+							weatherIcon = '<img src="' + imageURL + 'weather/' + weather.gameplay_condition + '.png" height="25" width="25">';
+						} else {
+							weatherIcon = ''
+						}
+						weatherName = weatherTypes[weather.gameplay_condition].name;
+						var options = {permanent: true, className: "leaflet-tooltip", direction: "center", offset: [0, 15]};
+                        /*var tooltip =*/ weather.marker.bindTooltip('<center>'+weatherIcon+'</center><center><b>'+weatherName+'</b></center>', options);
                         weatherMarkers.push(weather);
                         weather.marker.addTo(map);
                     } else {
@@ -2508,18 +2517,27 @@ function getCellPopupContent(cell) {
     return content;
 }
 
+function degreesToCardinal(d) {
+    var dirs = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
+        'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW']
+    var ix = Math.floor((d + 11.25) / 22.5 - 0.02)
+    return dirs[ix % 16]
+}
+
 function getWeatherPopupContent(weather) {
 
     weatherName = weatherTypes[weather.gameplay_condition].name;
+	weatherType = weatherTypes[weather.gameplay_condition].types;
 
     let content = '<center>';
-	content += '<b>'+weatherName+'</b><br>';
-	content += '<h6><b>Level '+weather.level+' S2 Cell</b></h6>';
-	content += '<b>Id:</b> '+weather.id+'<br>';
+	content += '<h6><b>'+weatherName+'</b><br></h6>';
+	content += '<b>Boosted Types:</b><br>'+weatherType+'<br>';
+	content += '<b>Cell ID:</b> '+weather.id+'<br>';
+	content += '<b>Cell Level:</b> '+weather.level+'<br>';
 	content += '<b>Lat:</b> '+weather.latitude+'<br>';
 	content += '<b>Lon:</b> '+weather.longitude+'<br>';
 	content += '<b>Gameplay Condition:</b> '+weather.gameplay_condition+'<br>';
-	content += '<b>Wind Direction:</b> '+weather.wind_direction+'°<br>';
+	content += '<b>Wind Direction:</b> '+weather.wind_direction+'° ('+degreesToCardinal(weather.wind_direction)+')<br>';
 	content += '<b>Cloud Level:</b> '+weather.cloud_level+'<br>';
 	content += '<b>Rain Level:</b> '+weather.rain_level+'<br>';
 	content += '<b>Wind Level:</b> '+weather.wind_level+'<br>';
@@ -2527,7 +2545,7 @@ function getWeatherPopupContent(weather) {
 	content += '<b>Fog Level:</b> '+weather.fog_level+'<br>';
 	content += '<b>Special Effects Level:</b> '+weather.special_effect_level+'<br>';
 	content += '<b>Severity:</b> '+weather.severity+'<br>';	
-	content += '<b>Weather Warning:</b> '+weather.warn_weather+'<br>';
+	content += '<b>Weather Warning:</b> '+weather.warn_weather+'<br><br>';
 
     const updatedDate = new Date(weather.updated * 1000);
 
@@ -2798,7 +2816,7 @@ function getWeatherStyle(weather, ts) {
     if (ago <= 150) {
         value = 0;
     } else {
-        value = Math.min((ago - 150) / 750, 1);
+        value = Math.min((ago - 150) / 1800, 1);
     }
     const hue = ((1-value)*120).toString(10);
     return {fillColor: ["hsl(",hue,",100%,50%)"].join(""), color: "black", opacity: 0.75, fillOpacity: 0.5};
