@@ -1479,7 +1479,7 @@ function loadData() {
                         weather.marker = getWeatherMarker(weather, ts);
 						let weatherIcon;
 						if (weather.gameplay_condition !== 0 && weather.gameplay_condition !== null) {
-							weatherIcon = '<img src="' + imageURL + 'weather/' + weather.gameplay_condition + '.png" height="25" width="25">';
+							weatherIcon = '<img src="/static/img/weather/' + weather.gameplay_condition + '.png" height="25" width="25">';
 						} else {
 							weatherIcon = ''
 						}

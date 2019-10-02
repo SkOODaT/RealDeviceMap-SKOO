@@ -364,7 +364,7 @@ struct Group {
                 perm_view_map_quest=VALUES(perm_view_map_quest),
                 perm_view_map_iv=VALUES(perm_view_map_iv),
                 perm_view_map_cell=VALUES(perm_view_map_cell),
-                perm_view_map_device=VALUES(perm_view_map_weather),
+                perm_view_map_weather=VALUES(perm_view_map_weather),
                 perm_view_map_lure=VALUES(perm_view_map_lure),
                 perm_view_map_invasion=VALUES(perm_view_map_invasion),
                 perm_view_map_device=VALUES(perm_view_map_device)
