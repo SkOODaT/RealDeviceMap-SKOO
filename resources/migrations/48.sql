@@ -16,3 +16,5 @@ CREATE TABLE IF NOT EXISTS `weather` (
   `updated` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`)
 );
+ALTER TABLE `group`
+ADD COLUMN `perm_view_map_weather` tinyint unsigned;
