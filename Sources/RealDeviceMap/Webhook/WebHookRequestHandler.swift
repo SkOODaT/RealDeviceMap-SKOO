@@ -143,7 +143,8 @@ class WebHookRequestHandler {
         var isEmtpyGMO = true
         var isInvalidGMO = true
         var containsGMO = false
-
+        var isMadData = false
+		
         for rawData in contents {
             
             let data: Data
@@ -163,9 +164,14 @@ class WebHookRequestHandler {
             } else if let ggi = rawData["GymGetInfoResponse"] as? String {
                 data = Data(base64Encoded: ggi) ?? Data()
                 method = 156
-            } else if let dataString = rawData["data"] as? String ?? rawData["payload"] as? String {
+            } else if let dataString = rawData["data"] as? String {
                 data = Data(base64Encoded: dataString) ?? Data()
-                method = rawData["method"] as? Int ?? rawData["type"] as? Int ?? 106
+                method = rawData["method"] as? Int ?? 106
+            } else if let madString = rawData["payload"] as? String {
+				data = Data(base64Encoded: madString) ?? Data()
+				method = rawData["type"] as? Int ?? 106
+				isMadData = true
+				//Log.info(message: "[WebHookRequestHandler] PogoDroid Raw Data Type: \(method)")
             } else {
                 continue
             }
@@ -179,7 +185,7 @@ class WebHookRequestHandler {
                 } else {
                     Log.info(message: "[WebHookRequestHandler] Malformed FortSearchResponse")
                 }
-            } else if method == 102 && trainerLevel >= 30 {
+            } else if method == 102 && trainerLevel >= 30 || method == 102 && isMadData == true {
                 if let er = try? POGOProtos_Networking_Responses_EncounterResponse(serializedData: data) {
                     encounters.append(er)
                 } else {
