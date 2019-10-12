@@ -399,6 +399,25 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
 
     }
 
+    public static func shouldUpdate(old: Pokemon, new: Pokemon) -> Bool {
+        let now = UInt32(Date().timeIntervalSince1970)
+        if (old.pokemonId != new.pokemonId){
+            return true
+        } else if (old.spawnId == nil && new.spawnId != nil) || (old.pokestopId == nil && new.pokestopId != nil) {
+            return true
+        } else if (old.expireTimestampVerified == false && new.expireTimestampVerified == true) || (old.expireTimestampVerified == true && new.expireTimestampVerified == true && ( old.expireTimestamp != new.expireTimestamp) ) {
+            return true
+        } else if (old.weather != new.weather) {
+            return true
+        } else if (now - old.updated!) > 90 {
+            return true
+        } else if (old.atkIv == nil && new.atkIv != nil) || (old.atkIv != nil && (old.atkIv != new.atkIv)) {
+            return true
+        } else {
+            return false
+        }
+    }
+
     public func save(mysql: MySQL?=nil, updateIV:Bool=false) throws {
 
         var bindFirstSeen: Bool
@@ -502,6 +521,12 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                     self.displayPokemonId = oldPokemon!.pokemonId
                     self.pokemonId = 132
                 }
+            }
+
+            let shouldWrite:Bool = Pokemon.shouldUpdate(old: oldPokemon!, new: self)
+            
+            if !shouldWrite {
+                return
             }
 
             let ivSQL: String
