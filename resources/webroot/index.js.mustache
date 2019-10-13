@@ -138,6 +138,10 @@ $(function() {
         pokemonDb = data;
     });
 
+    $.getJSON( "/static/data/weathertypes.json", function( data ) {
+        weatherTypes = data;
+    });
+
     avilableForms = JSON.parse('{{{avilable_forms_json}}}');
     avilableItems = JSON.parse('{{{avilable_items_json}}}');
     avilableTileservers = JSON.parse('{{{avilable_tileservers_json}}}');
