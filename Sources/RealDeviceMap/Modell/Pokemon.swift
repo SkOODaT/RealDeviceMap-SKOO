@@ -409,7 +409,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             return true
         } else if (old.weather != new.weather) {
             return true
-        } else if (now > old.updated!) && (now - old.updated!) > 90 {
+        } else if now > old.updated! + 90 {
             return true
         } else if (old.atkIv == nil && new.atkIv != nil) || (old.atkIv != nil && (old.atkIv != new.atkIv)) {
             return true
