@@ -7,6 +7,7 @@
 
 import Foundation
 import POGOProtos
+import PerfectLib
 
 extension POGOProtos_Enums_Costume {
     
@@ -48,6 +49,8 @@ extension POGOProtos_Enums_Costume {
         case .may2019Noevolve: return ["25-10"]
         case .unset: return []
         case .UNRECOGNIZED: return []
+        default:
+            Log.warning(message: "Missing costume string for costume: \(self.rawValue)")
 		}
     }
     
