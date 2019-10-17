@@ -2066,17 +2066,19 @@ class WebReqeustHandler {
                     
                     //Set any removed device's group name to null.
                     for deviceUUID in deviceDiff {
-                        let device = try Device.getById(id: deviceUUID)!
-                        try device.clearGroup()
+                        if let device = try Device.getById(id: deviceUUID) {
+                            try device.clearGroup()
+                        }
                     }
                     //Update new and existing devices
                     for deviceUUID in deviceUUIDs {
-                        let device = try Device.getById(id: deviceUUID)!
-                        device.deviceGroup = name
-                        device.instanceName = instanceName
-                        try device.save(oldUUID: device.uuid)
-                        oldDeviceGroup!.devices.append(device)
-                        InstanceController.global.reloadDevice(newDevice: device, oldDeviceUUID: deviceUUID)
+                        if let device = try Device.getById(id: deviceUUID) {
+                            device.deviceGroup = name
+                            device.instanceName = instanceName
+                            try device.save(oldUUID: device.uuid)
+                            oldDeviceGroup!.devices.append(device)
+                            InstanceController.global.reloadDevice(newDevice: device, oldDeviceUUID: deviceUUID)
+                        }
                     }
                 } catch {
                     data["show_error"] = true

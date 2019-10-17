@@ -35,6 +35,7 @@ Log.debug(message: "[MAIN] Starting Database Controller")
 _ = DBController.global
 
 // Load Groups
+Log.debug(message: "[MAIN] Loading groups")
 do {
     try Group.setup()
 } catch {

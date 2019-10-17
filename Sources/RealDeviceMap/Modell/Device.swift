@@ -250,6 +250,8 @@ class Device : JSONConvertibleObject, Hashable {
             throw DBController.DBError()
         }
 
+    }
+
     static func == (lhs: Device, rhs: Device) -> Bool {
         return lhs.uuid == rhs.uuid
     }  
