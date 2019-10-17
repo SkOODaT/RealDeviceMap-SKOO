@@ -50,6 +50,7 @@ class ApiRequestHandler {
         let showDevices =  request.param(name: "show_devices")?.toBool() ?? false
         let showActiveDevices = request.param(name: "show_active_devices")?.toBool() ?? false
         let showInstances =  request.param(name: "show_instances")?.toBool() ?? false
+        let showDeviceGroups = request.param(name: "show_devicegroups")?.toBool() ?? false
         let showUsers =  request.param(name: "show_users")?.toBool() ?? false
         let showGroups =  request.param(name: "show_groups")?.toBool() ?? false
         let showPokemonFilter = request.param(name: "show_pokemon_filter")?.toBool() ?? false
@@ -1045,6 +1046,7 @@ class ApiRequestHandler {
             if devices != nil {
                 for device in devices! {
                     var deviceData = [String: Any]()
+                    //deviceData["chk"] = ""
                     deviceData["uuid"] = device.uuid
                     deviceData["host"] = device.lastHost ?? ""
                     deviceData["instance"] = device.instanceName ?? ""
@@ -1116,6 +1118,30 @@ class ApiRequestHandler {
             }
             data["instances"] = jsonArray
             
+        }
+        
+        if showDeviceGroups && perms.contains(.admin) {
+            
+            let deviceGroups = try? DeviceGroup.getAll(mysql: mysql)
+            
+            var jsonArray = [[String: Any]]()
+            
+            if deviceGroups != nil {
+                for deviceGroup in deviceGroups! {
+                    var deviceGroupData = [String: Any]()
+                    deviceGroupData["name"] = deviceGroup.name
+                    deviceGroupData["instance"] = deviceGroup.instanceName
+                    deviceGroupData["devices"] = deviceGroup.devices.count
+                    
+                    if formatted {
+                        deviceGroupData["buttons"] = "<a href=\"/dashboard/devicegroup/edit/\(deviceGroup.name.encodeUrl()!)\" role=\"button\" class=\"btn btn-primary\">Edit Device Group</a>"
+                    }
+
+                    jsonArray.append(deviceGroupData)
+                }
+            }
+
+            data["devicegroups"] = jsonArray
         }
         
         if showAssignments && perms.contains(.admin) {

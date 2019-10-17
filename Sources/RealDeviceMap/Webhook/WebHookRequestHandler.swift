@@ -646,7 +646,7 @@ class WebHookRequestHandler {
                 }
 
                 if device == nil {
-                    let newDevice = Device(uuid: uuid, instanceName: nil, lastHost: nil, lastSeen: 0, accountUsername: nil, lastLat: 0.0, lastLon: 0.0)
+                    let newDevice = Device(uuid: uuid, instanceName: nil, lastHost: nil, lastSeen: 0, accountUsername: nil, lastLat: 0.0, lastLon: 0.0, deviceGroup: nil)
                     try newDevice.create(mysql: mysql)
                     try response.respondWithData(data: ["assigned": false, "first_warning_timestamp": firstWarningTimestamp as Any])
                 } else {
