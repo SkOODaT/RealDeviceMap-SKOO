@@ -503,23 +503,28 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             }
 
             if updateIV && oldPokemon!.atkIv != nil && self.atkIv == nil {
-                self.atkIv = oldPokemon!.atkIv
-                self.defIv = oldPokemon!.defIv
-                self.staIv = oldPokemon!.staIv
-                self.cp = oldPokemon!.cp
-                self.weight = oldPokemon!.weight
-                self.size = oldPokemon!.size
-                self.move1 = oldPokemon!.move1
-                self.move2 = oldPokemon!.move2
-                self.level = oldPokemon!.level
-                self.shiny = oldPokemon!.shiny
-                self.isDitto = Pokemon.isDittoDisguised(pokemon: oldPokemon!)
-                self.capture1 = oldPokemon!.capture1
-                self.capture2 = oldPokemon!.capture2
-                self.capture3 = oldPokemon!.capture3
-                if self.isDitto {
-                    self.displayPokemonId = oldPokemon!.pokemonId
-                    self.pokemonId = 132
+                if !(
+                        (oldPokemon!.weather == nil || oldPokemon!.weather! == 0) && (self.weather ?? 0 > 0) ||
+                            (self.weather == nil || self.weather! == 0 ) && (oldPokemon!.weather ?? 0 > 0)
+                    ) {
+                    self.atkIv = oldPokemon!.atkIv
+                    self.defIv = oldPokemon!.defIv
+                    self.staIv = oldPokemon!.staIv
+                    self.cp = oldPokemon!.cp
+                    self.weight = oldPokemon!.weight
+                    self.size = oldPokemon!.size
+                    self.move1 = oldPokemon!.move1
+                    self.move2 = oldPokemon!.move2
+                    self.level = oldPokemon!.level
+                    self.shiny = oldPokemon!.shiny
+                    self.isDitto = Pokemon.isDittoDisguised(pokemon: oldPokemon!)
+                    self.capture1 = oldPokemon!.capture1
+                    self.capture2 = oldPokemon!.capture2
+                    self.capture3 = oldPokemon!.capture3
+                    if self.isDitto {
+                        self.displayPokemonId = oldPokemon!.pokemonId
+                        self.pokemonId = 132
+                    }
                 }
             }
 
