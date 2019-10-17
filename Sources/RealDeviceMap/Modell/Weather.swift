@@ -193,10 +193,10 @@ class Weather: JSONConvertibleObject, WebHookEvent {
     
     public static func getAll(mysql: MySQL?=nil, minLat: Double, maxLat: Double, minLon: Double, maxLon: Double, updated: UInt32) throws -> [Weather] {
         
-        let minLatReal = minLat - 0.01
-        let maxLatReal = maxLat + 0.01
-        let minLonReal = minLon - 0.01
-        let maxLonReal = maxLon + 0.01
+        let minLatReal = minLat - 0.1
+        let maxLatReal = maxLat + 0.1
+        let minLonReal = minLon - 0.1
+        let maxLonReal = maxLon + 0.1
         
         guard let mysql = mysql ?? DBController.global.mysql else {
             Log.error(message: "[WEATHER] Failed to connect to database.")
