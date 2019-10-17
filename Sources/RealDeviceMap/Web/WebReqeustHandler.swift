@@ -2082,7 +2082,7 @@ class WebReqeustHandler {
             }
             data["enabled"] = assignment.enabled ? "checked" : ""
 
-            if selectedDevice == nil || selectedInstance == nil {
+            if selectedDevice == "" || selectedInstance == "" {
                 data["show_error"] = true
                 data["error"] = "Invalid Request."
                 return data

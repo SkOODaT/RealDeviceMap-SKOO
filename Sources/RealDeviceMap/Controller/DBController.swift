@@ -230,7 +230,7 @@ class DBController {
             
             if ProcessInfo.processInfo.environment["NO_BACKUP"] == nil {
             
-                var allTables = [
+                let allTables = [
                     "account": true,
                     "assignment": true,
                     "device": true,

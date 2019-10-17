@@ -334,7 +334,7 @@ class AutoInstanceController: InstanceControllerProto {
                     let current = CLLocationCoordinate2D(latitude: lastLat!, longitude: lastLon!)
                     
                     var closest: Pokestop?
-                    var closestDistance: Double = 9999999999999999
+                    var closestDistance: Double = 10000000000000000
                     
                     stopsLock.lock()
                     let todayStopsC = todayStops
