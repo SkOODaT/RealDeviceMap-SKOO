@@ -1,9 +1,8 @@
-ALTER TABLE `pokemon`
-ADD COLUMN `capture_1` double(18,14) DEFAULT NULL;
-ALTER TABLE `pokemon`
-ADD COLUMN `capture_2` double(18,14) DEFAULT NULL;
-ALTER TABLE `pokemon`
-ADD COLUMN `capture_3` double(18,14) DEFAULT NULL;
+ALTER TABLE device
+ADD COLUMN device_group varchar(30) DEFAULT NULL;
 
-ALTER TABLE `gym`
-ADD COLUMN `gym_weather` tinyint unsigned;
+CREATE TABLE IF NOT EXISTS `device_group` (
+  `name` varchar(30) UNIQUE NOT NULL,
+  `instance_name` varchar(30) NOT NULL,
+  PRIMARY KEY (`name`)
+);
