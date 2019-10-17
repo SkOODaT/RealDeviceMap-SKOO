@@ -1,3 +1,5 @@
-ALTER TABLE `gym`
-ADD COLUMN `gym_weather` tinyint unsigned;
+ALTER TABLE pokemon
+ADD COLUMN shiny TINYINT(1) DEFAULT 0;
 
+ALTER TABLE pokemon
+ADD COLUMN username VARCHAR(15) DEFAULT NULL;

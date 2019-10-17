@@ -1,2 +1,2 @@
-ALTER TABLE `pokestop`
-ADD COLUMN `grunt_type` smallint(5) unsigned DEFAULT 0;
+ALTER TABLE assignment
+ADD COLUMN enabled tinyint(1) unsigned NOT NULL DEFAULT 1;
