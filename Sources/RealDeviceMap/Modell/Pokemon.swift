@@ -84,9 +84,9 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             "shiny": shiny as Any,
             "username": username as Any,
             "display_pokemon_id": displayPokemonId as Any,
-            "capture_1": capture1 ?? Any,
-            "capture_2": capture2 ?? Any,
-            "capture_3": capture3 ?? Any
+            "capture_1": capture1 as Any,
+            "capture_2": capture2 as Any,
+            "capture_3": capture3 as Any
         ]
         return [
             "type": "pokemon",
@@ -398,25 +398,6 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
         self.changed = self.updated
 
     }
-
-    public static func shouldUpdate(old: Pokemon, new: Pokemon) -> Bool {
-        let now = UInt32(Date().timeIntervalSince1970)
-        if (old.pokemonId != new.pokemonId){
-            return true
-        } else if (old.spawnId == nil && new.spawnId != nil) || (old.pokestopId == nil && new.pokestopId != nil) {
-            return true
-        } else if (old.expireTimestampVerified == false && new.expireTimestampVerified == true) || (old.expireTimestampVerified == true && new.expireTimestampVerified == true && ( old.expireTimestamp != new.expireTimestamp) ) {
-            return true
-        } else if (old.weather != new.weather) {
-            return true
-        } else if now > old.updated! + 90 {
-            return true
-        } else if (old.atkIv == nil && new.atkIv != nil) || (old.atkIv != nil && (old.atkIv != new.atkIv)) {
-            return true
-        } else {
-            return false
-        }
-    }
     
     public static func shouldUpdate(old: Pokemon, new: Pokemon) -> Bool {
         let now = UInt32(Date().timeIntervalSince1970)
@@ -437,7 +418,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             return false
         }
     }
-
+    
     public func save(mysql: MySQL?=nil, updateIV:Bool=false) throws {
 
         var bindFirstSeen: Bool
@@ -778,7 +759,6 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             let capture1: Double?
             let capture2: Double?
             let capture3: Double?
-
             if showIV {
                 atkIv = result[6] as? UInt8
                 defIv = result[7] as? UInt8
@@ -793,7 +773,6 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                 capture1 = result[20] as? Double
                 capture2 = result[21] as? Double
                 capture3 = result[22] as? Double
-
             } else {
                 atkIv = nil
                 defIv = nil
@@ -809,7 +788,6 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                 capture2 = nil
                 capture3 = nil
             }
-
             let gender = result[11] as? UInt8
             let form = result[12] as? UInt16
             let weather = result[15] as? UInt8
@@ -897,7 +875,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
     static func == (lhs: Pokemon, rhs: Pokemon) -> Bool {
         return lhs.id == rhs.id
     }
-
+    
     private static func isDittoDisguised(pokemon: Pokemon) -> Bool {
         return isDittoDisguised(pokemonId: pokemon.pokemonId,
                                 level:     pokemon.level ?? 0,

@@ -352,7 +352,6 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
         mysqlStmt.bindParam(raidPokemonCp)
         mysqlStmt.bindParam(raidPokemonGender)
         mysqlStmt.bindParam(gymWeather)
-
         mysqlStmt.bindParam(raidIsExclusive)
         mysqlStmt.bindParam(cellId)
         mysqlStmt.bindParam(totalCp)

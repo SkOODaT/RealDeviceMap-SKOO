@@ -1451,7 +1451,7 @@ class WebReqeustHandler {
         let dittoDisguises = request.param(name: "ditto_disguises")?.components(separatedBy: ",").map({ (s) -> UInt16 in
             return s.toUInt16() ?? 0
         }) ?? [UInt16]()
-
+        
         var tileservers = [String: [String: String]]()
         for tileserverString in tileserversString.trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: "\n") {
             let split = tileserverString.components(separatedBy: ";")
@@ -1587,7 +1587,7 @@ class WebReqeustHandler {
         WebHookRequestHandler.hostWhitelistUsesProxy = deviceAPIhostWhitelistUsesProxy
         WebHookRequestHandler.loginSecret = deviceAPIloginSecret
         WebHookRequestHandler.dittoDisguises = dittoDisguises
-
+        
         data["title"] = title
         data["show_success"] = true
 
@@ -2234,7 +2234,7 @@ class WebReqeustHandler {
         let selectedDevice = request.param(name: "device")
         let selectedInstance = request.param(name: "instance")
         let time = request.param(name: "time")
-		let onComplete = request.param(name: "oncomplete")
+        let onComplete = request.param(name: "oncomplete")
         let enabled = request.param(name: "enabled")
 
         var data = data
