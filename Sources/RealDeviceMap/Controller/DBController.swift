@@ -238,7 +238,6 @@ class DBController {
                     "discord_rule": true,
                     "group": true,
                     "gym": true,
-                    "gyms": true,
                     "instance": true,
                     "metadata": true,
                     "pokemon": true,

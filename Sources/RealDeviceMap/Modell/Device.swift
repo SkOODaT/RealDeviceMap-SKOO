@@ -249,7 +249,6 @@ class Device : JSONConvertibleObject, Hashable {
             Log.error(message: "[DEVICE] Failed to execute query. (\(mysqlStmt.errorMessage())")
             throw DBController.DBError()
         }
-
     }
 
     static func == (lhs: Device, rhs: Device) -> Bool {

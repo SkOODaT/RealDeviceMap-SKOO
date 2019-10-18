@@ -68,25 +68,25 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             "disappear_time_verified": expireTimestampVerified,
             "first_seen": firstSeenTimestamp ?? 1,
             "last_modified_time": updated ?? 1,
-            "gender": gender ?? 0,
-            "cp": cp ?? 0,
-            "form": form ?? 0,
-            "costume": costume ?? 0,
-            "individual_attack": atkIv ?? 0,
-            "individual_defense": defIv ?? 0,
-            "individual_stamina": staIv ?? 0,
-            "pokemon_level": level ?? 0,
-            "move_1": move1 ?? 0,
-            "move_2": move2 ?? 0,
-            "weight": weight ?? 0,
-            "height": size ?? 0,
-            "weather": weather ?? 0,
-            "shiny": shiny ?? 0,
-            "username": username ?? 0,
+            "gender": gender as Any,
+            "cp": cp as Any,
+            "form": form as Any,
+            "costume": costume as Any,
+            "individual_attack": atkIv as Any,
+            "individual_defense": defIv as Any,
+            "individual_stamina": staIv as Any,
+            "pokemon_level": level as Any,
+            "move_1": move1 as Any,
+            "move_2": move2 as Any,
+            "weight": weight as Any,
+            "height": size as Any,
+            "weather": weather as Any,
+            "shiny": shiny as Any,
+            "username": username as Any,
             "display_pokemon_id": displayPokemonId as Any,
-            "capture_1": capture1 ?? 0,
-            "capture_2": capture2 ?? 0,
-            "capture_3": capture3 ?? 0
+            "capture_1": capture1 ?? Any,
+            "capture_2": capture2 ?? Any,
+            "capture_3": capture3 ?? Any
         ]
         return [
             "type": "pokemon",
@@ -409,6 +409,26 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             return true
         } else if (old.weather != new.weather) {
             return true
+        } else if now > old.updated! + 90 {
+            return true
+        } else if (old.atkIv == nil && new.atkIv != nil) || (old.atkIv != nil && (old.atkIv != new.atkIv)) {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    public static func shouldUpdate(old: Pokemon, new: Pokemon) -> Bool {
+        let now = UInt32(Date().timeIntervalSince1970)
+        
+        if (old.pokemonId != new.pokemonId){
+            return true
+        } else if (old.spawnId == nil && new.spawnId != nil) || (old.pokestopId == nil && new.pokestopId != nil) {
+            return true
+        } else if (old.expireTimestampVerified == false && new.expireTimestampVerified == true) || (old.expireTimestampVerified == true && new.expireTimestampVerified == true && ( old.expireTimestamp != new.expireTimestamp) ) {
+            return true
+        } else if (old.weather != new.weather) {
+           return true
         } else if now > old.updated! + 90 {
             return true
         } else if (old.atkIv == nil && new.atkIv != nil) || (old.atkIv != nil && (old.atkIv != new.atkIv)) {
@@ -758,6 +778,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             let capture1: Double?
             let capture2: Double?
             let capture3: Double?
+
             if showIV {
                 atkIv = result[6] as? UInt8
                 defIv = result[7] as? UInt8
@@ -772,6 +793,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                 capture1 = result[20] as? Double
                 capture2 = result[21] as? Double
                 capture3 = result[22] as? Double
+
             } else {
                 atkIv = nil
                 defIv = nil
@@ -885,7 +907,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                                 staIv:     pokemon.staIv ?? 0
         )
     }
-    
+
     private static func isDittoDisguised(pokemonId: UInt16, level: UInt8, weather: UInt8, atkIv: UInt8, defIv: UInt8, staIv: UInt8) -> Bool {
         let isDisguised =  WebHookRequestHandler.dittoDisguises?.contains(pokemonId) ?? false
         let isUnderLevel6 = level > 0 && level < 6
