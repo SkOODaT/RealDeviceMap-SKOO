@@ -1882,6 +1882,7 @@ function getPokemonPopupContent(pokemon) {
 	const despawnDate = new Date(pokemon.expire_timestamp * 1000);
 	const hasIV = pokemon.atk_iv !== null;
 	const costume = pokemon.costume !== null;
+	const isLured = pokemon.is_lured > 0;
 
     let pokemonIcon = getPokemonIconString(pokemon.pokemon_id, pokemon.form, pokemon.costume);
     let pokemonName = getPokemonNameString(pokemon.pokemon_id, pokemon.form, pokemon.costume);
@@ -1978,6 +1979,9 @@ function getPokemonPopupContent(pokemon) {
 
 			'<div class="col text-nowrap text-center">'; //START 3RD COLUMN
 
+            if (isLured) {
+				content += '<b>Lured Pokemon</b> <img src="' + imageURL + 'pokestop/1.png" height="15" width="15"/><br> '
+			}
 			if (pokemon.expire_timestamp_verified) {
 				content += '<b>Verified Timer</b> <img src="' + imageURL + 'verified/verified.png" height="15" width="15"/><br> '
 				content += '<b>Despawn Time:</b> '
