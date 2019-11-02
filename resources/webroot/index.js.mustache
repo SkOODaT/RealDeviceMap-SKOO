@@ -1882,7 +1882,6 @@ function getPokemonPopupContent(pokemon) {
 	const despawnDate = new Date(pokemon.expire_timestamp * 1000);
 	const hasIV = pokemon.atk_iv !== null;
 	const costume = pokemon.costume !== null;
-	const isLured = pokemon.is_lured > 0;
 
     let pokemonIcon = getPokemonIconString(pokemon.pokemon_id, pokemon.form, pokemon.costume);
     let pokemonName = getPokemonNameString(pokemon.pokemon_id, pokemon.form, pokemon.costume);
@@ -1978,15 +1977,18 @@ function getPokemonPopupContent(pokemon) {
 		'<div class="row">' + //START 3RD ROW
 
 			'<div class="col text-nowrap text-center">'; //START 3RD COLUMN
-
-            if (isLured) {
-				content += '<b>Lured Pokemon</b> <img src="' + imageURL + 'pokestop/1.png" height="15" width="15"/><br> '
+            if (pokemon.map_status == 1) {
+				content += '<b>Wild Pokemon</b> <img src="/static/img/misc/grass.png" height="15" width="15"/><br> '
+			} else if (pokemon.map_status == 2) {
+				content += '<b>Nearby Pokemon</b> <img src="/static/img/misc/nearby.png" height="15" width="15"/><br> '
+			} else if (pokemon.map_status == 3) {
+				content += '<b>Lured Pokemon</b> <img src="/static/img/misc/lured.png" height="15" width="15"/><br> '
 			}
 			if (pokemon.expire_timestamp_verified) {
-				content += '<b>Verified Timer</b> <img src="' + imageURL + 'verified/verified.png" height="15" width="15"/><br> '
+				content += '<b>Verified Timer</b> <img src="/static/img/verified/verified.png" height="15" width="15"/><br> '
 				content += '<b>Despawn Time:</b> '
 			} else {
-				content += '<b>Estimated Timer</b> <img src="' + imageURL + 'verified/estimated.png" height="15" width="15"/><br>'
+				content += '<b>Estimated Timer</b> <img src="/static/img/verified/estimated.png" height="15" width="15"/><br>'
 				content += '<b>Despawn Time:</b> ~'
 			}
 			content += despawnDate.toLocaleTimeString() + ' (' + getTimeUntill(despawnDate) + ')<br>' +
@@ -2830,20 +2832,27 @@ function getPokemonMarkerIcon(pokemon, ts) {
 	const size = getPokemonSize(pokemon.pokemon_id);
 
     let pokemonIdString = getPokemonIconString(pokemon.pokemon_id, pokemon.form, pokemon.costume);
-    let IconClass;
-	//const ivPercent = Math.round( (pokemon.atk_iv + pokemon.def_iv + pokemon.sta_iv) / 45 * 1000 ) / 10;
-    if (pokemon.expire_timestamp_verified) {
-        IconClass = ''
-    } else {
-        IconClass = 'blinking'
-    }
+	let HTML = "";
 
-    const icon = L.icon({
-		iconUrl: 		'/static/img/pokemon/' + pokemonIdString + '.png',
+    if (!pokemon.expire_timestamp_verified) {
+        HTML = "<div class='marker-pin-vtimer'><img src='/static/img/verified/estimated.png' height='10' width='10'/></img></div>"	
+    }
+    if (pokemon.map_status == 1) {
+        HTML += "<div class='marker-pin-mstatus'><img src='/static/img/misc/Wild.png' height='10' width='10'/></img></div>"		
+    } else if (pokemon.map_status == 2) {
+        HTML += "<div class='marker-pin-mstatus'><img src='/static/img/misc/Nearby.png' height='10' width='10'/></img></div>"			
+    } else if (pokemon.map_status == 3) {
+        HTML += "<div class='marker-pin-mstatus'><img src='/static/img/misc/Lured.png' height='10' width='10'/></img></div>"			
+    } 
+	
+    HTML += "<img src='/static/img/pokemon/" + pokemonIdString + ".png' height='" + size + "' width='" + size + "'/></img>";
+    const icon = L.divIcon({      //L.icon({
+		//iconUrl: 		'/static/img/pokemon/' + pokemonIdString + '.png',
+		className:      'custom-div-icon',
+		html:           HTML,
 		iconSize:    	[size, size],
 		iconAnchor:   	[size/2, size/2],
-		popupAnchor:  	[0, -(size/2)],
-		className: 		IconClass
+		popupAnchor:  	[0, -(size/2)]
     });
 
     return icon;
