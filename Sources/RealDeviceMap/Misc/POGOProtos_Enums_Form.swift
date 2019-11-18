@@ -689,7 +689,11 @@ extension POGOProtos_Enums_Form {
         .zigzagoonNormal,
         .zigzagoonGalarian,
         .linooneNormal,
-        .linooneGalarian
+        .linooneGalarian,
+        .pikachuCopy2019,
+        .venusaurCopy2019,
+        .charizardCopy2019,
+        .blastoiseCopy2019
     ]
     
     static var allFormsInString: [String] {
@@ -1382,10 +1386,15 @@ extension POGOProtos_Enums_Form {
         case .zigzagoonGalarian: return ["263-946"]
         case .linooneNormal: return ["264-947"]
         case .linooneGalarian: return ["264-948"]
+        case .pikachuCopy2019: return ["25-949"]
+        case .venusaurCopy2019: return ["3-950"]
+        case .charizardCopy2019: return ["6-951"]
+        case .blastoiseCopy2019: return ["9-952"]
         case .unset: return []
         case .UNRECOGNIZED: return []
         default:
             Log.warning(message: "Missing form string for form: \(self.rawValue)")
+            return []
         }
     }
     
