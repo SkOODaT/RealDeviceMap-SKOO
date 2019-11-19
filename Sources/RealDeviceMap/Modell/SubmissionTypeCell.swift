@@ -96,7 +96,7 @@ class SubmissionTypeCell: JSONConvertibleObject {
         let allGymCoods = allGyms.map { (gym) -> CLLocationCoordinate2D in
             return CLLocationCoordinate2D(latitude: gym.lat, longitude: gym.lon)
         }
-        
+                
         let regionCoverer = S2RegionCoverer()
         regionCoverer.maxCells = 1000
         regionCoverer.minLevel = 14
@@ -106,31 +106,30 @@ class SubmissionTypeCell: JSONConvertibleObject {
             hi: S2LatLng(coord: CLLocationCoordinate2D(latitude: maxLatReal, longitude: maxLonReal))
         )
         
-        var cells = [SubmissionTypeCell]()
-        let s2cells = regionCoverer.getCovering(region: region)
-        for s2cellId in s2cells {
-            var coords =  [CLLocationCoordinate2D]()
-            let s2cell = S2Cell(cellId: s2cellId)
-            for i in 0...3 {
-                coords.append(S2LatLng(point: s2cell.getVertex(i)).coord)
-            }
-            let polygon = Polygon([coords])
-            var countPokestops: UInt8 = 0
-            for coord in allStopCoods {
-                if polygon.contains(coord) {
-                    countPokestops += 1
-                }
-            }
-            var countGyms: UInt8 = 0
-            for coord in allGymCoods {
-                if polygon.contains(coord) {
-                    countGyms += 1
-                }
-            }
-            cells.append(SubmissionTypeCell(id: s2cellId.uid, countPokestops: countPokestops, countGyms: countGyms))
+        var indexedCells = [UInt64: SubmissionTypeCell]()
+        for cell in regionCoverer.getCovering(region: region) {
+            indexedCells[cell.uid] = SubmissionTypeCell(id: cell.uid, countPokestops: 0, countGyms: 0)
         }
         
-        return cells
+        for coord in allGymCoods {
+            let level1Cell = S2CellId(latlng: S2LatLng(coord: coord))
+            let level14Cell = level1Cell.parent(level: 14)
+            if let cell = indexedCells[level14Cell.uid] {
+                cell.countGyms += 1
+                cell.count += 1
+            }
+        }
+        
+        for coord in allStopCoods {
+            let level1Cell = S2CellId(latlng: S2LatLng(coord: coord))
+            let level14Cell = level1Cell.parent(level: 14)
+            if let cell = indexedCells[level14Cell.uid] {
+                cell.countPokestops += 1
+                cell.count += 1
+            }
+        }
+                
+        return Array(indexedCells.values)
         
     }
 

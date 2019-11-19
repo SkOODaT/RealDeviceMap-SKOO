@@ -1120,7 +1120,7 @@ function initMap() {
             cellMarkers = [];
         }
 
-        if (showSubmissionCells && map.getZoom() < 17) {
+        if (showSubmissionCells && map.getZoom() < 16) {
             $.each(submissionPlacementCellMarkers, function (index, cell) {
                 map.removeLayer(cell.marker);
             });
@@ -1131,7 +1131,7 @@ function initMap() {
             submissionPlacementRingMarkers = [];
         }
 
-        if (showSubmissionCells && map.getZoom() < 15) {
+        if (showSubmissionCells && map.getZoom() < 14) {
             $.each(submissionTypeCellMarkers, function (index, cell) {
                 map.removeLayer(cell.marker);
             });
@@ -1289,8 +1289,8 @@ function loadData() {
         'spawnpoint_filter_exclude': JSON.stringify(spawnpointFilterExclude),
         'show_spawnpoints': showSpawnpoints,
         'show_cells': showCells && map.getZoom() >= 13,
-        'show_submission_placement_cells': showSubmissionCells && map.getZoom() >= 17,
-        'show_submission_type_cells': showSubmissionCells && map.getZoom() >= 15,
+        'show_submission_placement_cells': showSubmissionCells && map.getZoom() >= 16,
+        'show_submission_type_cells': showSubmissionCells && map.getZoom() >= 14,
         'show_weathers': showWeathers,
         'show_active_devices': showDevices,
         'last_update': lastUpdateServer,
@@ -1568,7 +1568,7 @@ function loadData() {
             
             const submissionTypeCells = data.data.submission_type_cells;
             $.each(submissionTypeCells, function (index, cell) {
-                if (showSubmissionCells && map.getZoom() >= 15) {
+                if (showSubmissionCells && map.getZoom() >= 14) {
                     if (lastUpdateServer == 0) {
                         lastUpdateServer = 1
                     }
@@ -1590,7 +1590,7 @@ function loadData() {
             
             const submissionPlacementCells = data.data.submission_placement_cells;
             $.each(submissionPlacementCells, function (index, cell) {
-                if (showSubmissionCells && map.getZoom() >= 17) {
+                if (showSubmissionCells && map.getZoom() >= 16) {
                     if (lastUpdateServer == 0) {
                         lastUpdateServer = 1
                     }
@@ -1612,7 +1612,7 @@ function loadData() {
             
             const submissionPlacementRings = data.data.submission_placement_rings;
             $.each(submissionPlacementRings, function (index, ring) {
-                if (showSubmissionCells && map.getZoom() >= 17) {
+                if (showSubmissionCells && map.getZoom() >= 16) {
                     if (lastUpdateServer == 0) {
                         lastUpdateServer = 1
                     }

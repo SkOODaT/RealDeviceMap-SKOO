@@ -125,30 +125,24 @@ class SubmissionPlacementCell: JSONConvertibleObject {
             hi: S2LatLng(coord: CLLocationCoordinate2D(latitude: maxLatReal, longitude: maxLonReal))
         )
         
-        var cells = [SubmissionPlacementCell]()
-        let s2cells = regionCoverer.getCovering(region: region)
-        for s2cellId in s2cells {
-            var coords =  [CLLocationCoordinate2D]()
-            let s2cell = S2Cell(cellId: s2cellId)
-            for i in 0...3 {
-                coords.append(S2LatLng(point: s2cell.getVertex(i)).coord)
-            }
-            let polygon = Polygon([coords])
-            var blocked = false
-            for coord in allCoords {
-                blocked = polygon.contains(coord)
-                if blocked {
-                    break
-                }
-            }
-            cells.append(SubmissionPlacementCell(id: s2cellId.uid, blocked: blocked))
+        var indexedCells = [UInt64: SubmissionPlacementCell]()
+        for cell in regionCoverer.getCovering(region: region) {
+            indexedCells[cell.uid] = SubmissionPlacementCell(id: cell.uid, blocked: false)
         }
         
+        for coord in allCoords {
+            let level1Cell = S2CellId(latlng: S2LatLng(coord: coord))
+            let level17Cell = level1Cell.parent(level: 17)
+            if let cell = indexedCells[level17Cell.uid] {
+                cell.blocked = true
+            }
+        }
+
         let rings = (allGymCoods + allStopCoods).map { (coord) -> Ring in
             return Ring(lat: coord.latitude, lon: coord.longitude, radius: 20)
         }
         
-        return (cells, rings)
+        return (Array(indexedCells.values), rings)
         
     }
 
