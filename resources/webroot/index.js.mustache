@@ -40,7 +40,6 @@ let openedPokemon;
 let openedPokestop;
 let openedGym;
 let openedCell;
-let openedSubmissionPlacementCell;
 let openedSubmissionTypeCell;
 let openedWeather;
 let openedDevice;
@@ -1876,9 +1875,6 @@ function updateOpenedPopupLoop() {
     if (openedCell !== undefined) {
         openedCell.marker._popup.setContent(getCellPopupContent(openedCell));
     }
-    if (openedSubmissionPlacementCell !== undefined) {
-    openedSubmissionPlacementCell.marker._popup.setContent(getSubmissionPlacementCellPopupContent(openedSubmissionPlacementCell));
-    }
     if (openedSubmissionTypeCell !== undefined) {
         openedSubmissionTypeCell.marker._popup.setContent(getSubmissionTypeCellPopupContent(openedSubmissionTypeCell));
     }
@@ -2374,17 +2370,6 @@ function getCellPopupContent(cell) {
     return content;
 }
 
-function getSubmissionPlacementCellPopupContent(cell) {
-    let content = '<center>';
-    content += '<h6><b>Level '+cell.level+' S2 Cell</b></h6>';
-    content += '<b>Id:</b> '+cell.id;
-    if (cell.blocked) {
-        content += '<br><b>Cell is Blocked!</b>';
-    }
-    content += '</center>';
-    return content;
-}
-
 function getSubmissionTypeCellPopupContent(cell) {
     let content = '<center>';
     content += '<h6><b>Level '+cell.level+' S2 Cell</b></h6>';
@@ -2656,13 +2641,8 @@ function getCellStyle(cell, ts) {
 }
 
 function getSubmissionPlacementCellMarker(cell, ts) {
-    const polygon = L.polygon(cell.polygon, { forceZIndex: 2 });
+    const polygon = L.polygon(cell.polygon, { forceZIndex: 2, interactive: false });
     polygon.setStyle(getSubmissionPlacementCellStyle(cell, ts));
-    polygon.bindPopup(getSubmissionPlacementCellPopupContent(cell));
-    polygon.on('popupopen', function (popup) {
-        openedSubmissionPlacementCell = cell;
-        polygon._popup.setContent(getSubmissionPlacementCellPopupContent(cell));
-    });
     return polygon;
 }
 
@@ -2677,7 +2657,8 @@ function getSubmissionPlacementCellStyle(cell, ts) {
 function getSubmissionPlacementRingMarker(ring, ts) {
     const circle = L.circle([ring.lat, ring.lon], {
         radius: ring.radius,
-        forceZIndex: 4
+        forceZIndex: 4,
+        interactive: false
     });
     circle.setStyle(getSubmissionPlacementRingStyle(ring, ts));
     return circle;
