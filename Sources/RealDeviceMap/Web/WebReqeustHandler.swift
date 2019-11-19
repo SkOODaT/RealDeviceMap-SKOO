@@ -2654,7 +2654,7 @@ class WebReqeustHandler {
         let permViewMapWeather = request.param(name: "perm_view_map_weather") != nil
         let permViewMapDevice = request.param(name: "perm_view_map_device") != nil
         let permViewStats = request.param(name: "perm_view_stats") != nil
-
+        let permViewMapSubmissionCells = request.param(name: "perm_view_map_submission_cell") != nil
 
         data["name"] = name
         data["perm_admin"] = permAdmin
@@ -2671,6 +2671,7 @@ class WebReqeustHandler {
         data["perm_view_map_cell"] = permViewMapCell
         data["perm_view_map_weather"] = permViewMapWeather
         data["perm_view_map_device"] = permViewMapDevice
+        data["perm_view_map_submission_cell"] = permViewMapSubmissionCells
         data["perm_view_stats"] = permViewStats
 
         var perms = [Group.Perm]()
@@ -2718,6 +2719,9 @@ class WebReqeustHandler {
         }
         if permViewMapDevice {
             perms.append(.viewMapDevice)
+        }
+        if permViewMapSubmissionCells {
+            perms.append(.viewMapSubmissionCells)
         }
 
         if groupName == nil { // New Group
@@ -2789,6 +2793,7 @@ class WebReqeustHandler {
         data["perm_view_map_cell"] = perms.contains(.viewMapCell)
         data["perm_view_map_weather"] = perms.contains(.viewMapWeather)
         data["perm_view_map_device"] = perms.contains(.viewMapDevice)
+        data["perm_view_map_submission_cell"] = perms.contains(.viewMapSubmissionCells)
         data["perm_view_stats"] = perms.contains(.viewStats)
 
         return data

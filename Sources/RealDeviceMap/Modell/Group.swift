@@ -146,7 +146,7 @@ struct Group {
         let permViewMapLure = (result[12] as? UInt8)!.toBool()
         let permViewMapInvasion = (result[13] as? UInt8)!.toBool()
         let permViewMapDevice = (result[14] as? UInt8)!.toBool()
-        let viewMapSubmissionCells = (result[15] as? UInt8)!.toBool()
+        let permViewMapSubmissionCells = (result[15] as? UInt8)!.toBool()
 
         var perms = [Perm]()
         if permViewMap {
@@ -194,7 +194,7 @@ struct Group {
         if permViewMapDevice {
             perms.append(.viewMapDevice)
         }
-        if viewMapSubmissionCells {
+        if permViewMapSubmissionCells {
             perms.append(.viewMapSubmissionCells)
         }
         
@@ -241,7 +241,7 @@ struct Group {
             let permViewMapLure = (result[13] as? UInt8)!.toBool()
             let permViewMapInvasion = (result[14] as? UInt8)!.toBool()
             let permViewMapDevice = (result[15] as? UInt8)!.toBool()
-            let viewMapSubmissionCells = (result[15] as? UInt8)!.toBool()
+            let permViewMapSubmissionCells = (result[16] as? UInt8)!.toBool()
 
             var perms = [Perm]()
             if permViewMap {
@@ -289,7 +289,7 @@ struct Group {
             if permViewMapDevice {
                 perms.append(.viewMapDevice)
             }
-            if viewMapSubmissionCells {
+            if permViewMapSubmissionCells {
                 perms.append(.viewMapSubmissionCells)
             }
             
