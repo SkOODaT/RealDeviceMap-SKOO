@@ -194,7 +194,7 @@ struct Group {
         if permViewMapDevice {
             perms.append(.viewMapDevice)
         }
-        if viewMapSubmissionCells {
+        if viewMapSubmissionCells {
             perms.append(.viewMapSubmissionCells)
         }
         
