@@ -163,12 +163,12 @@ class ApiRequestHandler {
         if isPost && showCells && perms.contains(.viewMapCell) {
             data["cells"] = try? Cell.getAll(mysql: mysql, minLat: minLat!, maxLat: maxLat!, minLon: minLon!, maxLon: maxLon!, updated: lastUpdate)
         }
-        if isPost && showSubmissionPlacementCells && perms.contains(.viewMapSubmissionCells) {
+        if lastUpdate == 0 && isPost && showSubmissionPlacementCells && perms.contains(.viewMapSubmissionCells) {
             let result = try? SubmissionPlacementCell.getAll(mysql: mysql, minLat: minLat!, maxLat: maxLat!, minLon: minLon!, maxLon: maxLon!)
             data["submission_placement_cells"] = result?.cells
             data["submission_placement_rings"] = result?.rings
         }
-        if isPost && showSubmissionTypeCells && perms.contains(.viewMapSubmissionCells) {
+        if lastUpdate == 0 && isPost && showSubmissionTypeCells && perms.contains(.viewMapSubmissionCells) {
             data["submission_type_cells"] = try? SubmissionTypeCell.getAll(mysql: mysql, minLat: minLat!, maxLat: maxLat!, minLon: minLon!, maxLon: maxLon!)
         }
         if isPost && showWeathers && perms.contains(.viewMapWeather) {

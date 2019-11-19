@@ -1569,6 +1569,10 @@ function loadData() {
             const submissionTypeCells = data.data.submission_type_cells;
             $.each(submissionTypeCells, function (index, cell) {
                 if (showSubmissionCells && map.getZoom() >= 14) {
+                    if (lastUpdateServer == 0) {
+                        lastUpdateServer = 1
+                    }
+
                     const oldCell = submissionTypeCellMarkers.find(function (value) {
                         return cell.id === value.id ;
                     });
@@ -1587,6 +1591,10 @@ function loadData() {
             const submissionPlacementCells = data.data.submission_placement_cells;
             $.each(submissionPlacementCells, function (index, cell) {
                 if (showSubmissionCells && map.getZoom() >= 17) {
+                    if (lastUpdateServer == 0) {
+                        lastUpdateServer = 1
+                    }
+
                     const oldCell = submissionPlacementCellMarkers.find(function (value) {
                         return cell.id === value.id ;
                     });
@@ -1605,6 +1613,9 @@ function loadData() {
             const submissionPlacementRings = data.data.submission_placement_rings;
             $.each(submissionPlacementRings, function (index, ring) {
                 if (showSubmissionCells && map.getZoom() >= 17) {
+                    if (lastUpdateServer == 0) {
+                        lastUpdateServer = 1
+                    }
                     const oldRing = submissionPlacementRingMarkers.find(function (value) {
                         return ring.id === value.id ;
                     });
@@ -1866,10 +1877,10 @@ function updateOpenedPopupLoop() {
         openedCell.marker._popup.setContent(getCellPopupContent(openedCell));
     }
     if (openedSubmissionPlacementCell !== undefined) {
-        openedSubmissionPlacementCell.marker._popup.setContent(getSubmissionPlacementCellPopupContent(openedSubmissionPlacementCell));
+    openedSubmissionPlacementCell.marker._popup.setContent(getSubmissionPlacementCellPopupContent(openedSubmissionPlacementCell));
     }
     if (openedSubmissionTypeCell !== undefined) {
-        openedSubmissionTypeCell.marker._popup.setContent(getSubmissionTypeCellCellPopupContent(openedSubmissionTypeCell));
+        openedSubmissionTypeCell.marker._popup.setContent(getSubmissionTypeCellPopupContent(openedSubmissionTypeCell));
     }
     if (openedWeather !== undefined) {
         openedWeather.marker._popup.setContent(getWeatherPopupContent(openedWeather));
