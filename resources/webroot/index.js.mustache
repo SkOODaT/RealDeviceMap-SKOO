@@ -1131,7 +1131,7 @@ function initMap() {
             submissionPlacementRingMarkers = [];
         }
 
-        if (showSubmissionCells && map.getZoom() < 14) {
+        if (showSubmissionCells && map.getZoom() < 15) {
             $.each(submissionTypeCellMarkers, function (index, cell) {
                 map.removeLayer(cell.marker);
             });
@@ -1290,7 +1290,7 @@ function loadData() {
         'show_spawnpoints': showSpawnpoints,
         'show_cells': showCells && map.getZoom() >= 13,
         'show_submission_placement_cells': showSubmissionCells && map.getZoom() >= 17,
-        'show_submission_type_cells': showSubmissionCells && map.getZoom() >= 14,
+        'show_submission_type_cells': showSubmissionCells && map.getZoom() >= 15,
         'show_weathers': showWeathers,
         'show_active_devices': showDevices,
         'last_update': lastUpdateServer,
@@ -1568,7 +1568,7 @@ function loadData() {
             
             const submissionTypeCells = data.data.submission_type_cells;
             $.each(submissionTypeCells, function (index, cell) {
-                if (showSubmissionCells && map.getZoom() >= 14) {
+                if (showSubmissionCells && map.getZoom() >= 15) {
                     if (lastUpdateServer == 0) {
                         lastUpdateServer = 1
                     }
