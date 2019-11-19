@@ -88,7 +88,7 @@ class SubmissionTypeCell: JSONConvertibleObject {
             raidFilterExclude: nil,
             gymFilterExclude: nil
         ).filter({ (gym) -> Bool in
-            return gym.sponsorId == nil && gym.sponsorId == 0
+            return gym.sponsorId == nil || gym.sponsorId == 0
         })
         let allStopCoods = allStops.map { (pokestop) -> CLLocationCoordinate2D in
             return CLLocationCoordinate2D(latitude: pokestop.lat, longitude: pokestop.lon)
