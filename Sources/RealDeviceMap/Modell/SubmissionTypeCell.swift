@@ -50,10 +50,10 @@ class SubmissionTypeCell: JSONConvertibleObject {
 
     public static func getAll(mysql: MySQL?=nil, minLat: Double, maxLat: Double, minLon: Double, maxLon: Double) throws -> [SubmissionTypeCell] {
         
-        let minLatReal = minLat - 0.025
-        let maxLatReal = maxLat + 0.025
-        let minLonReal = minLon - 0.025
-        let maxLonReal = maxLon + 0.025
+        let minLatReal = minLat - 0.01
+        let maxLatReal = maxLat + 0.01
+        let minLonReal = minLon - 0.01
+        let maxLonReal = maxLon + 0.01
         
         guard let mysql = mysql ?? DBController.global.mysql else {
             Log.error(message: "[CELL] Failed to connect to database.")
@@ -62,10 +62,10 @@ class SubmissionTypeCell: JSONConvertibleObject {
         
         let allStops = try Pokestop.getAll(
             mysql: mysql,
-            minLat: minLatReal,
-            maxLat: maxLatReal,
-            minLon: minLonReal,
-            maxLon: maxLonReal,
+            minLat: minLatReal - 0.02,
+            maxLat: maxLatReal + 0.02,
+            minLon: minLonReal - 0.02,
+            maxLon: maxLonReal + 0.02,
             updated: 0,
             questsOnly: false,
             showQuests: false,
@@ -78,10 +78,10 @@ class SubmissionTypeCell: JSONConvertibleObject {
         })
         let allGyms = try Gym.getAll(
             mysql: mysql,
-            minLat: minLatReal,
-            maxLat: maxLatReal,
-            minLon: minLonReal,
-            maxLon: maxLonReal,
+            minLat: minLatReal - 0.02,
+            maxLat: maxLatReal + 0.02,
+            minLon: minLonReal - 0.02,
+            maxLon: maxLonReal + 0.02,
             updated: 0,
             raidsOnly: false,
             showRaids: false,

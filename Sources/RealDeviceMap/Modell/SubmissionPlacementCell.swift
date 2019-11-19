@@ -80,10 +80,10 @@ class SubmissionPlacementCell: JSONConvertibleObject {
         
         let allStops = try Pokestop.getAll(
             mysql: mysql,
-            minLat: minLatReal,
-            maxLat: maxLatReal,
-            minLon: minLonReal,
-            maxLon: maxLonReal,
+            minLat: minLatReal - 0.002,
+            maxLat: maxLatReal + 0.002,
+            minLon: minLonReal - 0.002,
+            maxLon: maxLonReal + 0.002,
             updated: 0,
             questsOnly: false,
             showQuests: false,
@@ -96,10 +96,10 @@ class SubmissionPlacementCell: JSONConvertibleObject {
         })
         let allGyms = try Gym.getAll(
             mysql: mysql,
-            minLat: minLatReal,
-            maxLat: maxLatReal,
-            minLon: minLonReal,
-            maxLon: maxLonReal,
+            minLat: minLatReal - 0.002,
+            maxLat: maxLatReal + 0.002,
+            minLon: minLonReal - 0.002,
+            maxLon: maxLonReal + 0.002,
             updated: 0,
             raidsOnly: false,
             showRaids: false,
