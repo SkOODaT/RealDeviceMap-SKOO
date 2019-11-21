@@ -2668,7 +2668,7 @@ function getSubmissionPlacementCellMarker(cell, ts) {
 
 function getSubmissionPlacementCellStyle(cell, ts) {
     if (cell.blocked) {
-        return {fillColor: "red", color: "black", opacity: 0.75, fillOpacity: 0.5, weight: 0.1};
+        return {fillColor: "black", color: "black", opacity: 0.75, fillOpacity: 0.25, weight: 0.1};
     } else {
         return {fillColor: "green", color: "black", opacity: 0.75, fillOpacity: 0.0, weight: 0.1};
     }
@@ -2684,13 +2684,18 @@ function getSubmissionPlacementRingMarker(ring, ts) {
 }
 
 function getSubmissionPlacementRingStyle(cell, ts) {
-    return {fillColor: "red", color: "black", opacity: 0.75, fillOpacity: 0.5, weight: 0.1};
+    return {fillColor: "blue", color: "black", opacity: 0.75, fillOpacity: 0.25, weight: 0.1};
 }
 
 function getSubmissionTypeCellMarker(cell, ts) {
     const polygon = L.polygon(cell.polygon, { forceZIndex: 3 });
     polygon.setStyle(getSubmissionTypeCellStyle(cell, ts));
     polygon.bindPopup(getSubmissionTypeCellPopupContent(cell));
+    polygon.bindTooltip(''+cell.count+'',{
+	    permanent: true,
+	    direction: "center",
+	    className: 'labelstyle'
+    })
     polygon.on('popupopen', function (popup) {
         openedSubmissionTypeCell = cell;
         polygon._popup.setContent(getSubmissionTypeCellPopupContent(cell));
@@ -2700,9 +2705,13 @@ function getSubmissionTypeCellMarker(cell, ts) {
 
 function getSubmissionTypeCellStyle(cell, ts) {
     if (cell.count == 1 || cell.count == 5 || cell.count == 19) {
-        return {fillColor: "orange", color: "black", opacity: 0.75, fillOpacity: 0.5, weight: 0.75};
+        return {fillColor: "red", color: "red", opacity: 0.75, fillOpacity: 0.5, weight: 0.75};
+    } else if (cell.count == 4 || cell.count == 18) {
+	    return {fillColor: "orange", color: "red", opacity: 0.75, fillOpacity: 0.5, weight: 0.75};
+    } else if (cell.count >= 20) {
+        return {fillColor: "black", color: "black", opacity: 0.75, fillOpacity: 0.25, weight: 0.75};
     } else {
-        return {fillColor: "blue", color: "black", opacity: 0.75, fillOpacity: 0.5, weight: 0.75};
+        return {fillColor: "blue", color: "black", opacity: 0.75, fillOpacity: 0.0, weight: 0.75};
     }
 }
 
