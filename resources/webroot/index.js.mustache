@@ -2393,17 +2393,15 @@ function getSubmissionTypeCellPopupContent(cell) {
     content += '<b>Pokestop Count:</b> '+ cell.count_pokestops +'<br>';
     content += '<b>Gym Count:</b> '+ cell.count_gyms + '<br>';
     
-    if (cell.count < 2) {
-        content += '<b>Submissions untill Gym:</b> ' + (2 - cell.count);
-    } else if (cell.count < 6) {
-        content += '<b>Submissions untill Gym:</b> ' + (6 - cell.count);
-    } else if (cell.count < 20) {
-        content += '<b>Submissions untill Gym:</b> ' + (20 - cell.count);
+    let gymThreshold = [ 2, 6 , 20 ];
+
+    if (cell.count_gyms < 3) {
+        content += '<b>Submissions untill Gym:</b> ' + (gymThreshold[cell.count_gyms] - cell.count);
     } else {
         content += '<b>Submissions untill Gym:</b> Never';
     }
     
-    if (cell.count == 1 || cell.count == 5 || cell.count == 19) {
+    if ((cell.count == 1 && cell.count_gyms < 1) || (cell.count == 5 && cell.count_gyms < 2) || (cell.count == 19 && cell.count_gyms < 3)) {
         content += '<br><b>Next submission will cause a Gym!';
     }
     
@@ -2704,9 +2702,9 @@ function getSubmissionTypeCellMarker(cell, ts) {
 }
 
 function getSubmissionTypeCellStyle(cell, ts) {
-    if (cell.count == 1 || cell.count == 5 || cell.count == 19) {
+    if ((cell.count == 1 && cell.count_gyms < 1) || (cell.count == 5 && cell.count_gyms < 2) || (cell.count == 19 && cell.count_gyms < 3)) {
         return {fillColor: "red", color: "red", opacity: 0.75, fillOpacity: 0.5, weight: 0.75};
-    } else if (cell.count == 4 || cell.count == 18) {
+    } else if ((cell.count == 4 && cell.count_gyms < 2) || (cell.count == 18 && cell.count_gyms < 3)) {
 	    return {fillColor: "orange", color: "red", opacity: 0.75, fillOpacity: 0.5, weight: 0.75};
     } else if (cell.count >= 20) {
         return {fillColor: "black", color: "black", opacity: 0.75, fillOpacity: 0.25, weight: 0.75};
