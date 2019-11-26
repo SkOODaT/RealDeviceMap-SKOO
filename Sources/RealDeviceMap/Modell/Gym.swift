@@ -85,7 +85,6 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
                 "ex_raid_eligible": exRaidEligible ?? 0,
                 "in_battle": inBattle ?? 0,
                 "total_cp": totalCp ?? 0,
-                "in_battle": inBattle ?? false,
                 "sponsor_od": sponsorId ?? 0
             ]
         } else if type == "egg" || type == "raid" {
@@ -283,7 +282,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
             
             let sql = """
                 INSERT INTO gym (id, lat, lon, name, url, guarding_pokemon_id, last_modified_timestamp, team_id, raid_end_timestamp, raid_spawn_timestamp, raid_battle_timestamp, raid_pokemon_id, enabled, availble_slots, raid_level, ex_raid_eligible, in_battle, raid_pokemon_move_1, raid_pokemon_move_2, raid_pokemon_form, raid_pokemon_cp, raid_pokemon_gender, gym_weather, raid_is_exclusive, cell_id, total_cp, sponsor_id, updated, first_seen_timestamp)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP())
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP())
             """
             _ = mysqlStmt.prepare(statement: sql)
             mysqlStmt.bindParam(id)
