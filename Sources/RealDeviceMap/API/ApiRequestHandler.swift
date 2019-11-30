@@ -822,7 +822,6 @@ class ApiRequestHandler {
             let pokestopNormal = Localizer.global.get(value: "filter_pokestop_normal")
             let pokestopInvasion = Localizer.global.get(value: "filter_pokestop_invasion")
 			let pokestopLeaders = Localizer.global.get(value: "filter_pokestop_leaders")
-			let pokestopLeaders2 = Localizer.global.get(value: "filter_pokestop_leaders2")
             
             let filter = """
             <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -982,7 +981,7 @@ class ApiRequestHandler {
                     "formatted": String(format: "%03d", 6),
                     "sort": 6
                 ],
-                "name": pokestopLeaders + "<br>" + pokestopLeaders2,
+                "name": pokestopLeaders,
                 "image": "<img class=\"lazy_load\" data-src=\"/static/img/pokestop/i0.png\" style=\"height:50px; width:50px;\">",
                 "filter": leadersFilter,
                 "size": leadersSize,
