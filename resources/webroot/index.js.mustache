@@ -563,6 +563,9 @@ function loadStorage() {
         if (defaultPokestopFilter["invasion"] === undefined) {
             defaultPokestopFilter["invasion"] = {"show": true, "size": "normal"};
         }
+        if (defaultPokestopFilter["leaders"] === undefined) {
+            defaultPokestopFilter["leaders"] = {"show": false, "size": "normal"};
+        }
 
         store('pokestop_filter', JSON.stringify(defaultPokestopFilter));
         pokestopFilter = defaultPokestopFilter;
@@ -584,6 +587,9 @@ function loadStorage() {
         }
         if (pokestopFilter["invasion"] === undefined) {
             pokestopFilter["invasion"] = {"show": true, "size": "normal"};
+        }
+        if (pokestopFilter["leaders"] === undefined) {
+            pokestopFilter["leaders"] = {"show": false, "size": "normal"};
         }
     }
 
@@ -787,6 +793,7 @@ function initMap() {
             defaultPokestopFilter["l" + i] = {"show": true, "size": "normal"};
         }
         defaultPokestopFilter["invasion"] = {"show": true, "size": "normal"};
+        defaultPokestopFilter["leaders"] = {"show": false, "size": "normal"};
 
         store('pokestop_filter', JSON.stringify(defaultPokestopFilter));
         pokestopFilterNew = defaultPokestopFilter;
@@ -802,6 +809,7 @@ function initMap() {
             defaultPokestopFilter["l" + i] = {"show": false, "size": pokestopFilterNew["l" + i]["size"]};
         }
         defaultPokestopFilter["invasion"] = {"show": false, "size": pokestopFilterNew["invasion"]["size"]};
+		defaultPokestopFilter["leaders"] = {"show": false, "size": pokestopFilterNew["leaders"]["size"]};
 
         store('pokestop_filter', JSON.stringify(defaultPokestopFilter));
         pokestopFilterNew = defaultPokestopFilter;
@@ -1281,6 +1289,9 @@ function loadData() {
         }
         if (pokestopFilter["invasion"]["show"] === false) {
             pokestopFilterExclude.push("invasion");
+        }
+        if (pokestopFilter["leaders"]["show"] !== false) {
+            pokestopFilterExclude.push("leaders");
         }
     }
 
@@ -3766,6 +3777,27 @@ function manageSelectButton(e, isNew) {
                 shouldShow = pokestopFilterNew[id]["size"] === "huge";
                 break;
         }
+    } else if (type === "pokestop-leaders") {
+        switch (info) {
+            case "hide":
+                shouldShow = pokestopFilterNew[id]["show"] === false;
+                break;
+            case "show":
+                shouldShow = pokestopFilterNew[id]["show"] === true;
+                break;
+            case "small":
+                shouldShow = pokestopFilterNew[id]["size"] === "small";
+                break;
+            case "normal":
+                shouldShow = pokestopFilterNew[id]["size"] === "normal";
+                break;
+            case "large":
+                shouldShow = pokestopFilterNew[id]["size"] === "large";
+                break;
+            case "huge":
+                shouldShow = pokestopFilterNew[id]["size"] === "huge";
+                break;
+        }
     } else if (type === "spawnpoint-timer") {
         switch (info) {
             case "hide":
@@ -4085,6 +4117,27 @@ function manageSelectButton(e, isNew) {
                         break;
                 }
             } else if (type === "pokestop-invasion") {
+                switch (info) {
+                    case "hide":
+                        pokestopFilterNew[id]["show"] = false;
+                        break;
+                    case "show":
+                        pokestopFilterNew[id]["show"] = true;
+                        break;
+                    case "small":
+                        pokestopFilterNew[id]["size"] = "small";
+                        break;
+                    case "normal":
+                        pokestopFilterNew[id]["size"] = "normal";
+                        break;
+                    case "large":
+                        pokestopFilterNew[id]["size"] = "large";
+                        break;
+                    case "huge":
+                        pokestopFilterNew[id]["size"] = "huge";
+                        break;
+                }
+            } else if (type === "pokestop-leaders") {
                 switch (info) {
                     case "hide":
                         pokestopFilterNew[id]["show"] = false;
