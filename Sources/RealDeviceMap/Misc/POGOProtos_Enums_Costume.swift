@@ -51,6 +51,7 @@ extension POGOProtos_Enums_Costume {
         case .UNRECOGNIZED: return []
         default:
             Log.warning(message: "Missing costume string for costume: \(self.rawValue)")
+            return []
 		}
     }
     
