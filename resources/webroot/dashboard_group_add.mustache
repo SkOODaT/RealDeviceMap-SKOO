@@ -69,6 +69,9 @@
             <div class="checkbox">
                 <label><input type="checkbox" name="perm_view_stats" value="perm_view_stats" {{#perm_view_stats}}checked{{/perm_view_stats}}> Stats</label>
             </div>
+            <div class="checkbox">
+                <label><input type="checkbox" name="perm_view_map_nests" value="perm_view_map_nests" {{#perm_view_map_nests}}checked{{/perm_view_map_nests}}> Nests</label>
+            </div>
             <br>
             <input type="hidden" name="_csrf" value="{{csrf}}">
             <button type="submit" class="btn btn-primary">Create</button>

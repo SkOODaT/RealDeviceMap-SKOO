@@ -1340,6 +1340,8 @@ class ApiRequestHandler {
                                 permName = "Device"
                             case .viewMapSubmissionCells:
                                 permName = "Submission-Cell"
+                            case .viewMapNests:
+                                permName = "Nests"
                             }
                             
                             if permsString == "" {
