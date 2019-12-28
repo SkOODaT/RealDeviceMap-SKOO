@@ -1757,12 +1757,16 @@ function loadNestPolygons() {
     if (nestsDb == null) {
         return;
     }
-    var nestGeoPolys = L.geoJson(nestsDb, {
-        onEachFeature: function(features, featureLayer) {
-            featureLayer.bindPopup(getNestPopupContent(features.properties.name));
-        }
-    });
-    nestLayer.addLayer(nestGeoPolys);
+    try {
+        var nestGeoPolys = L.geoJson(nestsDb, {
+            onEachFeature: function(features, featureLayer) {
+                featureLayer.bindPopup(getNestPopupContent(features.properties.name));
+            }
+        });
+        nestLayer.addLayer(nestGeoPolys);
+    } catch (err) {
+        console.log("Failed to load nest.json file.\r\nError:", err);
+    }
 }
 
 // MARK: - Filters
