@@ -400,8 +400,8 @@ function loadStorage() {
     
     const showNestsValue = retrieve('show_nests');
     if (showNestsValue === null) {
-        store('show_nests', true);
-        showNests = true;
+        store('show_nests', false);
+        showNests = false;
     } else {
         showNests = (showNestsValue === 'true');
     }
