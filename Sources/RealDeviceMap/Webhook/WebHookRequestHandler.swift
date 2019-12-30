@@ -177,7 +177,7 @@ class WebHookRequestHandler {
 				data = Data(base64Encoded: madString) ?? Data()
 				method = rawData["type"] as? Int ?? 106
 				isMadData = true
-				username = "MAD"
+				username = "PogoDroid"
 				//Log.info(message: "[WebHookRequestHandler] PogoDroid Raw Data Type: \(method)")
             } else {
                 continue

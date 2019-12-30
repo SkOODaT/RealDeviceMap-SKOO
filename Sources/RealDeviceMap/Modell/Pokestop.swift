@@ -129,9 +129,8 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
     var pokestopDisplay: UInt16?
     var incidentExpireTimestamp: UInt32?
     var gruntType: UInt16?
-
+    
     init(id: String, lat: Double, lon: Double, name: String?, url: String?, enabled: Bool?, lureExpireTimestamp: UInt32?, lastModifiedTimestamp: UInt32?, updated: UInt32?, questType: UInt32?, questTarget: UInt16?, questTimestamp: UInt32?, questConditions: [[String: Any]]?, questRewards: [[String: Any]]?, questTemplate: String?, cellId: UInt64?, lureId: Int16?, pokestopDisplay: UInt16?, incidentExpireTimestamp: UInt32?, gruntType: UInt16?, sponsorId: UInt16?) {
-
         self.id = id
         self.lat = lat
         self.lon = lon
@@ -295,6 +294,13 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
             case .withPlayerLevel:
                 let info = conditionData.withPlayerLevel
                 infoData["level"] = info.level
+            case .withBuddy:
+                let info = conditionData.withBuddy
+                infoData["min_buddy_level"] = info.minBuddyLevel
+                infoData["must_be_on_map"] = info.mustBeOnMap
+            case .withDailyBuddyAffection:
+                let info = conditionData.withDailyBuddyAffection
+                infoData["min_buddy_affection_earned_today"] = info.minBuddyAffectionEarnedToday
             case .withWinGymBattleStatus: break
             case .withSuperEffectiveCharge: break
             case .withUniquePokestop: break
@@ -307,6 +313,7 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
             case .withDailyCaptureBonus: break
             case .withDailySpinBonus: break
             case .withUniquePokemon: break
+            case .withBuddyInterestingPoi: break
             case .unset: break
             case .UNRECOGNIZED(_): break
             }
@@ -793,8 +800,8 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
             let pokestopDisplay = result[17] as? UInt16
             let incidentExpireTimestamp = result[18] as? UInt32
             let gruntType = result[19] as? UInt16
-			let sponsorId = result[20] as? UInt16
-
+            let sponsorId = result[20] as? UInt16
+            
             pokestops.append(Pokestop(id: id, lat: lat, lon: lon, name: name, url: url, enabled: enabled, lureExpireTimestamp: lureExpireTimestamp, lastModifiedTimestamp: lastModifiedTimestamp, updated: updated, questType: questType, questTarget: questTarget, questTimestamp: questTimestamp, questConditions: questConditions, questRewards: questRewards, questTemplate: questTemplate, cellId: cellId, lureId: lureId, pokestopDisplay: pokestopDisplay, incidentExpireTimestamp: incidentExpireTimestamp, gruntType: gruntType, sponsorId: sponsorId))
         }
         return pokestops
