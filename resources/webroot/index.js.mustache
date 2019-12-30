@@ -2066,16 +2066,16 @@ function updateMapTimers() {
 
 function getPokemonNameString(pokemonId, pokemonForm, pokemonCostume) {
     let pokemonNameString;
-    if (pokemonForm !== 0 && pokemonForm !== null) {
-        const pokemonNameStringTmp = getFormName(pokemonForm) + ' ' + getPokemonName(pokemonId);
-        if (pokemonForm) {
+    if (pokemonCostume !== 0 && pokemonCostume !== null) {
+        const pokemonNameStringTmp = getCostumeName(pokemonCostume) + ' ' + getPokemonName(pokemonId);
+        if (pokemonCostume) {
             pokemonNameString = pokemonNameStringTmp;
         } else {
             pokemonNameString = getPokemonName(pokemonId);
         }
-    } else if (pokemonCostume !== 0 && pokemonCostume !== null) {
-        const pokemonNameStringTmp = getCostumeName(pokemonCostume) + ' ' + getPokemonName(pokemonId);
-        if (pokemonCostume) {
+    } else if (pokemonForm !== 0 && pokemonForm !== null) {
+        const pokemonNameStringTmp = getFormName(pokemonForm) + ' ' + getPokemonName(pokemonId);
+        if (pokemonForm) {
             pokemonNameString = pokemonNameStringTmp;
         } else {
             pokemonNameString = getPokemonName(pokemonId);
@@ -3222,19 +3222,21 @@ function getPokestopMarkerIcon(pokestop, ts) {
             lureId = 0;
         }
         let invasionString;
-        let invasionStringEnd;
-        let folder;
-        if (pokestopFilter["invasion"]["show"] === true && pokestop.incident_expire_timestamp >= ts) {
+        if (pokestop.incident_expire_timestamp >= ts) {
+        //let invasionStringEnd;
+        //let folder;
+        //if (pokestopFilter["invasion"]["show"] === true && pokestop.incident_expire_timestamp >= ts) {
             invasionString = "i";
-            invasionStringEnd = "_" + pokestop.grunt_type;
-            folder = "quest_invasion";
+            //invasionStringEnd = "_" + pokestop.grunt_type;
+            //folder = "quest_invasion";
         } else {
             invasionString = "";
-            invasionStringEnd = "";
-            folder = "quest";
+            //invasionStringEnd = "";
+            //folder = "quest";
         }
         icon = L.icon({
-            iconUrl: '/static/img/'+folder+'/'+invasionString+lureId+'_'+rewardString+invasionStringEnd+'.png',
+			iconUrl: '/static/img/quest/'+invasionString+lureId+'_'+rewardString+'.png',
+            //iconUrl: '/static/img/'+folder+'/'+invasionString+lureId+'_'+rewardString+invasionStringEnd+'.png',
             iconSize: 		[size       , size * 1.667  ],
             iconAnchor: 	[size / 2   , size * 1.567  ],
             popupAnchor: 	[0          , size * -1.567 ]
@@ -3247,16 +3249,17 @@ function getPokestopMarkerIcon(pokestop, ts) {
             lureId = 0;
         }
         let invasionString;
-        let invasionStringEnd;
-        let folder;
-        if (pokestopFilter["invasion"]["show"] === true && pokestop.incident_expire_timestamp >= ts) {
+        if (pokestop.incident_expire_timestamp >= ts) {
+        //let invasionStringEnd;
+        //let folder;
+        //if (pokestopFilter["invasion"]["show"] === true && pokestop.incident_expire_timestamp >= ts) {
             invasionString = "i";
-            invasionStringEnd = "_" + pokestop.grunt_type;
-            folder = "invasion";
+            //invasionStringEnd = "_" + pokestop.grunt_type;
+            //folder = "invasion";
         } else {
             invasionString = "";
-            invasionStringEnd = "";
-            folder = "pokestop";
+            //invasionStringEnd = "";
+            //folder = "pokestop";
         }
 
         var sizeId = "normal";
@@ -3267,7 +3270,8 @@ function getPokestopMarkerIcon(pokestop, ts) {
         }
         const size = getPokestopSize(sizeId);
         icon = L.icon({
-            iconUrl: '/static/img/'+folder+'/'+invasionString+lureId+invasionStringEnd+'.png',
+            iconUrl: '/static/img/pokestop/'+invasionString+lureId+'.png',
+            //iconUrl: '/static/img/'+folder+'/'+invasionString+lureId+invasionStringEnd+'.png',
             iconSize: 		[size       , size /** 1.667*/  ],
             iconAnchor: 	[size / 2   , size /** 1.567*/  ],
             popupAnchor: 	[0          , size * -1.567 ]
@@ -4390,16 +4394,16 @@ function getSize(size) {
 
 function getPokemonIconString(pokemonId, pokemonForm, pokemonCostume) {
     let pokemonIdString;
-    if (pokemonForm !== 0 && pokemonForm !== null) {
-        const pokemonIdStringTmp = '' + pokemonId + '-' + pokemonForm;
-        if ($.inArray(pokemonIdStringTmp, avilableForms) !== -1) {
+    if (pokemonCostume !== 0 && pokemonCostume !== null) {
+        const pokemonIdStringTmp = '' + pokemonId + '-' + pokemonCostume;
+        if ($.inArray(pokemonIdStringTmp, avilableCostumes) !== -1) {
             pokemonIdString = pokemonIdStringTmp;
         } else {
             pokemonIdString = '' + pokemonId;
         }
-    } else if (pokemonCostume !== 0 && pokemonCostume !== null) {
-        const pokemonIdStringTmp = '' + pokemonId + '-' + pokemonCostume;
-        if ($.inArray(pokemonIdStringTmp, avilableCostumes) !== -1) {
+    } else if (pokemonForm !== 0 && pokemonForm !== null) {
+        const pokemonIdStringTmp = '' + pokemonId + '-' + pokemonForm;
+        if ($.inArray(pokemonIdStringTmp, avilableForms) !== -1) {
             pokemonIdString = pokemonIdStringTmp;
         } else {
             pokemonIdString = '' + pokemonId;
