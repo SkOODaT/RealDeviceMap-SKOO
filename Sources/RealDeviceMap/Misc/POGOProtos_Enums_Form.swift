@@ -5,8 +5,6 @@
 //  Created by Florian Kostenzer on 17.10.18.
 //
 
-/*
-
 import Foundation
 import POGOProtos
 import PerfectLib
