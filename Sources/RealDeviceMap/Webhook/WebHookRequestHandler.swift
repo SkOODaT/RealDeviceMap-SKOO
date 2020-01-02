@@ -421,7 +421,7 @@ class WebHookRequestHandler {
         let queue = Threading.getQueue(name: Foundation.UUID().uuidString, type: .serial)
         queue.dispatch {
 
-            if !playerdatas.isEmpty {
+            if !playerdatas.isEmpty && username != nil {
                 let start = Date()
                 for playerdata in playerdatas {
                     //Log.debug(message: "[WebHookRequestHandler] \(playerdata)") 
