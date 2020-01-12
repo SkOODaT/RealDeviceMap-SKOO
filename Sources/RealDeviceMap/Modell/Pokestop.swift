@@ -500,7 +500,7 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
         var excludedLures = [Int]()
         var excludedGrunts = [Int]()
         var excludeNormal = Bool()
-        var excludeInvasion = Bool()
+        //var excludeInvasion = Bool()
 
         if showQuests && questsOnly && questFilterExclude != nil {
             for filter in questFilterExclude! {
@@ -527,6 +527,7 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
                 } else if showLures && filter.contains(string: "l") {
                     if let id = filter.stringByReplacing(string: "l", withString: "").toInt() {
                         excludedLures.append(id + 500)
+						Log.info(message: "[POKESTOP] EXCLUDED: \(excludedLures).")
                     }
                 }
             }
@@ -548,6 +549,7 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
         var excludeLureSQL: String
         var excludeInvasionSQL: String
         
+        if showQuests {
             if excludedTypes.isEmpty {
                 excludeTypeSQL = ""
             } else {
@@ -633,19 +635,19 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
                 excludeQuestSQL += excludeItemSQL
             }
         }
-        var excludeSQL: String
+        var excludeSQL = ""
         if !excludeInvasionSQL.isEmpty && !excludeQuestSQL.isEmpty {
-             excludeSQL = "((\(excludeQuestSQL)) OR (\(excludeInvasionSQL)))"
+            excludeSQL = "((\(excludeQuestSQL)) OR (\(excludeInvasionSQL)))"
         } else {
-             excludeSQL = excludeInvasionSQL
+            excludeSQL = excludeInvasionSQL
         }
         if !excludeLureSQL.isEmpty && !excludeSQL.isEmpty {
-             excludeSQL = "(\(excludeSQL)) OR (\(excludeLureSQL))"
+            excludeSQL = "(\(excludeSQL)) OR (\(excludeLureSQL))"
         } else {
-             excludeSQL = excludeLureSQL
+            excludeSQL = excludeLureSQL
         }
-         
         let sqlFilter = excludeSQL.isEmpty ? "" : "AND (\(excludeSQL))"
+        Log.debug(message: "FILTER: \(sqlFilter)")
         var sql = """
             SELECT id, lat, lon, name, url, enabled, lure_expire_timestamp, last_modified_timestamp, updated, quest_type, quest_timestamp, quest_target, CAST(quest_conditions AS CHAR), CAST(quest_rewards AS CHAR), quest_template, cell_id, lure_id, pokestop_display, incident_expire_timestamp, grunt_type, sponsor_id
             FROM pokestop
@@ -656,6 +658,7 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
             sql += " AND (incident_expire_timestamp >= UNIX_TIMESTAMP() OR lure_expire_timestamp >= UNIX_TIMESTAMP())"
         }
 
+        Log.debug(message: "SQL: \(sql)")
         let mysqlStmt = MySQLStmt(mysql)
         _ = mysqlStmt.prepare(statement: sql)
         mysqlStmt.bindParam(minLat)
