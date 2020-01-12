@@ -3266,7 +3266,7 @@ function getPokestopMarkerIcon(pokestop, ts) {
         if (lureId > 0) {
             sizeId = "l" + getLureIconId(pokestop.lure_id);
         } else if (pokestop.incident_expire_timestamp >= ts) {
-            sizeId = "invasion";
+            sizeId = "normal";
         }
         const size = getPokestopSize(sizeId);
         icon = L.icon({
