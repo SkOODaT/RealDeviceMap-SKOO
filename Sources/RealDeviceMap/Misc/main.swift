@@ -176,7 +176,7 @@ do {
     }
     WebReqeustHandler.avilableFormsJson = try avilableForms.jsonEncodedString()
 } catch {
-    Log.error(message: "Failed to load forms. Frontend will only display default forms.")
+    Log.error(message: "Failed to load forms. Frontend will only display default forms. Error: \(error)")
 }
 
 // Load Costumes

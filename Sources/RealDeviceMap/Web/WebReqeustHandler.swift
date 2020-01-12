@@ -31,6 +31,9 @@ class WebReqeustHandler {
     static var avilableFormsJson: String = ""
     static var avilableCostumesJson: String = ""
     static var avilableItemJson: String = ""
+    //static var avilableFormsJson: String = "[]"
+    //static var avilableCostumesJson: String = "[]"
+    //static var avilableItemJson: String = "[]"
     static var enableRegister: Bool = true
     static var tileservers = [String: [String: String]]()
     static var cities = [String: [String: Any]]()
