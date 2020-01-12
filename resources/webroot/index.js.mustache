@@ -900,7 +900,7 @@ function initMap() {
         }
         if (newShowNests !== showNests && newShowNests === false) {
             nestLayer.clearLayers();
-        } else {
+        } else if (newShowNests === true) {
             loadNestPolygons();
         }
 		if (newShowRaids !== showRaids) {
