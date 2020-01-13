@@ -493,9 +493,9 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                     self.move1 = oldPokemon!.move1
                     self.move2 = oldPokemon!.move2
                     self.level = oldPokemon!.level
-					self.capture1 = oldPokemon!.capture1
-					self.capture2 = oldPokemon!.capture2
-					self.capture3 = oldPokemon!.capture3
+                    self.capture1 = oldPokemon!.capture1
+                    self.capture2 = oldPokemon!.capture2
+                    self.capture3 = oldPokemon!.capture3
                     self.shiny = oldPokemon!.shiny
                     self.isDitto = Pokemon.isDittoDisguised(pokemon: oldPokemon!)
                     if self.isDitto {
