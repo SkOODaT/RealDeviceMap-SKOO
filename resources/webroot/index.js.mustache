@@ -10,6 +10,10 @@ let gymMarkers = [];
 let pokemonMarkers = [];
 let spawnpointMarkers = [];
 let cellMarkers = [];
+let submissionPlacementCellMarkers = [];
+let submissionPlacementRingMarkers = [];
+let submissionTypeCellMarkers = [];
+let weatherMarkers = [];
 let deviceMarkers = [];
 
 let pokemonFilter = {};
@@ -36,6 +40,8 @@ let openedPokemon;
 let openedPokestop;
 let openedGym;
 let openedCell;
+let openedSubmissionTypeCell;
+let openedWeather;
 let openedDevice;
 
 let showPokestops;
@@ -45,7 +51,9 @@ let showRaids;
 let showPokemon;
 let showSpawnpoints;
 let showCells;
+let showWeathers;
 let showDevices;
+let showRaidTimers;
 
 let avilableForms = [];
 let avilableItems = [];
@@ -133,6 +141,10 @@ $(function() {
 
     $.getJSON( "/static/data/pokemon.json", function( data ) {
         pokemonDb = data;
+    });
+
+    $.getJSON( "/static/data/weathertypes.json", function( data ) {
+        weatherTypes = data;
     });
 
     avilableForms = JSON.parse('{{{avilable_forms_json}}}');
@@ -240,6 +252,8 @@ $(function() {
             show_pokestops: showPokestops,
             show_spawnpoints: showSpawnpoints,
             show_cells: showCells,
+            show_submission_cells: showSubmissionCells,
+            show_weathers: showWeathers,
             gym: gymFilterNew,
             raid: raidFilterNew,
             pokemon: pokemonFilterNew,
@@ -266,7 +280,7 @@ $(function() {
 
     // If you see this: Don't tell anyone
     var d = new Date();
-    if (d.getMonth() == 11 && d.getDate() >= 24) {
+    if (d.getMonth() === 11 && d.getDate() >= 24 && d.getDate() <= 30) {
         const snow = '<div class="winter-is-coming">\n' +
             '            <div class="snow snow--near"></div>\n' +
             '            <div class="snow snow--near snow--alt"></div>\n' +
@@ -278,6 +292,14 @@ $(function() {
         $('#map').append(snow)
     }
 
+    if ((d.getMonth() === 11 && d.getDate() >= 31) || (d.getMonth() === 0 && d.getDate() <= 1)) {
+		const fireworks = '<div class="pyro">' +
+			'<div class="before"></div>' +
+			'<div class="after"></div>' +
+			'</div>'
+		$('#map').append(fireworks)
+    }
+	
     if ("{{google_analytics_id}}" !== false) {
         window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};
         ga.l=+new Date;
@@ -357,6 +379,14 @@ function loadStorage() {
         showPokemon = (showPokemonValue === 'true');
     }
 
+    const showSubmissionCellsValue = retrieve('show_submission_cells');
+    if (showSubmissionCellsValue === null) {
+        store('show_submission_cells', false);
+        showSubmissionCells = false;
+    } else {
+        showSubmissionCells = (showSubmissionCellsValue === 'true');
+    }
+    
     const showCellsValue = retrieve('show_cells');
     if (showCellsValue === null) {
         store('show_cells', false);
@@ -365,6 +395,14 @@ function loadStorage() {
         showCells = (showCellsValue === 'true');
     }
 
+    const showWeathersValue = retrieve('show_weathers');
+    if (showWeathersValue === null) {
+        store('show_weathers', false);
+        showWeathers = false;
+    } else {
+        showWeathers = (showWeathersValue === 'true');
+    }
+	
     const showDevicesValue = retrieve('show_devices');
     if (showDevicesValue === null) {
         store('show_devices', false);
@@ -434,6 +472,9 @@ function loadStorage() {
     const raidFilterValue = retrieve('raid_filter');
     if (raidFilterValue === null) {
         const defaultRaidFilter = {};
+        if (defaultRaidFilter["timers"] === undefined) {
+            defaultRaidFilter["timers"] = {"show": true, "size": "normal"};
+        }
         let i;
         for (i = 1; i <= 5; i++) {
             if (defaultRaidFilter["l" + i] === undefined) {
@@ -450,6 +491,12 @@ function loadStorage() {
         raidFilter = defaultRaidFilter;
     } else {
         raidFilter = JSON.parse(raidFilterValue);
+        if (raidFilter["timers"] === undefined) {
+            raidFilter["timers"] = {"show": true, "size": "normal"};
+            showRaidTimers = true;
+        } else {
+            showRaidTimers = raidFilter["timers"]["show"];
+        }
         let i;
         for (i = 1; i <= 5; i++) {
             if (raidFilter["l" + i] === undefined) {
@@ -659,6 +706,7 @@ function initMap() {
 
     $('#reset-raid-filter').on('click', function(event) {
         const defaultRaidFilter = {};
+        defaultRaidFilter["timers"] = {"show": true, "size": "normal"};
         let i;
         for (i = 1; i <= 5; i++) {
             defaultRaidFilter["l" + i] = {"show": true, "size": "normal"};
@@ -675,6 +723,7 @@ function initMap() {
 
     $('#disable-all-raid-filter').on('click', function(event) {
         const defaultRaidFilter = {};
+        defaultRaidFilter["timers"] = {"show": false, "size": raidFilterNew["timers"]["size"]};
         let i;
         for (i = 1; i <= 5; i++) {
             defaultRaidFilter["l" + i] = {"show": false, "size": raidFilterNew["l" + i]["size"]};
@@ -785,6 +834,8 @@ function initMap() {
         const newShowPokemon = $('#show-pokemon').hasClass('active');
         const newShowSpawnpoints = $('#show-spawnpoints').hasClass('active');
         const newShowCells = $('#show-cells').hasClass('active');
+        const newShowSubmissionCells = $('#show-submission-cells').hasClass('active');
+        const newShowWeathers = $('#show-weathers').hasClass('active');
         const newShowDevices = $('#show-devices').hasClass('active');
 
         const ts = Math.round((new Date()).getTime() / 1000);
@@ -818,13 +869,15 @@ function initMap() {
 				map.removeLayer(pokestop.marker);
 			});
 			pokestopMarkers = [];
-		}
+        }
+        /* :thinking:
         if (newShowRaids !== showRaids) {
             $.each(pokestopMarkers, function (index, pokestop) {
                 map.removeLayer(pokestop.marker);
             });
             pokestopMarkers = [];
         }
+        */
 		if (newShowQuests !== showQuests) {
             $.each(pokestopMarkers, function (index, pokestop) {
                 map.removeLayer(pokestop.marker);
@@ -842,6 +895,26 @@ function initMap() {
                 map.removeLayer(cell.marker);
             });
             cellMarkers = [];
+        }
+        if (newShowSubmissionCells !== showSubmissionCells && newShowSubmissionCells === false) {
+            $.each(submissionPlacementCellMarkers, function (index, cell) {
+                map.removeLayer(cell.marker);
+            });
+            submissionPlacementCellMarkers = [];
+            $.each(submissionPlacementRingMarkers, function (index, ring) {
+                map.removeLayer(ring.marker);
+            });
+            submissionPlacementRingMarkers = [];
+            $.each(submissionTypeCellMarkers, function (index, cell) {
+                map.removeLayer(cell.marker);
+            });
+            submissionTypeCellMarkers = [];
+        }
+        if (newShowWeathers !== showWeathers && newShowWeathers === false) {
+            $.each(weatherMarkers, function (index, weather) {
+                map.removeLayer(weather.marker);
+            });
+            weatherMarkers = [];
         }
         if (newShowDevices !== showDevices && newShowDevices === false) {
             $.each(deviceMarkers, function (index, device) {
@@ -908,6 +981,11 @@ function initMap() {
         });
         gymMarkers = newGymMarkers;
 
+        let newShowRaidTimers = raidFilter["timers"]["show"];
+        if (newShowRaidTimers !== showRaidTimers) {
+            showRaidTimers = newShowRaidTimers;
+        }
+
 		showGyms = newShowGyms;
 		store('show_gyms', newShowGyms);
 		showRaids = newShowRaids;
@@ -928,6 +1006,10 @@ function initMap() {
         store('spawnpoint_filter', JSON.stringify(spawnpointFilter));
         store('show_cells', newShowCells);
         showCells = newShowCells;
+        store('show_submission_cells', newShowSubmissionCells);
+        showSubmissionCells = newShowSubmissionCells;
+        store('show_weathers', newShowWeathers);
+        showWeathers = newShowWeathers;
         showDevices = newShowDevices;
         store('show_devices', newShowDevices);
 
@@ -1003,7 +1085,23 @@ function initMap() {
                     $('#hide-cells').addClass('active');
                     $('#show-cells').removeClass('active');
                 }
+                
+                if (retrieve('show_submission_cells') == 'true') {
+                    $('#show-submission-cells').addClass('active');
+                    $('#hide-submission-cells').removeClass('active');
+                } else {
+                    $('#hide-submission-cells').addClass('active');
+                    $('#show-submission-cells').removeClass('active');
+                }
 
+                if (retrieve('show_weathers') == 'true') {
+                    $('#show-weathers').addClass('active');
+                    $('#hide-weathers').removeClass('active');
+                } else {
+                    $('#hide-weathers').addClass('active');
+                    $('#show-weathers').removeClass('active');
+                }
+				
                 if (retrieve('show_devices') == 'true') {
                     $('#show-devices').addClass('active');
                     $('#hide-devices').removeClass('active');
@@ -1021,6 +1119,32 @@ function initMap() {
 	map.addControl(new customControlSettings());
 
 	map.on('zoomend', function() {
+ 
+        if (showCells && map.getZoom() < 13) {
+            $.each(cellMarkers, function (index, cell) {
+                map.removeLayer(cell.marker);
+            });
+            cellMarkers = [];
+        }
+
+        if (showSubmissionCells && map.getZoom() < 16) {
+            $.each(submissionPlacementCellMarkers, function (index, cell) {
+                map.removeLayer(cell.marker);
+            });
+            submissionPlacementCellMarkers = [];
+            $.each(submissionPlacementRingMarkers, function (index, ring) {
+                map.removeLayer(ring.marker);
+            });
+            submissionPlacementRingMarkers = [];
+        }
+
+        if (showSubmissionCells && map.getZoom() < 14) {
+            $.each(submissionTypeCellMarkers, function (index, cell) {
+                map.removeLayer(cell.marker);
+            });
+            submissionTypeCellMarkers = [];
+        }
+ 
 		lastUpdateServer = 0;
 		loadData();
 	});
@@ -1035,6 +1159,7 @@ function initMap() {
 	setInterval(updateOpenedPopupLoop, 1000);
     setInterval(updateCellsLoop, 10000);
     setInterval(updateDevicesLoop, 10000);
+    setInterval(updateMapTimers, 1000);
 }
 
 // MARK: - Date Loading
@@ -1090,6 +1215,10 @@ function loadData() {
     
     const raidFilterExclude = [];
     if (showRaids) {
+        //REVIEW: Probably not needed
+        if (raidFilter["timers"]["show"] === false) {
+            raidFilterExclude.push("timers");
+        }
         let i;
         for (i = 1; i <= 5; i++) {
             if (raidFilter["l" + i]["show"] === false) {
@@ -1166,7 +1295,10 @@ function loadData() {
         'pokestop_filter_exclude': JSON.stringify(pokestopFilterExclude),
         'spawnpoint_filter_exclude': JSON.stringify(spawnpointFilterExclude),
         'show_spawnpoints': showSpawnpoints,
-        'show_cells': showCells,
+        'show_cells': showCells && map.getZoom() >= 13,
+        'show_submission_placement_cells': showSubmissionCells && map.getZoom() >= 16,
+        'show_submission_type_cells': showSubmissionCells && map.getZoom() >= 14,
+        'show_weathers': showWeathers,
         'show_active_devices': showDevices,
         'last_update': lastUpdateServer,
         '_csrf': "{{csrf}}"
@@ -1199,7 +1331,10 @@ function loadData() {
 						gym.marker.addTo(map);
 						if (gym.raid_end_timestamp >= ts) {
 							startRaidTimer(gym, ts);
-							gym.raidTimerSet = true;
+                            gym.raidTimerSet = true;
+                            if (showRaidTimers) {
+                                setDespawnTimer(gym);
+                            }
 						} else {
 							gym.raidTimerSet = false;
 						}
@@ -1229,7 +1364,10 @@ function loadData() {
 							oldGym.marker.setIcon(getGymMarkerIcon(oldGym, ts));
 							if (oldGym.raid_end_timestamp >= ts && !oldGym.raidTimerSet) {
 								startRaidTimer(oldGym, ts);
-								oldGym.raidTimerSet = true;
+                                oldGym.raidTimerSet = true;
+                                if (showRaidTimers) {
+                                    setDespawnTimer(oldGym);
+                                }
 							}
 						}
 					}
@@ -1416,7 +1554,7 @@ function loadData() {
 
             const cells = data.data.cells;
             $.each(cells, function (index, cell) {
-                if (showCells) {
+                if (showCells && map.getZoom() >= 13) {
                     if (cell.updated > lastUpdateServer) {
                         lastUpdateServer = cell.updated;
                     }
@@ -1434,7 +1572,102 @@ function loadData() {
                     }
                 }
             });
+            
+            const submissionTypeCells = data.data.submission_type_cells;
+            $.each(submissionTypeCells, function (index, cell) {
+                if (showSubmissionCells && map.getZoom() >= 14) {
+                    if (lastUpdateServer == 0) {
+                        lastUpdateServer = 1
+                    }
 
+                    const oldCell = submissionTypeCellMarkers.find(function (value) {
+                        return cell.id === value.id ;
+                    });
+
+                    if (oldCell === undefined) {
+                        cell.marker = getSubmissionTypeCellMarker(cell, ts);
+                        submissionTypeCellMarkers.push(cell);
+                        cell.marker.addTo(map);
+                    } else {
+                        oldCell.updated = cell.updated;
+                        oldCell.marker.setStyle(getSubmissionTypeCellStyle(cell, ts));
+                    }
+                }
+            });
+            
+            const submissionPlacementCells = data.data.submission_placement_cells;
+            $.each(submissionPlacementCells, function (index, cell) {
+                if (showSubmissionCells && map.getZoom() >= 16) {
+                    if (lastUpdateServer == 0) {
+                        lastUpdateServer = 1
+                    }
+
+                    const oldCell = submissionPlacementCellMarkers.find(function (value) {
+                        return cell.id === value.id ;
+                    });
+
+                    if (oldCell === undefined) {
+                        cell.marker = getSubmissionPlacementCellMarker(cell, ts);
+                        submissionPlacementCellMarkers.push(cell);
+                        cell.marker.addTo(map);
+                    } else {
+                        oldCell.updated = cell.updated;
+                        oldCell.marker.setStyle(getSubmissionPlacementCellStyle(cell, ts));
+                    }
+                }
+            });
+            
+            const submissionPlacementRings = data.data.submission_placement_rings;
+            $.each(submissionPlacementRings, function (index, ring) {
+                if (showSubmissionCells && map.getZoom() >= 16) {
+                    if (lastUpdateServer == 0) {
+                        lastUpdateServer = 1
+                    }
+                    const oldRing = submissionPlacementRingMarkers.find(function (value) {
+                        return ring.id === value.id ;
+                    });
+
+                    if (oldRing === undefined) {
+                        ring.marker = getSubmissionPlacementRingMarker(ring, ts);
+                        submissionPlacementRingMarkers.push(ring);
+                        ring.marker.addTo(map);
+                    } else {
+                        oldRing.updated = ring.updated;
+                        oldRing.marker.setStyle(getSubmissionPlacementRingStyle(ring, ts));
+                    }
+                }
+            });
+
+            const weathers = data.data.weather;
+            $.each(weathers, function (index, weather) {
+                if (showWeathers) {
+                    if (weather.updated > lastUpdateServer) {
+                        lastUpdateServer = weather.updated;
+                    }
+                    const oldWeather = weatherMarkers.find(function (value) {
+                        return weather.id === value.id ;
+                    });
+
+                    if (oldWeather === undefined) {
+                        weather.marker = getWeatherMarker(weather, ts);
+						let weatherIcon;
+						if (weather.gameplay_condition !== 0 && weather.gameplay_condition !== null) {
+							weatherIcon = '<img src="/static/img/weather/' + weather.gameplay_condition + '.png" height="25" width="25">';
+						} else {
+							weatherIcon = ''
+						}
+						weatherName = weatherTypes[weather.gameplay_condition].name;
+						var options = {permanent: true, className: "leaflet-tooltip", direction: "center", offset: [0, 15]};
+                        /*var tooltip =*/ weather.marker.bindTooltip('<center>'+weatherIcon+'</center><center><b>'+weatherName+'</b></center>', options);
+                        weatherMarkers.push(weather);
+                        weather.marker.addTo(map);
+                    } else {
+                        oldWeather.updated = weather.updated;
+                        oldWeather.marker.setStyle(getWeatherStyle(weather, ts));
+                    }
+                }
+            });
+			
             lastUpdate = new Date();
 			isLoading = false;
 		}
@@ -1598,7 +1831,7 @@ function startRaidTimer(gym, ts) {
 				});
 				map.removeLayer(realGym.marker);
 			} else {
-				realGym.marker.setIcon(getGymMarkerIcon(realGym, ts2 + 1));
+                realGym.marker.setIcon(getGymMarkerIcon(realGym, ts2 + 1));
 			}
 
 		}, (gym.raid_end_timestamp - ts) * 1000);
@@ -1629,9 +1862,11 @@ function startPokestopTimer(pokestop, expire_timestamp, ts) {
 			if (expire_timestamp - 10 >= ts2) {
                 startPokestopTimer(realPokestop, expire_timestamp, ts2);
 			} else {
-                realPokestop.willUpdate = false;
-				realPokestop.marker.setIcon(getPokestopMarkerIcon(realPokestop, ts2 + 10));
-			}
+                pokestopMarkers = pokestopMarkers.filter(function( obj ) {
+                    return obj.id !== realPokestop.id;
+                });
+                map.removeLayer(realPokestop.marker);
+            }
 		}, (expire_timestamp - ts) * 1000);
 }
 
@@ -1650,6 +1885,12 @@ function updateOpenedPopupLoop() {
     if (openedCell !== undefined) {
         openedCell.marker._popup.setContent(getCellPopupContent(openedCell));
     }
+    if (openedSubmissionTypeCell !== undefined) {
+        openedSubmissionTypeCell.marker._popup.setContent(getSubmissionTypeCellPopupContent(openedSubmissionTypeCell));
+    }
+    if (openedWeather !== undefined) {
+        openedWeather.marker._popup.setContent(getWeatherPopupContent(openedWeather));
+    }
     if (openedDevice !== undefined) {
         openedDevice.marker._popup.setContent(getDevicePopupContent(openedDevice));
     }
@@ -1660,12 +1901,25 @@ function updateCellsLoop() {
     $.each(cellMarkers, function (index, cell) {
         cell.marker.setStyle(getCellStyle(cell, ts));
     });
+    $.each(weatherMarkers, function (index, weather) {
+        weather.marker.setStyle(getWeatherStyle(weather, ts));
+    });
 }
 
 function updateDevicesLoop() {
     $.each(deviceMarkers, function (index, device) {
         var newLatLng = new L.LatLng(device.last_lat, device.last_lon);
         device.marker.setLatLng(newLatLng);
+    });
+}
+
+function updateMapTimers() {
+    $.each(gymMarkers, function(index, marker) {
+        if (showRaidTimers) {
+            setDespawnTimer(marker);
+        } else {
+            marker.marker.unbindTooltip();
+        }
     });
 }
 
@@ -1680,6 +1934,9 @@ function getPokemonPopupContent(pokemon) {
     } else {
         pokemonName = getPokemonName(pokemon.pokemon_id);
     }
+    if (pokemon.display_pokemon_id > 0) {
+        pokemonName += " (" + getPokemonNameNoId(pokemon.display_pokemon_id) + ")";
+    }
 
     let pokemonIcon = getPokemonIconString(pokemon.pokemon_id, pokemon.form);
 
@@ -1690,7 +1947,7 @@ function getPokemonPopupContent(pokemon) {
         '</div>' +
         '<div class="col-6 col-md-4 center-vertical">' + 
             '<div style="float:right; margin-right:5px;">';
-        if (pokemon.weather !== 0 && pokemon.weather !== null) {
+        if (!(pokemon.display_pokemon_id > 0) && pokemon.weather !== 0 && pokemon.weather !== null) {
             content += '<img src="/static/img/weather/' + pokemon.weather + '.png" height="32" width="32">';
         }
         content += 
@@ -1961,6 +2218,7 @@ function getGymPopupContent(gym) {
             } else {
                 pokemonName = getPokemonName(gym.raid_pokemon_id);
             }
+            pokemonName += ' ' + getGenderIcon(gym.raid_pokemon_gender);
     	} else if (isRaidBattle) {
             pokemonName = "Unknown Raid Boss";
         } else {
@@ -2025,7 +2283,7 @@ function getGymPopupContent(gym) {
                     }
                 }
                 if (gym.ex_raid_eligible) {
-                    content += '<img src="/static/img/egg/ex.png" height="24" width="32">';
+                    content += '<img src="/static/img/misc/ex.png" height="24" width="32">';
                 }
                 content += 
             '</div>' + //END 2ND COL
@@ -2067,7 +2325,7 @@ function getGymPopupContent(gym) {
                 }
                 if (gym.ex_raid_eligible) {
                     //content += '<b>Gym is EX-Raid eligible</b>';
-                    content += '<img src="/static/img/egg/ex.png" height="24" width="32">';
+                    content += '<img src="/static/img/misc/ex.png" height="24" width="32">';
                 }
         content += 
             '</div>' + //END 2ND COL
@@ -2122,6 +2380,68 @@ function getCellPopupContent(cell) {
     content += '<b>Id:</b> '+cell.id+'<br>';
 
     const updatedDate = new Date(cell.updated * 1000);
+
+    content += '<b>Last Updated:</b> '+ updatedDate.toLocaleTimeString() + ' (' + getTimeSince(updatedDate) + ')';
+    content += '</center>';
+    return content;
+}
+
+function getSubmissionTypeCellPopupContent(cell) {
+    let content = '<center>';
+    content += '<h6><b>Level '+cell.level+' S2 Cell</b></h6>';
+    content += '<b>Id:</b> '+cell.id+'<br>';
+    content += '<b>Total Count:</b> '+ cell.count +'<br>';
+    content += '<b>Pokestop Count:</b> '+ cell.count_pokestops +'<br>';
+    content += '<b>Gym Count:</b> '+ cell.count_gyms + '<br>';
+    
+    let gymThreshold = [ 2, 6 , 20 ];
+
+    if (cell.count_gyms < 3) {
+        content += '<b>Submissions untill Gym:</b> ' + (gymThreshold[cell.count_gyms] - cell.count);
+    } else {
+        content += '<b>Submissions untill Gym:</b> Never';
+    }
+    
+    if ((cell.count == 1 && cell.count_gyms < 1) || (cell.count == 5 && cell.count_gyms < 2) || (cell.count == 19 && cell.count_gyms < 3)) {
+        content += '<br><b>Next submission will cause a Gym!';
+    }
+    
+
+    content += '</center>';
+    return content;
+}
+
+function degreesToCardinal(d) {
+    var dirs = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
+        'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW']
+    var ix = Math.floor((d + 11.25) / 22.5 - 0.02)
+    return dirs[ix % 16]
+}
+
+function getWeatherPopupContent(weather) {
+
+    weatherName = weatherTypes[weather.gameplay_condition].name;
+	weatherType = weatherTypes[weather.gameplay_condition].types;
+
+    let content = '<center>';
+	content += '<h6><b>'+weatherName+'</b><br></h6>';
+	content += '<b>Boosted Types:</b><br>'+weatherType+'<br>';
+	content += '<b>Cell ID:</b> '+weather.id+'<br>';
+	content += '<b>Cell Level:</b> '+weather.level+'<br>';
+	content += '<b>Lat:</b> '+weather.latitude+'<br>';
+	content += '<b>Lon:</b> '+weather.longitude+'<br>';
+	content += '<b>Gameplay Condition:</b> '+weather.gameplay_condition+'<br>';
+	content += '<b>Wind Direction:</b> '+weather.wind_direction+'° ('+degreesToCardinal(weather.wind_direction)+')<br>';
+	content += '<b>Cloud Level:</b> '+weather.cloud_level+'<br>';
+	content += '<b>Rain Level:</b> '+weather.rain_level+'<br>';
+	content += '<b>Wind Level:</b> '+weather.wind_level+'<br>';
+	content += '<b>Snow Level:</b> '+weather.snow_level+'<br>';
+	content += '<b>Fog Level:</b> '+weather.fog_level+'<br>';
+	content += '<b>Special Effects Level:</b> '+weather.special_effect_level+'<br>';
+	content += '<b>Severity:</b> '+weather.severity+'<br>';	
+	content += '<b>Weather Warning:</b> '+weather.warn_weather+'<br><br>';
+
+    const updatedDate = new Date(weather.updated * 1000);
 
     content += '<b>Last Updated:</b> '+ updatedDate.toLocaleTimeString() + ' (' + getTimeSince(updatedDate) + ')';
     content += '</center>';
@@ -2312,7 +2632,7 @@ function getQuestCondition(condition) {
 // MARK: - Markers
 
 function getCellMarker(cell, ts) {
-    const polygon = L.polygon(cell.polygon);
+    const polygon = L.polygon(cell.polygon, { forceZIndex: 1 });
     polygon.setStyle(getCellStyle(cell, ts));
     polygon.bindPopup(getCellPopupContent(cell));
     polygon.on('popupopen', function (popup) {
@@ -2331,7 +2651,86 @@ function getCellStyle(cell, ts) {
         value = Math.min((ago - 150) / 750, 1);
     }
     const hue = ((1-value)*120).toString(10);
-    return {fillColor: ["hsl(",hue,",100%,50%)"].join(""), color: "black", opacity: 0.75, fillOpacity: 0.5};
+    return {fillColor: ["hsl(",hue,",100%,50%)"].join(""), color: "black", opacity: 0.75, fillOpacity: 0.5, weight: 0.5};
+}
+
+function getSubmissionPlacementCellMarker(cell, ts) {
+    const polygon = L.polygon(cell.polygon, { forceZIndex: 2, interactive: false });
+    polygon.setStyle(getSubmissionPlacementCellStyle(cell, ts));
+    return polygon;
+}
+
+function getSubmissionPlacementCellStyle(cell, ts) {
+    if (cell.blocked) {
+        return {fillColor: "black", color: "black", opacity: 0.75, fillOpacity: 0.25, weight: 0.1};
+    } else {
+        return {fillColor: "green", color: "black", opacity: 0.75, fillOpacity: 0.0, weight: 0.1};
+    }
+}
+
+function getSubmissionPlacementRingMarker(ring, ts) {
+    const circle = L.circle([ring.lat, ring.lon], {
+        radius: ring.radius,
+        forceZIndex: 4,
+        interactive: false
+    });
+    circle.setStyle(getSubmissionPlacementRingStyle(ring, ts));
+    return circle;
+}
+
+function getSubmissionPlacementRingStyle(cell, ts) {
+    return {fillColor: "blue", color: "black", opacity: 0.75, fillOpacity: 0.25, weight: 0.1};
+}
+
+function getSubmissionTypeCellMarker(cell, ts) {
+    const polygon = L.polygon(cell.polygon, { forceZIndex: 3 });
+    polygon.setStyle(getSubmissionTypeCellStyle(cell, ts));
+    polygon.bindPopup(getSubmissionTypeCellPopupContent(cell));
+    polygon.bindTooltip(''+cell.count+'',{
+	    permanent: true,
+	    direction: "center",
+	    className: 'labelstyle'
+    })
+    polygon.on('popupopen', function (popup) {
+        openedSubmissionTypeCell = cell;
+        polygon._popup.setContent(getSubmissionTypeCellPopupContent(cell));
+    });
+    return polygon;
+}
+
+function getSubmissionTypeCellStyle(cell, ts) {
+    if ((cell.count == 1 && cell.count_gyms < 1) || (cell.count == 5 && cell.count_gyms < 2) || (cell.count == 19 && cell.count_gyms < 3)) {
+        return {fillColor: "red", color: "red", opacity: 0.75, fillOpacity: 0.5, weight: 0.75};
+    } else if ((cell.count == 4 && cell.count_gyms < 2) || (cell.count == 18 && cell.count_gyms < 3)) {
+	    return {fillColor: "orange", color: "red", opacity: 0.75, fillOpacity: 0.5, weight: 0.75};
+    } else if (cell.count >= 20) {
+        return {fillColor: "black", color: "black", opacity: 0.75, fillOpacity: 0.25, weight: 0.75};
+    } else {
+        return {fillColor: "blue", color: "black", opacity: 0.75, fillOpacity: 0.0, weight: 0.75};
+    }
+}
+
+function getWeatherMarker(weather, ts) {
+    const polygon = L.polygon(weather.polygon);
+    polygon.setStyle(getWeatherStyle(weather, ts));
+    polygon.bindPopup(getWeatherPopupContent(weather));
+    polygon.on('popupopen', function (popup) {
+        openedWeather = weather;
+        polygon._popup.setContent(getWeatherPopupContent(weather));
+    });
+    return polygon;
+}
+
+function getWeatherStyle(weather, ts) {
+    let ago = ts - weather.updated;
+    let value;
+    if (ago <= 150) {
+        value = 0;
+    } else {
+        value = Math.min((ago - 150) / 1800, 1);
+    }
+    const hue = ((1-value)*120).toString(10);
+    return {fillColor: ["hsl(",hue,",100%,50%)"].join(""), color: "black", opacity: 0.75, fillOpacity: 0.5, weight: 1.0};
 }
 
 function getPokemonMarkerIcon(pokemon, ts) {
@@ -2401,13 +2800,19 @@ function getPokestopMarkerIcon(pokestop, ts) {
             lureId = 0;
         }
         let invasionString;
-        if (pokestop.incident_expire_timestamp >= ts) {
+        let invasionStringEnd;
+        let folder;
+        if (pokestopFilter["invasion"]["show"] === true && pokestop.incident_expire_timestamp >= ts) {
             invasionString = "i";
+            invasionStringEnd = "_" + pokestop.grunt_type;
+            folder = "quest_invasion";
         } else {
             invasionString = "";
+            invasionStringEnd = "";
+            folder = "quest";
         }
         icon = L.icon({
-            iconUrl: '/static/img/quest/'+invasionString+lureId+'_'+rewardString+'.png',
+            iconUrl: '/static/img/'+folder+'/'+invasionString+lureId+'_'+rewardString+invasionStringEnd+'.png',
             iconSize: 		[size       , size * 1.667  ],
             iconAnchor: 	[size / 2   , size * 1.567  ],
             popupAnchor: 	[0          , size * -1.567 ]
@@ -2420,10 +2825,16 @@ function getPokestopMarkerIcon(pokestop, ts) {
             lureId = 0;
         }
         let invasionString;
-        if (pokestop.incident_expire_timestamp >= ts) {
+        let invasionStringEnd;
+        let folder;
+        if (pokestopFilter["invasion"]["show"] === true && pokestop.incident_expire_timestamp >= ts) {
             invasionString = "i";
+            invasionStringEnd = "_" + pokestop.grunt_type;
+            folder = "invasion";
         } else {
             invasionString = "";
+            invasionStringEnd = "";
+            folder = "pokestop";
         }
 
         var sizeId = "normal";
@@ -2434,7 +2845,7 @@ function getPokestopMarkerIcon(pokestop, ts) {
         }
         const size = getPokestopSize(sizeId);
         icon = L.icon({
-            iconUrl: '/static/img/pokestop/'+invasionString+lureId+'.png',
+            iconUrl: '/static/img/'+folder+'/'+invasionString+lureId+invasionStringEnd+'.png',
             iconSize: 		[size       , size /** 1.667*/  ],
             iconAnchor: 	[size / 2   , size /** 1.567*/  ],
             popupAnchor: 	[0          , size * -1.567 ]
@@ -2624,6 +3035,34 @@ function isDeviceOffline(device, ts) {
     return isOffline;
 }
 
+function setDespawnTimer(gym) {
+    var date = new Date();
+    var ts = date.getTime() / 1000;
+    var raidTimestamp = 0;
+    if (gym.raid_battle_timestamp <= ts && gym.raid_end_timestamp >= ts && parseInt(gym.raid_level) > 0 && showRaids) {
+        //Hatched
+        raidTimestamp = gym.raid_end_timestamp;
+    } else if (gym.raid_battle_timestamp >= ts && gym.raid_end_timestamp >= ts && parseInt(gym.raid_level) > 0 && showRaids) {
+        //Egg
+        raidTimestamp = gym.raid_battle_timestamp;
+    } else {
+        gym.marker.unbindTooltip();
+        gym.marker.timerSet = false;
+    }
+
+    if (raidTimestamp > 0) {
+        var timer = getTimeUntill(new Date(raidTimestamp * 1000));
+        if (gym.marker.timerSet) {
+            var text = "<div class='rounded raid-timer'><span class='p-1'>" + timer + "</span></div>";
+            gym.marker.setTooltipContent(text);
+        } else {
+            var options = {permanent: true, className: "leaflet-tooltip", direction: "bottom", offset: [0, 0]};
+            /*var tooltip =*/ gym.marker.bindTooltip(timer, options);
+            gym.marker.timerSet = true;
+        }
+    }
+}
+
 // MARK: - Misc
 
 function manageSelectButton(e, isNew) {
@@ -2722,6 +3161,27 @@ function manageSelectButton(e, isNew) {
                 break;
             case "huge":
                 shouldShow = questFilterNew["p"+ id]["size"] === "huge";
+                break;
+        }
+    } else if (type === "raid-timers") {
+        switch (info) {
+            case "hide":
+                shouldShow = raidFilterNew[id]["show"] === false;
+                break;
+            case "show":
+                shouldShow = raidFilterNew[id]["show"] === true;
+                break;
+            case "small":
+                shouldShow = raidFilterNew[id]["size"] === "small";
+                break;
+            case "normal":
+                shouldShow = raidFilterNew[id]["size"] === "normal";
+                break;
+            case "large":
+                shouldShow = raidFilterNew[id]["size"] === "large";
+                break;
+            case "huge":
+                shouldShow = raidFilterNew[id]["size"] === "huge";
                 break;
         }
     } else if (type === "raid-level") {
@@ -3019,6 +3479,27 @@ function manageSelectButton(e, isNew) {
                         break;
                     case "huge":
                         questFilterNew["p" + id]["size"] = "huge";
+                        break;
+                }
+            } else if (type === "raid-timers") {
+                switch (info) {
+                    case "hide":
+                        raidFilterNew[id]["show"] = false;
+                        break;
+                    case "show":
+                        raidFilterNew[id]["show"] = true;
+                        break;
+                    case "small":
+                        raidFilterNew[id]["size"] = "small";
+                        break;
+                    case "normal":
+                        raidFilterNew[id]["size"] = "normal";
+                        break;
+                    case "large":
+                        raidFilterNew[id]["size"] = "large";
+                        break;
+                    case "huge":
+                        raidFilterNew[id]["size"] = "huge";
                         break;
                 }
             } else if (type === "raid-level") {
@@ -3923,7 +4404,13 @@ function loadFilterSettings(e) {
 
         showCells = obj.show_cells;
         store('show_cells', showCells);
+        
+        showSubmissionCells = obj.show_submission_cells;
+        store('show_submission_cells"', showSubmissionCells);
 
+        showWeathers = obj.show_weathers;
+        store('show_weathers', showWeathers);
+		
         if (showGyms) {
             $('#show-gyms').addClass('active');
             $('#hide-gyms').removeClass('active');
@@ -3979,7 +4466,24 @@ function loadFilterSettings(e) {
             $('#hide-cells').addClass('active');
             $('#show-cells').removeClass('active');
         }
+        
+        if (showSubmissionCells) {
+            $('#show-submission-cells').addClass('active');
+            $('#hide-submission-cells').removeClass('active');
+        } else {
+            $('#hide-submission-cells').addClass('active');
+            $('#show-submission-cells').removeClass('active');
+        }
 
+
+        if (showWeathers) {
+            $('#show-weathers').addClass('active');
+            $('#hide-weathers').removeClass('active');
+        } else {
+            $('#hide-weathers').addClass('active');
+            $('#show-weathers').removeClass('active');
+        }
+		
         $('#table-filter-pokemon').DataTable().rows().invalidate('data').draw(false);
         $('#table-filter-raid').DataTable().rows().invalidate('data').draw(false);
         $('#table-filter-gym').DataTable().rows().invalidate('data').draw(false);

@@ -46,9 +46,13 @@ class ApiRequestHandler {
         let spawnpointFilterExclude = request.param(name: "spawnpoint_filter_exclude")?.jsonDecodeForceTry() as? [String]
         let showSpawnpoints =  request.param(name: "show_spawnpoints")?.toBool() ?? false
         let showCells = request.param(name: "show_cells")?.toBool() ?? false
+        let showSubmissionPlacementCells = request.param(name: "show_submission_placement_cells")?.toBool() ?? false
+        let showSubmissionTypeCells = request.param(name: "show_submission_type_cells")?.toBool() ?? false
+        let showWeathers = request.param(name: "show_weathers")?.toBool() ?? false
         let showDevices =  request.param(name: "show_devices")?.toBool() ?? false
         let showActiveDevices = request.param(name: "show_active_devices")?.toBool() ?? false
         let showInstances =  request.param(name: "show_instances")?.toBool() ?? false
+        let showDeviceGroups = request.param(name: "show_devicegroups")?.toBool() ?? false
         let showUsers =  request.param(name: "show_users")?.toBool() ?? false
         let showGroups =  request.param(name: "show_groups")?.toBool() ?? false
         let showPokemonFilter = request.param(name: "show_pokemon_filter")?.toBool() ?? false
@@ -63,7 +67,7 @@ class ApiRequestHandler {
         let showIVQueue = request.param(name: "show_ivqueue")?.toBool() ?? false
         let showDiscordRules = request.param(name: "show_discordrules")?.toBool() ?? false
         
-        if (showGyms || showRaids || showPokestops || showPokemon || showSpawnpoints || showCells) &&
+        if (showGyms || showRaids || showPokestops || showPokemon || showSpawnpoints || showCells || showSubmissionTypeCells || showSubmissionPlacementCells || showWeathers) &&
             (minLat == nil || maxLat == nil || minLon == nil || maxLon == nil) {
             response.respondWithError(status: .badRequest)
             return
@@ -158,6 +162,17 @@ class ApiRequestHandler {
         }
         if isPost && showCells && perms.contains(.viewMapCell) {
             data["cells"] = try? Cell.getAll(mysql: mysql, minLat: minLat!, maxLat: maxLat!, minLon: minLon!, maxLon: maxLon!, updated: lastUpdate)
+        }
+        if lastUpdate == 0 && isPost && showSubmissionPlacementCells && perms.contains(.viewMapSubmissionCells) {
+            let result = try? SubmissionPlacementCell.getAll(mysql: mysql, minLat: minLat!, maxLat: maxLat!, minLon: minLon!, maxLon: maxLon!)
+            data["submission_placement_cells"] = result?.cells
+            data["submission_placement_rings"] = result?.rings
+        }
+        if lastUpdate == 0 && isPost && showSubmissionTypeCells && perms.contains(.viewMapSubmissionCells) {
+            data["submission_type_cells"] = try? SubmissionTypeCell.getAll(mysql: mysql, minLat: minLat!, maxLat: maxLat!, minLon: minLon!, maxLon: maxLon!)
+        }
+        if isPost && showWeathers && perms.contains(.viewMapWeather) {
+			data["weather"] = try? Weather.getAll(mysql: mysql, minLat: minLat!, maxLat: maxLat!, minLon: minLon!, maxLon: maxLon!, updated: lastUpdate)
         }
         if permViewMap && showPokemonFilter {
             
@@ -456,10 +471,54 @@ class ApiRequestHandler {
             let largeString = Localizer.global.get(value: "filter_large")
             let hugeString = Localizer.global.get(value: "filter_huge")
             
+            let generalString = Localizer.global.get(value: "filter_general")
             let raidLevelsString = Localizer.global.get(value: "filter_raid_levels")
             let pokemonString = Localizer.global.get(value: "filter_pokemon")
             
             var raidData = [[String: Any]]()
+
+            let raidTimers = Localizer.global.get(value: "filter_raid_timers")
+            
+            let filter = """
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <label class="btn btn-sm btn-off select-button-new" data-id="timers" data-type="raid-timers" data-info="hide">
+            <input type="radio" name="options" id="hide" autocomplete="off">\(hideString)
+            </label>
+            <label class="btn btn-sm btn-on select-button-new" data-id="timers" data-type="raid-timers" data-info="show">
+            <input type="radio" name="options" id="show" autocomplete="off">\(showString)
+            </label>
+            </div>
+            """
+            
+            let size = """
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <label class="btn btn-sm btn-size select-button-new" data-id="timers" data-type="raid-timers" data-info="small" disabled>
+            <input type="radio" name="options" id="hide" autocomplete="off">\(smallString)
+            </label>
+            <label class="btn btn-sm btn-size select-button-new" data-id="timers" data-type="raid-timers" data-info="normal" disabled>
+            <input type="radio" name="options" id="show" autocomplete="off">\(normalString)
+            </label>
+            <label class="btn btn-sm btn-size select-button-new" data-id="timers" data-type="raid-timers" data-info="large" disabled>
+            <input type="radio" name="options" id="show" autocomplete="off">\(largeString)
+            </label>
+            <label class="btn btn-sm btn-size select-button-new" data-id="timers" data-type="raid-timers" data-info="huge" disabled>
+            <input type="radio" name="options" id="show" autocomplete="off">\(hugeString)
+            </label>
+            </div>
+            """
+            
+            raidData.append([
+                "id": [
+                    "formatted": String(format: "%03d", 0),
+                    "sort": 0
+                ],
+                "name": raidTimers,
+                "image": "<img class=\"lazy_load\" data-src=\"/static/img/misc/timer.png\" style=\"height:50px; width:50px;\">",
+                "filter": filter,
+                "size": size,
+                "type": generalString
+                ])
+            
             //Level
             for i in 1...5 {
                 
@@ -953,6 +1012,7 @@ class ApiRequestHandler {
             if devices != nil {
                 for device in devices! {
                     var deviceData = [String: Any]()
+                    //deviceData["chk"] = ""
                     deviceData["uuid"] = device.uuid
                     deviceData["host"] = device.lastHost ?? ""
                     deviceData["instance"] = device.instanceName ?? ""
@@ -1026,6 +1086,30 @@ class ApiRequestHandler {
             
         }
         
+        if showDeviceGroups && perms.contains(.admin) {
+            
+            let deviceGroups = try? DeviceGroup.getAll(mysql: mysql)
+            
+            var jsonArray = [[String: Any]]()
+            
+            if deviceGroups != nil {
+                for deviceGroup in deviceGroups! {
+                    var deviceGroupData = [String: Any]()
+                    deviceGroupData["name"] = deviceGroup.name
+                    deviceGroupData["instance"] = deviceGroup.instanceName
+                    deviceGroupData["devices"] = deviceGroup.devices.count
+                    
+                    if formatted {
+                        deviceGroupData["buttons"] = "<a href=\"/dashboard/devicegroup/edit/\(deviceGroup.name.encodeUrl()!)\" role=\"button\" class=\"btn btn-primary\">Edit Device Group</a>"
+                    }
+
+                    jsonArray.append(deviceGroupData)
+                }
+            }
+
+            data["devicegroups"] = jsonArray
+        }
+        
         if showAssignments && perms.contains(.admin) {
             
             let assignments = try? Assignment.getAll(mysql: mysql)
@@ -1050,7 +1134,7 @@ class ApiRequestHandler {
                         assignmentData["time"] = ["timestamp": assignment.time as Any, "formatted": formattedTime]
                        
                         let instanceUUID = "\(assignment.instanceName.escaped())\\-\(assignment.deviceUUID.escaped())\\-\(assignment.time)"
-                        assignmentData["buttons"] = "<div class=\"btn-group\" role=\"group\"><a href=\"/dashboard/assignment/edit/\(instanceUUID.encodeUrl()!)\" role=\"button\" class=\"btn btn-primary\">Edit</a><a href=\"/dashboard/assignment/delete/\(instanceUUID.encodeUrl()!)\" role=\"button\" class=\"btn btn-danger\">Delete</a></div>"
+                        assignmentData["buttons"] = "<div class=\"btn-group\" role=\"group\"><a href=\"/dashboard/assignment/start/\(instanceUUID.encodeUrl()!)\" role=\"button\" class=\"btn btn-success\">Start</a><a href=\"/dashboard/assignment/edit/\(instanceUUID.encodeUrl()!)\" role=\"button\" class=\"btn btn-primary\">Edit</a><a href=\"/dashboard/assignment/delete/\(instanceUUID.encodeUrl()!)\" role=\"button\" class=\"btn btn-danger\">Delete</a></div>"
                     } else {
                         assignmentData["time"] = assignment.time as Any
                     }
@@ -1160,13 +1244,17 @@ class ApiRequestHandler {
                             case .viewMapIV:
                                 permName = "IV"
                             case .viewMapCell:
-                                permName = "Cell"
+                                permName = "Scann-Cell"
+                            case .viewMapWeather:
+                                permName = "Weather"
                             case .viewMapLure:
                                 permName = "Lure"
                             case .viewMapInvasion:
                                 permName = "Invasion"
                             case .viewMapDevice:
                                 permName = "Device"
+                            case .viewMapSubmissionCells:
+                                permName = "Submission-Cell"
                             }
                             
                             if permsString == "" {

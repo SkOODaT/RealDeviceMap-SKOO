@@ -25,11 +25,13 @@ struct Group {
         case viewMapQuest = 9
         case viewMapIV = 10
         case viewMapCell = 11
-        case viewMapLure = 12
-        case viewMapInvasion = 13
-        case viewMapDevice = 14
-        
-        static var all: [Perm] = [.viewMap, .viewMapRaid, .viewMapPokemon, .viewStats, .admin, .viewMapGym, .viewMapPokestop, .viewMapSpawnpoint, .viewMapQuest, .viewMapIV, .viewMapCell, .viewMapLure, .viewMapInvasion, .viewMapDevice]
+        case viewMapWeather = 12
+        case viewMapLure = 13
+        case viewMapInvasion = 14
+        case viewMapDevice = 15
+        case viewMapSubmissionCells = 16
+
+        static var all: [Perm] = [.viewMap, .viewMapRaid, .viewMapPokemon, .viewStats, .admin, .viewMapGym, .viewMapPokestop, .viewMapSpawnpoint, .viewMapQuest, .viewMapIV, .viewMapCell, .viewMapWeather, .viewMapLure, .viewMapInvasion, .viewMapDevice, .viewMapSubmissionCells]
         
         
         static func permsToNumber(perms: [Perm]) -> UInt32 {
@@ -109,7 +111,7 @@ struct Group {
         }
         
         let sql = """
-            SELECT perm_view_map, perm_view_map_raid, perm_view_map_pokemon, perm_view_stats, perm_admin, perm_view_map_gym, perm_view_map_pokestop, perm_view_map_spawnpoint, perm_view_map_quest, perm_view_map_iv, perm_view_map_cell, perm_view_map_lure, perm_view_map_invasion, perm_view_map_device
+            SELECT perm_view_map, perm_view_map_raid, perm_view_map_pokemon, perm_view_stats, perm_admin, perm_view_map_gym, perm_view_map_pokestop, perm_view_map_spawnpoint, perm_view_map_quest, perm_view_map_iv, perm_view_map_cell, perm_view_map_weather, perm_view_map_lure, perm_view_map_invasion, perm_view_map_device, perm_view_map_submission_cell
             FROM `group`
             WHERE name = ?
         """
@@ -140,10 +142,12 @@ struct Group {
         let permViewMapQuest = (result[8] as? UInt8)!.toBool()
         let permViewMapIV = (result[9] as? UInt8)!.toBool()
         let permViewMapCell = (result[10] as? UInt8)!.toBool()
-        let permViewMapLure = (result[11] as? UInt8)!.toBool()
-        let permViewMapInvasion = (result[12] as? UInt8)!.toBool()
-        let permViewMapDevice = (result[13] as? UInt8)!.toBool()
-        
+        let permViewMapWeather = (result[11] as? UInt8)!.toBool()
+        let permViewMapLure = (result[12] as? UInt8)!.toBool()
+        let permViewMapInvasion = (result[13] as? UInt8)!.toBool()
+        let permViewMapDevice = (result[14] as? UInt8)!.toBool()
+        let permViewMapSubmissionCells = (result[15] as? UInt8)!.toBool()
+
         var perms = [Perm]()
         if permViewMap {
             perms.append(.viewMap)
@@ -178,6 +182,9 @@ struct Group {
         if permViewMapCell {
             perms.append(.viewMapCell)
         }
+        if permViewMapWeather {
+            perms.append(.viewMapWeather)
+        }
         if permViewMapLure {
             perms.append(.viewMapLure)
         }
@@ -186,6 +193,9 @@ struct Group {
         }
         if permViewMapDevice {
             perms.append(.viewMapDevice)
+        }
+        if permViewMapSubmissionCells {
+            perms.append(.viewMapSubmissionCells)
         }
         
         return Group(name: name, perms: perms)
@@ -200,7 +210,7 @@ struct Group {
         }
         
         let sql = """
-            SELECT name, perm_view_map, perm_view_map_raid, perm_view_map_pokemon, perm_view_stats, perm_admin, perm_view_map_gym, perm_view_map_pokestop, perm_view_map_spawnpoint, perm_view_map_quest, perm_view_map_iv, perm_view_map_cell, perm_view_map_lure, perm_view_map_invasion, perm_view_map_device
+            SELECT name, perm_view_map, perm_view_map_raid, perm_view_map_pokemon, perm_view_stats, perm_admin, perm_view_map_gym, perm_view_map_pokestop, perm_view_map_spawnpoint, perm_view_map_quest, perm_view_map_iv, perm_view_map_cell, perm_view_map_weather, perm_view_map_lure, perm_view_map_invasion, perm_view_map_device, perm_view_map_submission_cell
             FROM `group`
         """
         
@@ -227,10 +237,12 @@ struct Group {
             let permViewMapQuest = (result[9] as? UInt8)!.toBool()
             let permViewMapIV = (result[10] as? UInt8)!.toBool()
             let permViewMapCell = (result[11] as? UInt8)!.toBool()
-            let permViewMapLure = (result[12] as? UInt8)!.toBool()
-            let permViewMapInvasion = (result[13] as? UInt8)!.toBool()
-            let permViewMapDevice = (result[14] as? UInt8)!.toBool()
-            
+            let permViewMapWeather = (result[12] as? UInt8)!.toBool()
+            let permViewMapLure = (result[13] as? UInt8)!.toBool()
+            let permViewMapInvasion = (result[14] as? UInt8)!.toBool()
+            let permViewMapDevice = (result[15] as? UInt8)!.toBool()
+            let permViewMapSubmissionCells = (result[16] as? UInt8)!.toBool()
+
             var perms = [Perm]()
             if permViewMap {
                 perms.append(.viewMap)
@@ -265,6 +277,9 @@ struct Group {
             if permViewMapCell {
                 perms.append(.viewMapCell)
             }
+            if permViewMapWeather {
+                perms.append(.viewMapWeather)
+            }
             if permViewMapLure {
                 perms.append(.viewMapLure)
             }
@@ -273,6 +288,9 @@ struct Group {
             }
             if permViewMapDevice {
                 perms.append(.viewMapDevice)
+            }
+            if permViewMapSubmissionCells {
+                perms.append(.viewMapSubmissionCells)
             }
             
             groups.append(Group(name: name, perms: perms))
@@ -338,8 +356,8 @@ struct Group {
         }
         
         var sql = """
-        INSERT INTO `group` (name, perm_view_map, perm_view_map_raid, perm_view_map_pokemon, perm_view_stats, perm_admin, perm_view_map_gym, perm_view_map_pokestop, perm_view_map_spawnpoint, perm_view_map_quest, perm_view_map_iv, perm_view_map_cell, perm_view_map_lure, perm_view_map_invasion, perm_view_map_device)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO `group` (name, perm_view_map, perm_view_map_raid, perm_view_map_pokemon, perm_view_stats, perm_admin, perm_view_map_gym, perm_view_map_pokestop, perm_view_map_spawnpoint, perm_view_map_quest, perm_view_map_iv, perm_view_map_cell, perm_view_map_weather, perm_view_map_lure, perm_view_map_invasion, perm_view_map_device, perm_view_map_submission_cell)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
         if update {
             sql += """
@@ -355,9 +373,11 @@ struct Group {
                 perm_view_map_quest=VALUES(perm_view_map_quest),
                 perm_view_map_iv=VALUES(perm_view_map_iv),
                 perm_view_map_cell=VALUES(perm_view_map_cell),
+                perm_view_map_weather=VALUES(perm_view_map_weather),
                 perm_view_map_lure=VALUES(perm_view_map_lure),
                 perm_view_map_invasion=VALUES(perm_view_map_invasion),
-                perm_view_map_device=VALUES(perm_view_map_device)
+                perm_view_map_device=VALUES(perm_view_map_device),
+                perm_view_map_submission_cell=VALUES(perm_view_map_submission_cell)
             """
         }
         
@@ -376,9 +396,11 @@ struct Group {
         mysqlStmt.bindParam(perms.contains(.viewMapQuest))
         mysqlStmt.bindParam(perms.contains(.viewMapIV))
         mysqlStmt.bindParam(perms.contains(.viewMapCell))
+        mysqlStmt.bindParam(perms.contains(.viewMapWeather))
         mysqlStmt.bindParam(perms.contains(.viewMapLure))
         mysqlStmt.bindParam(perms.contains(.viewMapInvasion))
         mysqlStmt.bindParam(perms.contains(.viewMapDevice))
+        mysqlStmt.bindParam(perms.contains(.viewMapSubmissionCells))
         
         guard mysqlStmt.execute() else {
             Log.error(message: "[GROUP] Failed to execute query. (\(mysqlStmt.errorMessage())")

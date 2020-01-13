@@ -35,6 +35,7 @@ Log.debug(message: "[MAIN] Starting Database Controller")
 _ = DBController.global
 
 // Load Groups
+Log.debug(message: "[MAIN] Loading groups")
 do {
     try Group.setup()
 } catch {
@@ -81,6 +82,9 @@ WebReqeustHandler.statsUrl = try! DBController.global.getValueForKey(key: "STATS
 WebHookRequestHandler.hostWhitelist = try! DBController.global.getValueForKey(key: "DEVICEAPI_HOST_WHITELIST")?.emptyToNil()?.components(separatedBy: ";")
 WebHookRequestHandler.hostWhitelistUsesProxy = try! DBController.global.getValueForKey(key: "DEVICEAPI_HOST_WHITELIST_USES_PROXY")?.toBool() ?? false
 WebHookRequestHandler.loginSecret = try! DBController.global.getValueForKey(key: "DEVICEAPI_SECRET")?.emptyToNil()
+WebHookRequestHandler.dittoDisguises = try! DBController.global.getValueForKey(key: "DITTO_DISGUISES")?.components(separatedBy: ",").map({ (s) -> UInt16 in
+    return s.toUInt16() ?? 0
+}) ?? [13, 46, 48, 163, 165, 167, 187, 223, 273, 293, 300, 316, 322, 399] //Default ditto disguises
 
 if let tileserversOld = try! DBController.global.getValueForKey(key: "TILESERVERS")?.jsonDecodeForceTry() as? [String: String]  {
     var tileservers = [String: [String: String]]()
@@ -142,13 +146,17 @@ WebHookController.global.start()
 // Load Forms
 Log.debug(message: "[MAIN] Loading Avilable Forms")
 var avilableForms = [String]()
-for formString in POGOProtos_Enums_Form.allFormsInString {
-    let file = File("\(projectroot)/resources/webroot/static/img/pokemon/\(formString).png")
-    if file.exists {
-        avilableForms.append(formString)
+do {
+    try Dir("\(projectroot)/resources/webroot/static/img/pokemon").forEachEntry { (file) in
+        let split = file.replacingOccurrences(of: ".png", with: "").components(separatedBy: "-")
+        if split.count == 2, let pokemonID = Int(split[0]), let formID = Int(split[1]) {
+            avilableForms.append("\(pokemonID)-\(formID)")
+        }
     }
+    WebReqeustHandler.avilableFormsJson = try avilableForms.jsonEncodedString()
+} catch {
+    Log.error(message: "Failed to load forms. Frontend will only display default forms. Error: \(error)")
 }
-WebReqeustHandler.avilableFormsJson = try! avilableForms.jsonEncodedString()
 
 Log.debug(message: "[MAIN] Loading Avilable Items")
 var aviableItems = [-3, -2, -1]
