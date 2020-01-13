@@ -15,9 +15,12 @@ class Shell {
         self.args = args
     }
     
-    func run(errorPipe: Any?=nil, inputPipe: Any?=nil) -> String? {
+    func run(errorPipe: Any?=nil, inputPipe: Any?=nil, environment: [String: String]?=nil) -> String? {
         let task = Process()
         task.launchPath = "/usr/bin/env"
+        if environment != nil {
+            task.environment = environment
+        }
         task.arguments = args
         let pipe = Pipe()
         if errorPipe != nil {
@@ -33,9 +36,12 @@ class Shell {
         return String(data: data, encoding: String.Encoding.utf8)
     }
     
-    func runError(standartPipe: Any?=nil, inputPipe: Any?=nil) -> String? {
+    func runError(standartPipe: Any?=nil, inputPipe: Any?=nil, environment: [String: String]?=nil) -> String? {
         let task = Process()
         task.launchPath = "/usr/bin/env"
+        if environment != nil {
+            task.environment = environment
+        }
         task.arguments = args
         let pipe = Pipe()
         if standartPipe != nil {

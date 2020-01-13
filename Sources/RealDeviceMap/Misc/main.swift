@@ -146,13 +146,17 @@ WebHookController.global.start()
 // Load Forms
 Log.debug(message: "[MAIN] Loading Avilable Forms")
 var avilableForms = [String]()
-for formString in POGOProtos_Enums_Form.allFormsInString {
-    let file = File("\(projectroot)/resources/webroot/static/img/pokemon/\(formString).png")
-    if file.exists {
-        avilableForms.append(formString)
+do {
+    try Dir("\(projectroot)/resources/webroot/static/img/pokemon").forEachEntry { (file) in
+        let split = file.replacingOccurrences(of: ".png", with: "").components(separatedBy: "-")
+        if split.count == 2, let pokemonID = Int(split[0]), let formID = Int(split[1]) {
+            avilableForms.append("\(pokemonID)-\(formID)")
+        }
     }
+    WebReqeustHandler.avilableFormsJson = try avilableForms.jsonEncodedString()
+} catch {
+    Log.error(message: "Failed to load forms. Frontend will only display default forms. Error: \(error)")
 }
-WebReqeustHandler.avilableFormsJson = try! avilableForms.jsonEncodedString()
 
 Log.debug(message: "[MAIN] Loading Avilable Items")
 var aviableItems = [-3, -2, -1]
