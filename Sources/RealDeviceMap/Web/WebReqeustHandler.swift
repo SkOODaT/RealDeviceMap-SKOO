@@ -43,7 +43,6 @@ class WebReqeustHandler {
     static var googleAnalyticsId: String?
     static var googleAdSenseId: String?
     static var logoUrl: String?
-    static var imgUrl: String?
     static var statsUrl: String?
 
     static var oauthDiscordRedirectURL: String?
@@ -75,7 +74,6 @@ class WebReqeustHandler {
         data["title"] = title
         data["google_analytics_id"] = WebReqeustHandler.googleAnalyticsId
         data["google_adsense_id"] = WebReqeustHandler.googleAdSenseId
-        data["img_url"] = WebReqeustHandler.imgUrl
 
         // Localize Navbar
         let navLoc = ["nav_dashboard", "nav_areas", "nav_stats", "nav_logout", "nav_register", "nav_login"]
@@ -538,7 +536,6 @@ class WebReqeustHandler {
             data["discord_client_id"] = WebReqeustHandler.oauthDiscordClientID
             data["discord_client_secret"] = WebReqeustHandler.oauthDiscordClientSecret
             data["logo_url"] = WebReqeustHandler.logoUrl
-            data["img_url"] = WebReqeustHandler.imgUrl
             data["stats_url"] = WebReqeustHandler.statsUrl
             data["deviceapi_host_whitelist"] = WebHookRequestHandler.hostWhitelist?.joined(separator: ";")
             data["deviceapi_host_whitelist_uses_proxy"] = WebHookRequestHandler.hostWhitelistUsesProxy
@@ -1550,7 +1547,6 @@ class WebReqeustHandler {
         let oauthDiscordClientID = request.param(name: "discord_client_id")
         let oauthDiscordClientSecret = request.param(name: "discord_client_secret")
         let logoUrl = request.param(name: "logo_url")
-        let imgUrl = request.param(name: "img_url")
         let statsUrl = request.param(name: "stats_url")
         let deviceAPIhostWhitelist = request.param(name: "deviceapi_host_whitelist")?
                                      .emptyToNil()?.components(separatedBy: ";")
@@ -1644,7 +1640,6 @@ class WebReqeustHandler {
             try DBController.global.setValueForKey(key: "DISCORD_CLIENT_SECRET", value: oauthDiscordClientSecret ?? "")
             try DBController.global.setValueForKey(key: "CITIES", value: citySettings.jsonEncodeForceTry() ?? "")
             try DBController.global.setValueForKey(key: "LOGO_URL", value: logoUrl ?? "")
-            try DBController.global.setValueForKey(key: "IMG_URL", value: imgUrl ?? "")
             try DBController.global.setValueForKey(key: "STATS_URL", value: statsUrl ?? "")
             try DBController.global.setValueForKey(key: "DEVICEAPI_HOST_WHITELIST",
                                                    value: deviceAPIhostWhitelist?.joined(separator: ";") ?? "")
@@ -1693,7 +1688,6 @@ class WebReqeustHandler {
         WebReqeustHandler.oauthDiscordRedirectURL = oauthDiscordRedirectURL
         WebReqeustHandler.oauthDiscordClientID = oauthDiscordClientID
         WebReqeustHandler.logoUrl = logoUrl
-        WebReqeustHandler.imgUrl = imgUrl
         WebReqeustHandler.statsUrl = statsUrl
         WebHookRequestHandler.hostWhitelist = deviceAPIhostWhitelist
         WebHookRequestHandler.hostWhitelistUsesProxy = deviceAPIhostWhitelistUsesProxy

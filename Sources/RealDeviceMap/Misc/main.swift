@@ -82,7 +82,6 @@ WebReqeustHandler.oauthDiscordClientID = try! DBController.global.getValueForKey
 WebReqeustHandler.oauthDiscordClientSecret = try! DBController.global.getValueForKey(key: "DISCORD_CLIENT_SECRET")?
     .emptyToNil()
 WebReqeustHandler.logoUrl = try! DBController.global.getValueForKey(key: "LOGO_URL") ?? ""
-WebReqeustHandler.imgUrl = try! DBController.global.getValueForKey(key: "IMG_URL") ?? ""
 WebReqeustHandler.statsUrl = try! DBController.global.getValueForKey(key: "STATS_URL") ?? ""
 WebHookRequestHandler.hostWhitelist = try! DBController.global.getValueForKey(key: "DEVICEAPI_HOST_WHITELIST")?
     .emptyToNil()?.components(separatedBy: ";")
