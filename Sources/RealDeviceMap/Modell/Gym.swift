@@ -378,11 +378,11 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
         mysqlStmt.bindParam(raidPokemonForm)
         mysqlStmt.bindParam(raidPokemonCp)
         mysqlStmt.bindParam(raidPokemonGender)
-        mysqlStmt.bindParam(gymWeather)
         mysqlStmt.bindParam(raidIsExclusive)
         mysqlStmt.bindParam(cellId)
         mysqlStmt.bindParam(totalCp)
         mysqlStmt.bindParam(sponsorId)
+        mysqlStmt.bindParam(gymWeather)
 
         if oldGym != nil {
             mysqlStmt.bindParam(id)
@@ -851,7 +851,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
             let raidPokemonGender = result[22] as? UInt8
             let raidIsExclusive = (result[23] as? UInt8)?.toBool()
             let cellId = result[24] as? UInt64
-            let totalCp = result[28] as? UInt32
+            let totalCp = result[25] as? UInt32
             let sponsorId = result[26] as? UInt16
             let gymWeather = result[27] as? UInt8
             

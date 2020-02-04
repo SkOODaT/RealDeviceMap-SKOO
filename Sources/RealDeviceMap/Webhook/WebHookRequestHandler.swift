@@ -476,7 +476,8 @@ class WebHookRequestHandler {
 
             }
 
-            let startclientWeathers = Date()
+			let startclientWeathers = Date()
+			var raidWeather = UInt8()
 			for conditions in clientWeathers {
 				let ws2cell = S2Cell(cellId: S2CellId(id: conditions.cell))
 				let wlat = ws2cell.capBound.rectBound.center.lat.degrees

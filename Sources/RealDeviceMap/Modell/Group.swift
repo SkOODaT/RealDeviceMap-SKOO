@@ -117,7 +117,7 @@ struct Group {
                    perm_view_map_gym, perm_view_map_pokestop, perm_view_map_spawnpoint, perm_view_map_quest,
                    perm_view_map_iv, perm_view_map_cell, perm_view_map_weather, perm_view_map_lure,
                    perm_view_map_invasion, perm_view_map_device, perm_view_map_submission_cell,
-				   perm_view_map_nests
+                   perm_view_map_nests
             FROM `group`
             WHERE name = ?
         """
@@ -224,7 +224,7 @@ struct Group {
                    perm_view_map_gym, perm_view_map_pokestop, perm_view_map_spawnpoint, perm_view_map_quest,
                    perm_view_map_iv, perm_view_map_cell, perm_view_map_weather, perm_view_map_lure,
                    perm_view_map_invasion, perm_view_map_device, perm_view_map_submission_cell,
-				   perm_view_map_nests
+                   perm_view_map_nests
             FROM `group`
         """
 
