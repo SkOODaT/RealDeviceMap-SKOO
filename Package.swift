@@ -37,13 +37,14 @@ let package = Package(
                 "Turf",
                 "S2Geometry"
             ]
-        ),
-        .testTarget(
-            name: "RealDeviceMapTests",
-            dependencies: [
-                "RealDeviceMap"
-            ]
         )
+		//,
+        //.testTarget(
+        //    name: "RealDeviceMapTests",
+        //    dependencies: [
+        //        "RealDeviceMap"
+        //    ]
+        //)
     ],
     swiftLanguageVersions: [4]
 )
