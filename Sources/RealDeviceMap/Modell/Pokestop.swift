@@ -83,15 +83,15 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
             ]
         } else {
             let message: [String: Any] = [
-                "pokestop_id":id,
-                "latitude":lat,
-                "longitude":lon,
-                "name":name ?? "Unknown",
-                "url":url ?? "",
-                "lure_expiration":lureExpireTimestamp ?? 0,
-                "last_modified":lastModifiedTimestamp ?? 0,
-                "enabled":enabled ?? true,
-                "lure_id":lureId ?? 0,
+                "pokestop_id": id,
+                "latitude": lat,
+                "longitude": lon,
+                "name": name ?? "Unknown",
+                "url": url ?? "",
+                "lure_expiration": lureExpireTimestamp ?? 0,
+                "last_modified": lastModifiedTimestamp ?? 0,
+                "enabled": enabled ?? true,
+                "lure_id": lureId ?? 0,
                 "pokestop_display":pokestopDisplay ?? 0,
                 "incident_expire_timestamp":incidentExpireTimestamp ?? 0,
                 "grunt_type":gruntType ?? 0,
@@ -516,7 +516,7 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
         var excludedLures = [Int]()
         var excludeNormal = Bool()
         var excludeInvasion = Bool()
-		var excludeInvasionButLeaders = false
+        var excludeInvasionButLeaders = false
 
         if showQuests && questsOnly && questFilterExclude != nil {
             for filter in questFilterExclude! {
@@ -557,7 +557,7 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
         let excludeItemSQL: String
         let excludeLureSQL: String
         var excludePokestopSQL: String
-		let excludeInvasionButLeadersSQL: String
+        let excludeInvasionButLeadersSQL: String
 
         if showQuests && questsOnly {
             if excludedTypes.isEmpty {

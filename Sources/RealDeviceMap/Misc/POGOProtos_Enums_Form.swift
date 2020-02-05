@@ -2068,7 +2068,7 @@ extension POGOProtos_Enums_Form {
         .meltanPurified,
         .melmetalNormal,
         .melmetalShadow,
-        .melmetalPurified,
+        .melmetalPurified
     ]
 
     static var allFormsInString: [String] {
