@@ -58,6 +58,7 @@ let showCells
 let showWeathers
 let showDevices
 let showRaidTimers
+let showRocketTimers
 let showSubmissionCells
 
 let avilableForms = []
@@ -1469,7 +1470,7 @@ function loadData () {
             }
             if (pokestop.incident_expire_timestamp >= ts) {
               pokestop.willUpdate = true
-			  //setPokestopMarker(pokestop)
+              //setPokestopMarker(pokestop)
               startPokestopTimer(pokestop, pokestop.incident_expire_timestamp, ts)
             } else {
               pokestop.willUpdate = false
@@ -2069,7 +2070,6 @@ function getPokemonNameString(pokemonId, pokemonForm, pokemonCostume) {
 function getPokemonPopupContent (pokemon) {
   const despawnDate = new Date(pokemon.expire_timestamp * 1000)
   const hasIV = pokemon.atk_iv !== null
-  const costume = pokemon.costume !== null
 
   let pokemonIcon = getPokemonIconString(pokemon.pokemon_id, pokemon.form, pokemon.costume)
   let pokemonName = getPokemonNameString(pokemon.pokemon_id, pokemon.form, pokemon.costume)
@@ -2279,7 +2279,6 @@ function getPokestopPopupContent (pokestop) {
       } else {
         rewardString = "i0"
       }
-      const size = getQuestSize(rewardString)
       if (isActiveLure) {
         if (pokestop.lure_id === 501) {
           icon = 'quest/1_' + rewardString + '.png'
@@ -2475,16 +2474,16 @@ function getGymPopupContent (gym) {
 	
   let raidtypesIcon = ''
   if (hasRaidBoss) {
-	let types = pokemonDb[gym.raid_pokemon_id].types
-	if (types !== null && types.length > 0) {
-	  if (types.length === 2) {
-	    raidtypesIcon += '<b>' + types[0].type + '</b><img src="/static/img/type/' + types[0].type.toLowerCase() + '.png" height="16" width="16">&nbsp;'
-	    raidtypesIcon += '<b>' + types[1].type + '</b><img src="/static/img/type/' + types[1].type.toLowerCase() + '.png" height="16" width="16">'
-	  } else if (types.length === 1) {
-	    raidtypesIcon += '<b>' + types[0].type + '</b><img src="/static/img/type/' + types[0].type.toLowerCase() + '.png" height="16" width="16">'
-	  } else {
-	    raidtypesIcon = ''
-	  }
+    let types = pokemonDb[gym.raid_pokemon_id].types
+    if (types !== null && types.length > 0) {
+      if (types.length === 2) {
+        raidtypesIcon += '<b>' + types[0].type + '</b><img src="/static/img/type/' + types[0].type.toLowerCase() + '.png" height="16" width="16">&nbsp;'
+        raidtypesIcon += '<b>' + types[1].type + '</b><img src="/static/img/type/' + types[1].type.toLowerCase() + '.png" height="16" width="16">'
+      } else if (types.length === 1) {
+        raidtypesIcon += '<b>' + types[0].type + '</b><img src="/static/img/type/' + types[0].type.toLowerCase() + '.png" height="16" width="16">'
+      } else {
+        raidtypesIcon = ''
+      }
     }
   }
   

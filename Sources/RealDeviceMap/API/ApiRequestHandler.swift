@@ -875,10 +875,12 @@ class ApiRequestHandler {
             
             let rfilter = """
             <div class="btn-group btn-group-toggle" data-toggle="buttons">
-            <label class="btn btn-sm btn-off select-button-new" data-id="timers" data-type="rocket-timers" data-info="hide">
+            <label class="btn btn-sm btn-off select-button-new" data-id="timers" 
+             data-type="rocket-timers" data-info="hide">
             <input type="radio" name="options" id="hide" autocomplete="off">\(hideString)
             </label>
-            <label class="btn btn-sm btn-on select-button-new" data-id="timers" data-type="rocket-timers" data-info="show">
+            <label class="btn btn-sm btn-on select-button-new" data-id="timers" 
+             data-type="rocket-timers" data-info="show">
             <input type="radio" name="options" id="show" autocomplete="off">\(showString)
             </label>
             </div>
@@ -886,16 +888,20 @@ class ApiRequestHandler {
             
             let rsize = """
             <div class="btn-group btn-group-toggle" data-toggle="buttons">
-            <label class="btn btn-sm btn-size select-button-new" data-id="timers" data-type="rocket-timers" data-info="small" disabled>
+            <label class="btn btn-sm btn-size select-button-new" data-id="timers" 
+             data-type="rocket-timers" data-info="small" disabled>
             <input type="radio" name="options" id="hide" autocomplete="off">\(smallString)
             </label>
-            <label class="btn btn-sm btn-size select-button-new" data-id="timers" data-type="rocket-timers" data-info="normal" disabled>
+            <label class="btn btn-sm btn-size select-button-new" data-id="timers" 
+             data-type="rocket-timers" data-info="normal" disabled>
             <input type="radio" name="options" id="show" autocomplete="off">\(normalString)
             </label>
-            <label class="btn btn-sm btn-size select-button-new" data-id="timers" data-type="rocket-timers" data-info="large" disabled>
+            <label class="btn btn-sm btn-size select-button-new" data-id="timers" 
+             data-type="rocket-timers" data-info="large" disabled>
             <input type="radio" name="options" id="show" autocomplete="off">\(largeString)
             </label>
-            <label class="btn btn-sm btn-size select-button-new" data-id="timers" data-type="rocket-timers" data-info="huge" disabled>
+            <label class="btn btn-sm btn-size select-button-new" data-id="timers" 
+             data-type="rocket-timers" data-info="huge" disabled>
             <input type="radio" name="options" id="show" autocomplete="off">\(hugeString)
             </label>
             </div>
@@ -907,7 +913,8 @@ class ApiRequestHandler {
                     "sort": 0
                 ],
                 "name": rocketTimers,
-                "image": "<img class=\"lazy_load\" data-src=\"/static/img/misc/timer.png\" style=\"height:50px; width:50px;\">",
+                "image": "<img class=\"lazy_load\" data-src=\"/static/img/misc/timer.png\" " +
+                             "style=\"height:50px; width:50px;\">",
                 "filter": rfilter,
                 "size": rsize,
                 "type": generalString
@@ -1064,10 +1071,12 @@ class ApiRequestHandler {
 
             let leadersFilter = """
             <div class="btn-group btn-group-toggle" data-toggle="buttons">
-            <label class="btn btn-sm btn-off select-button-new" data-id="leaders" data-type="pokestop-leaders" data-info="hide">
+            <label class="btn btn-sm btn-off select-button-new" data-id="leaders" 
+             data-type="pokestop-leaders" data-info="hide">
             <input type="radio" name="options" id="hide" autocomplete="off">\(hideString)
             </label>
-            <label class="btn btn-sm btn-on select-button-new" data-id="leaders" data-type="pokestop-leaders" data-info="show">
+            <label class="btn btn-sm btn-on select-button-new" data-id="leaders" 
+             data-type="pokestop-leaders" data-info="show">
             <input type="radio" name="options" id="show" autocomplete="off">\(showString)
             </label>
             </div>
@@ -1075,16 +1084,20 @@ class ApiRequestHandler {
 
             let leadersSize = """
             <div class="btn-group btn-group-toggle" data-toggle="buttons">
-            <label class="btn btn-sm btn-size select-button-new" data-id="leaders" data-type="pokestop-leaders" data-info="small">
+            <label class="btn btn-sm btn-size select-button-new" data-id="leaders" 
+             data-type="pokestop-leaders" data-info="small">
             <input type="radio" name="options" id="hide" autocomplete="off">\(smallString)
             </label>
-            <label class="btn btn-sm btn-size select-button-new" data-id="leaders" data-type="pokestop-leaders" data-info="normal">
+            <label class="btn btn-sm btn-size select-button-new" data-id="leaders" 
+             data-type="pokestop-leaders" data-info="normal">
             <input type="radio" name="options" id="show" autocomplete="off">\(normalString)
             </label>
-            <label class="btn btn-sm btn-size select-button-new" data-id="leaders" data-type="pokestop-leaders" data-info="large">
+            <label class="btn btn-sm btn-size select-button-new" data-id="leaders" 
+             data-type="pokestop-leaders" data-info="large">
             <input type="radio" name="options" id="show" autocomplete="off">\(largeString)
             </label>
-            <label class="btn btn-sm btn-size select-button-new" data-id="leaders" data-type="pokestop-leaders" data-info="huge">
+            <label class="btn btn-sm btn-size select-button-new" data-id="leaders" 
+             data-type="pokestop-leaders" data-info="huge">
             <input type="radio" name="options" id="show" autocomplete="off">\(hugeString)
             </label>
             </div>
@@ -1096,7 +1109,8 @@ class ApiRequestHandler {
                     "sort": 6
                 ],
                 "name": pokestopLeaders,
-                "image": "<img class=\"lazy_load\" data-src=\"/static/img/pokestop/i0.png\" style=\"height:50px; width:50px;\">",
+                "image": "<img class=\"lazy_load\" data-src=\"/static/img/pokestop/i0.png\"" +
+                         "style=\"height:50px; width:50px;\">",
                 "filter": leadersFilter,
                 "size": leadersSize,
                 "type": pokestopOptionsString

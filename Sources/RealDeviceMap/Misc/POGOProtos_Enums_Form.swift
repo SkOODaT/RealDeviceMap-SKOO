@@ -1,3 +1,4 @@
+/* eslint-disable */
 //
 //  File.swift
 //  RealDeviceMap
