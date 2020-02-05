@@ -1,4 +1,4 @@
-// swiftlint:disable
+// swiftlint:disable:next line_length
 //
 //  File.swift
 //  RealDeviceMap
