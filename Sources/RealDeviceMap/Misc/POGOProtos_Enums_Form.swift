@@ -1,10 +1,10 @@
-// swiftlint:disable line_length
 //
 //  File.swift
 //  RealDeviceMap
 //
 //  Created by Florian Kostenzer on 17.10.18.
 //
+// swiftlint:disable
 
 import Foundation
 import POGOProtos

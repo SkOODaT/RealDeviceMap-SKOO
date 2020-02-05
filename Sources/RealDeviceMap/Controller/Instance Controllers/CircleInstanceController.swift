@@ -36,12 +36,12 @@ class CircleInstanceController: InstanceControllerProto {
         self.type = type
         self.lastCompletedTime = Date()
     }
-    
+
     func getTask(uuid: String, username: String?) -> [String: Any] {
 
         guard let mysql = DBController.global.mysql else {
             Log.error(message: "[InstanceControllerProto] Failed to connect to database.")
-            return [String : Any]()
+            return [String: Any]()
         }
 
         do {

@@ -10,7 +10,7 @@ import POGOProtos
 import PerfectLib
 
 extension POGOProtos_Enums_Costume {
-    
+
     public static var allCases: [POGOProtos_Enums_Costume] = [
         .holiday2016,
         .anniversary,
@@ -21,9 +21,9 @@ extension POGOProtos_Enums_Costume {
         .november2018,
         .winter2018,
         .feb2019,
-		.may2019Noevolve,
+        .may2019Noevolve
     ]
-    
+
     static var allCostumesInString: [String] {
         var costumeStrings = [String]()
         for costume in POGOProtos_Enums_Costume.allCases {
@@ -33,9 +33,9 @@ extension POGOProtos_Enums_Costume {
         }
         return costumeStrings
     }
-    
+
     var costumeStrings: [String] {
-        
+
         switch self {
         case .holiday2016: return ["25-1"]
         case .anniversary: return ["25-2"]
@@ -52,7 +52,6 @@ extension POGOProtos_Enums_Costume {
         default:
             Log.warning(message: "Missing costume string for costume: \(self.rawValue)")
             return []
-		}
+        }
     }
-    
 }
