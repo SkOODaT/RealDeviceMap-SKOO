@@ -198,7 +198,7 @@ class ApiRequestHandler {
             )
         }
         if isPost && showWeathers && perms.contains(.viewMapWeather) {
-			data["weather"] = try? Weather.getAll(
+            data["weather"] = try? Weather.getAll(
                 mysql: mysql, minLat: minLat!, maxLat: maxLat!, minLon: minLon!, maxLon: maxLon!, updated: lastUpdate
             )
         }
@@ -871,7 +871,7 @@ class ApiRequestHandler {
 
             var pokestopData = [[String: Any]]()
             
-			let rocketTimers = Localizer.global.get(value: "filter_rocket_timers")
+            let rocketTimers = Localizer.global.get(value: "filter_rocket_timers")
             
             let rfilter = """
             <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -919,10 +919,10 @@ class ApiRequestHandler {
                 "size": rsize,
                 "type": generalString
                 ])
-			
+
             let pokestopNormal = Localizer.global.get(value: "filter_pokestop_normal")
             let pokestopInvasion = Localizer.global.get(value: "filter_pokestop_invasion")
-			let pokestopLeaders = Localizer.global.get(value: "filter_pokestop_leaders")
+            let pokestopLeaders = Localizer.global.get(value: "filter_pokestop_leaders")
             
             let filter = """
             <div class="btn-group btn-group-toggle" data-toggle="buttons">

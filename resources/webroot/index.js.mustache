@@ -412,7 +412,7 @@ function loadStorage () {
   } else {
     showNests = (showNestsValue === 'true')
   }
-	
+
   const showWeathersValue = retrieve('show_weathers')
   if (showWeathersValue === null) {
     store('show_weathers', false)
@@ -1026,7 +1026,7 @@ function initMap () {
     if (newShowRaidTimers !== showRaidTimers) {
       showRaidTimers = newShowRaidTimers
     }
-	
+
     let newShowRocketTimers = pokestopFilter.timers.show
     if (newShowRocketTimers !== showRocketTimers) {
       showRocketTimers = newShowRocketTimers
@@ -2471,7 +2471,7 @@ function getGymPopupContent (gym) {
       }
     }
   }
-	
+
   let raidtypesIcon = ''
   if (hasRaidBoss) {
     let types = pokemonDb[gym.raid_pokemon_id].types
@@ -3025,14 +3025,14 @@ function getPokemonMarkerIcon (pokemon, ts) {
   let pokemonIdString = getPokemonIconString(pokemon.pokemon_id, pokemon.form, pokemon.costume)
   let HTML = ""
   if (!pokemon.expire_timestamp_verified) {
-    HTML = "<div class='marker-pin-vtimer'><img src='/static/img/verified/estimated.png' height='10' width='10'/></img></div>"	
+    HTML = "<div class='marker-pin-vtimer'><img src='/static/img/verified/estimated.png' height='10' width='10'/></img></div>"
   }
   if (pokemon.map_status == 1) {
-    HTML += "<div class='marker-pin-mstatus'><img src='/static/img/misc/Wild.png' height='10' width='10'/></img></div>"		
+    HTML += "<div class='marker-pin-mstatus'><img src='/static/img/misc/Wild.png' height='10' width='10'/></img></div>"
   } else if (pokemon.map_status == 2) {
-    HTML += "<div class='marker-pin-mstatus'><img src='/static/img/misc/Nearby.png' height='10' width='10'/></img></div>"			
+    HTML += "<div class='marker-pin-mstatus'><img src='/static/img/misc/Nearby.png' height='10' width='10'/></img></div>"
   } else if (pokemon.map_status == 3) {
-    HTML += "<div class='marker-pin-mstatus'><img src='/static/img/misc/Lured.png' height='10' width='10'/></img></div>"			
+    HTML += "<div class='marker-pin-mstatus'><img src='/static/img/misc/Lured.png' height='10' width='10'/></img></div>"
   } 
   HTML += "<img src='/static/img/pokemon/" + pokemonIdString + ".png' height='" + size + "' width='" + size + "'/></img>"
   const icon = L.divIcon({      //L.icon({
@@ -3109,7 +3109,7 @@ function getPokestopMarkerIcon (pokestop, ts) {
     }
     let invasionString
     //let invasionStringEnd
-    if (pokestop.incident_expire_timestamp >= ts) {	
+    if (pokestop.incident_expire_timestamp >= ts) {
     //let folder
     //if (pokestopFilter.invasion.show === true && pokestop.incident_expire_timestamp >= ts) {
       invasionString = 'i'
@@ -3121,7 +3121,7 @@ function getPokestopMarkerIcon (pokestop, ts) {
     //  folder = 'quest'
     }
     icon = L.icon({
-	  iconUrl: '/static/img/quest/'+invasionString+lureId+'_'+rewardString+'.png',
+      iconUrl: '/static/img/quest/'+invasionString+lureId+'_'+rewardString+'.png',
       //iconUrl: '/static/img/' + folder + '/' + invasionString + lureId + '_' + rewardString + invasionStringEnd + '.png',
       iconSize: [size, size * 1.667],
       iconAnchor: [size / 2, size * 1.567],
@@ -3156,7 +3156,7 @@ function getPokestopMarkerIcon (pokestop, ts) {
     }
     const size = getPokestopSize(sizeId)
     icon = L.icon({
-	  iconUrl: '/static/img/pokestop/'+invasionString+lureId+'.png',
+      iconUrl: '/static/img/pokestop/'+invasionString+lureId+'.png',
       //iconUrl: '/static/img/' + folder + '/' + invasionString + lureId + invasionStringEnd + '.png',
       iconSize: [size, size],
       iconAnchor: [size / 2, size],
@@ -4851,7 +4851,7 @@ function loadFilterSettings (e) {
 
     showNests = obj.show_nests
     store('show_nests', showNests)
-		
+
     showQuests = obj.show_quests
     questFilterNew = obj.quest
     store('show_quests', showRaids)
@@ -4923,7 +4923,7 @@ function loadFilterSettings (e) {
       $('#hide-nests').addClass('active')
       $('#show-nests').removeClass('active')
     }
-		
+
     if (showSpawnpoints) {
       $('#show-spawnpoints').addClass('active')
       $('#hide-spawnpoints').removeClass('active')

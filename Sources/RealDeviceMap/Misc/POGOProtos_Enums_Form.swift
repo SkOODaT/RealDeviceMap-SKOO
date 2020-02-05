@@ -1,4 +1,4 @@
-/* eslint-disable */
+// swiftlint:disable
 //
 //  File.swift
 //  RealDeviceMap
