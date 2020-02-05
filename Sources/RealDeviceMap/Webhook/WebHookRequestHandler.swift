@@ -136,7 +136,8 @@ class WebHookRequestHandler {
 
         var wildPokemons = [(cell: UInt64, data: POGOProtos_Map_Pokemon_WildPokemon, timestampMs: UInt64)]()
         var nearbyPokemons = [(cell: UInt64, data: POGOProtos_Map_Pokemon_NearbyPokemon)]()
-        var mapPokemons = [(cell: UInt64, fortData: POGOProtos_Map_Fort_FortData, pokeData: POGOProtos_Map_Pokemon_MapPokemon, timestampMs: UInt64)]()
+        var mapPokemons = [(cell: UInt64, fortData: POGOProtos_Map_Fort_FortData,
+          pokeData: POGOProtos_Map_Pokemon_MapPokemon, timestampMs: UInt64)]()
         var clientWeathers =  [(cell: Int64, data: POGOProtos_Map_Weather_ClientWeather)]()
         var forts = [(cell: UInt64, data: POGOProtos_Map_Fort_FortData)]()
         var fortDetails = [POGOProtos_Networking_Responses_FortDetailsResponse]()
@@ -247,8 +248,8 @@ class WebHookRequestHandler {
                         for fort in mapCell.forts {
                             newForts.append((cell: mapCell.s2CellID, data: fort))
                             if fort.hasActivePokemon {
-                               newMapPokemons.append((cell: mapCell.s2CellID, fortData: fort, pokeData: fort.activePokemon,
-                                            timestampMs: timestampMs))
+                               newMapPokemons.append((cell: mapCell.s2CellID, fortData: fort,
+                                 pokeData: fort.activePokemon, timestampMs: timestampMs))
                             }
                         }
                         newCells.append(mapCell.s2CellID)
