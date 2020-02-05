@@ -2101,7 +2101,7 @@ function getPokemonPopupContent (pokemon) {
   //TIP START
   content +=
   '<div style="background-image: url(/static/img/background/' + types[0].type.toLowerCase() + '.png); background-size: cover; border-radius: 12px; background-repeat: no-repeat; background-position: center bottom; background-color: #009FDD;">' +
-	'<center>' + //START TITLE ROW
+    '<center>' + //START TITLE ROW
       '<div class="title-label">' +
         '<h6><b>' + pokemonName + ' ' + getGenderIcon(pokemon.gender) + ' ' + typesIcon + ' ' + weatherIcon + '</b></h6>' +
       '</div>' +
@@ -2120,7 +2120,7 @@ function getPokemonPopupContent (pokemon) {
   }
   content +=
   '</div>'  //END 2ND COLUMN
-	'<div class="col-8 col-md-8 text-nowrap">'
+    '<div class="col-8 col-md-8 text-nowrap">'
     if (hasIV) {
       content += '<div class="iv-label">'
       const ivPercent = Math.round( (pokemon.atk_iv + pokemon.def_iv + pokemon.sta_iv) / 45 * 1000 ) / 10
@@ -2182,27 +2182,27 @@ function getPokemonPopupContent (pokemon) {
     '</div>' + //END 3RD COLUMN
     '</div></center>' + //END 3RD ROW
     '<div class="text-center">' +
-			'<button class="button" onclick="addPokemonFilter(' + pokemon.pokemon_id + ', false);return false;" href="#" title="Add Pokemon to Filter">Filter</button>&nbsp;&nbsp;&nbsp;&nbsp;' +
-			'<button class="button" onclick="setIndividualPokemonHidden(' + pokemon.id + ');return false;" id="h' + pokemon.id + '" href="#" title="Hide Individual Pokemon">Hide</button>' +
-			'<br>' +
-			'<div class="row">' +
-				'<div class="col">' +
-					'<a href="https://www.google.com/maps/place/'+pokemon.lat+','+pokemon.lon+'" target="_blank" title="Open in Google Maps">' +
-						'<img src="/static/img/navigation/gmaps.png" height="32" width="32">' +
-					'</a>' +
-				'</div>' +
-				'<div class="col">' +
-					'<a href="https://maps.apple.com/maps?daddr='+pokemon.lat+','+pokemon.lon+'" target="_blank" title="Open in Apple Maps">' +
-						'<img src="/static/img/navigation/applemaps.png" height="32" width="32">' +
-					'</a>' +
-				'</div>' +
-				'<div class="col">' +
-					'<a href="https://www.waze.com/ul?ll='+pokemon.lat+','+pokemon.lon+'&navigate=yes" target="_blank" title="Open in Waze">' +
-						'<img src="/static/img/navigation/othermaps.png" height="32" width="32">' +
-					'</a>' +
-				'</div>' +
-			'</div>' +
-		'<br>' +
+            '<button class="button" onclick="addPokemonFilter(' + pokemon.pokemon_id + ', false);return false;" href="#" title="Add Pokemon to Filter">Filter</button>&nbsp;&nbsp;&nbsp;&nbsp;' +
+            '<button class="button" onclick="setIndividualPokemonHidden(' + pokemon.id + ');return false;" id="h' + pokemon.id + '" href="#" title="Hide Individual Pokemon">Hide</button>' +
+            '<br>' +
+            '<div class="row">' +
+                '<div class="col">' +
+                    '<a href="https://www.google.com/maps/place/'+pokemon.lat+','+pokemon.lon+'" target="_blank" title="Open in Google Maps">' +
+                        '<img src="/static/img/navigation/gmaps.png" height="32" width="32">' +
+                    '</a>' +
+                '</div>' +
+                '<div class="col">' +
+                    '<a href="https://maps.apple.com/maps?daddr='+pokemon.lat+','+pokemon.lon+'" target="_blank" title="Open in Apple Maps">' +
+                        '<img src="/static/img/navigation/applemaps.png" height="32" width="32">' +
+                    '</a>' +
+                '</div>' +
+                '<div class="col">' +
+                    '<a href="https://www.waze.com/ul?ll='+pokemon.lat+','+pokemon.lon+'&navigate=yes" target="_blank" title="Open in Waze">' +
+                        '<img src="/static/img/navigation/othermaps.png" height="32" width="32">' +
+                    '</a>' +
+                '</div>' +
+            '</div>' +
+        '<br>' +
         '</div>' + //END BACKGROUND
     '</div>' //END
   return content
@@ -2376,7 +2376,7 @@ function getPokestopPopupContent (pokestop) {
             formating = ', '
           }
           conditionsString += formating + getQuestCondition(condition)
-		})
+        })
           conditionsString += ')'
       }
       content += '<b>Quest Condition:</b> ' + getQuestName(pokestop.quest_type, pokestop.quest_target) + conditionsString + '<br>'
@@ -2408,7 +2408,7 @@ function getPokestopPopupContent (pokestop) {
                 '</a>' +
             '</div>' +
         '</div>' +
-	'<br>' +
+    '<br>' +
     '</div>'
   return content
 }
@@ -2512,55 +2512,55 @@ function getGymPopupContent (gym) {
     let pokemonIcon = getPokemonIconString(gym.raid_pokemon_id, gym.raid_pokemon_form)
     content +=
       '<div class="row">' + //START PIC/IV ROW
-		'<div class="' + (hasRaidBoss ? 'col-1 col-md-1' : '') + '"></div>' + //DUMMY SPACER COLUMN
-		'<div class="' + (hasRaidBoss ? 'col-4 col-md-4' : 'col text-center') + '">' + //START 2ND COLUMN
-		  '<div class="row' + (hasRaidBoss ? '' : 'text-center') + '" style="margin-left:auto;">' 
-		  if (hasRaidBoss) {
-		    content += '<img src="/static/img/pokemon/' + pokemonIcon + '.png" height="64" width="64">'
-		  } else {
-		    content += '<img src="/static/img/egg/' + gym.raid_level + '.png" height="64" width="64">'
-		  }
-		  content += '</div>' //END POKEMON ROW
-		content +=
-		  '</div>'  //END 2ND COLUMN
-		  '<div class="col-8 col-md-8 text-nowrap">'
-			if (hasRaidBoss) {
-			  content += '<div class="iv-label">' +
-			  '<h7><b>' + pokemonName + '</b></h7><br>'
-			  if (raidtypesIcon) {
+        '<div class="' + (hasRaidBoss ? 'col-1 col-md-1' : '') + '"></div>' + //DUMMY SPACER COLUMN
+        '<div class="' + (hasRaidBoss ? 'col-4 col-md-4' : 'col text-center') + '">' + //START 2ND COLUMN
+          '<div class="row' + (hasRaidBoss ? '' : 'text-center') + '" style="margin-left:auto;">' 
+          if (hasRaidBoss) {
+            content += '<img src="/static/img/pokemon/' + pokemonIcon + '.png" height="64" width="64">'
+          } else {
+            content += '<img src="/static/img/egg/' + gym.raid_level + '.png" height="64" width="64">'
+          }
+          content += '</div>' //END POKEMON ROW
+         content +=
+        '</div>'  //END 2ND COLUMN
+          '<div class="col-8 col-md-8 text-nowrap">'
+            if (hasRaidBoss) {
+              content += '<div class="iv-label">' +
+              '<h7><b>' + pokemonName + '</b></h7><br>'
+              if (raidtypesIcon) {
                 content += '' + raidtypesIcon + '<br>'
-			  }
-			  if (gym.raid_pokemon_cp !== null) {
-				if (gym.raid_is_exclusive) {
-				  content += '<b>Level:</b> EX<br>'
-				} else {
-				  content += '<b>Level:</b> ' + gym.raid_level + '<br>'
-				}
-			  }
-			  if (gym.raid_pokemon_cp !== null) {
-				content += '<b>CP:</b> ' + gym.raid_pokemon_cp + '<br>'
-			  }
-			  if (gym.raid_pokemon_move_1 !== null) {
-				content += '<b>Fast:</b> ' + getMoveName(gym.raid_pokemon_move_1) + '<br>'
-			  }
-			  if (gym.raid_pokemon_move_2 !== null) {
-				content += '<b>Charge:</b> ' + getMoveName(gym.raid_pokemon_move_2) + '<br>'
-			  }
-			  if (gym.raid_pokemon_gender !== null && gym.raid_pokemon_gender > 0) {
-				content += '<b>Gender:</b> ' + getGenderIcon(gym.raid_pokemon_gender) + '<br>'
-			  }
-			  if (gym.raid_pokemon_form !== null && gym.raid_pokemon_form > 0) {
-				content += '<b>Form:</b> ' + getFormName(gym.raid_pokemon_form) + '<br>'
-			  }
-			  if (gym.ex_raid_eligible) {
-				content += '<img src="/static/img/misc/ex.png" height="24" width="32"><br>'
-			  }
-			  if (gym.gym_weather !== null && gym.gym_weather > 0) {
-				content += '<b>'+ wname +':</b> ' + wtypes
-			  }
-			  content += '</div>' 
-			}
-		content += '</div>'  //END PIC/IV ROW
+              }
+              if (gym.raid_pokemon_cp !== null) {
+                if (gym.raid_is_exclusive) {
+                  content += '<b>Level:</b> EX<br>'
+                } else {
+                  content += '<b>Level:</b> ' + gym.raid_level + '<br>'
+                }
+                  }
+              if (gym.raid_pokemon_cp !== null) {
+                content += '<b>CP:</b> ' + gym.raid_pokemon_cp + '<br>'
+              }
+              if (gym.raid_pokemon_move_1 !== null) {
+                content += '<b>Fast:</b> ' + getMoveName(gym.raid_pokemon_move_1) + '<br>'
+              }
+              if (gym.raid_pokemon_move_2 !== null) {
+                content += '<b>Charge:</b> ' + getMoveName(gym.raid_pokemon_move_2) + '<br>'
+              }
+              if (gym.raid_pokemon_gender !== null && gym.raid_pokemon_gender > 0) {
+                content += '<b>Gender:</b> ' + getGenderIcon(gym.raid_pokemon_gender) + '<br>'
+              }
+              if (gym.raid_pokemon_form !== null && gym.raid_pokemon_form > 0) {
+                content += '<b>Form:</b> ' + getFormName(gym.raid_pokemon_form) + '<br>'
+              }
+              if (gym.ex_raid_eligible) {
+                content += '<img src="/static/img/misc/ex.png" height="24" width="32"><br>'
+              }
+              if (gym.gym_weather !== null && gym.gym_weather > 0) {
+                content += '<b>'+ wname +':</b> ' + wtypes
+              }
+              content += '</div>' 
+            }
+        content += '</div>'  //END PIC/IV ROW
   } else {
     content +=
       '<div class="col-1 col-md-1"></div>' + //DUMMY SPACER COLUMN
