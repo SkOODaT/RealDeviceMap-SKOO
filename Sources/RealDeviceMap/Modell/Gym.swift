@@ -153,8 +153,8 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
     var inBattle: Bool?
     var raidIsExclusive: Bool?
     var cellId: UInt64?
-    var totalCp: UInt32?    
-	var sponsorId: UInt16?
+    var totalCp: UInt32?
+    var sponsorId: UInt16?
     var gymWeather: UInt8?
 
     init(id: String, lat: Double, lon: Double, name: String?, url: String?, guardPokemonId: UInt16?, enabled: Bool?,
@@ -192,7 +192,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
         self.gymWeather = gymWeather
         self.sponsorId = sponsorId
     }
-    
+
     init(fortData: POGOProtos_Map_Fort_FortData, cellId: UInt64, weatherData: UInt8) {
         self.id = fortData.id
         self.lat = fortData.latitude
@@ -585,8 +585,8 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
             let cellId = result[24] as? UInt64
             let totalCp = result[25] as? UInt32
             let sponsorId = result[26] as? UInt16
-			let gymWeather = result[27] as? UInt8
-            
+            let gymWeather = result[27] as? UInt8
+
             gyms.append(Gym(
                 id: id, lat: lat, lon: lon, name: name, url: url, guardPokemonId: guardPokemonId, enabled: enabled,
                 lastModifiedTimestamp: lastModifiedTimestamp, teamId: teamId, raidEndTimestamp: raidEndTimestamp,
@@ -854,7 +854,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
             let totalCp = result[25] as? UInt32
             let sponsorId = result[26] as? UInt16
             let gymWeather = result[27] as? UInt8
-            
+
             gyms.append(Gym(
                 id: id, lat: lat, lon: lon, name: name, url: url, guardPokemonId: guardPokemonId, enabled: enabled,
                 lastModifiedTimestamp: lastModifiedTimestamp, teamId: teamId, raidEndTimestamp: raidEndTimestamp,

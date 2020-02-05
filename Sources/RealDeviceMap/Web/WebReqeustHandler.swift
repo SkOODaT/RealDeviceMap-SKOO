@@ -1280,9 +1280,9 @@ class WebReqeustHandler {
             data["avilable_forms_json"] = avilableFormsJson.replacingOccurrences(of: "\\\"", with: "\\\\\"")
                                           .replacingOccurrences(of: "'", with: "\\'")
                                           .replacingOccurrences(of: "\"", with: "\\\"")
-			data["avilable_costumes_json"] = avilableCostumesJson.replacingOccurrences(of: "\\\"", with: "\\\\\"")
+            data["avilable_costumes_json"] = avilableCostumesJson.replacingOccurrences(of: "\\\"", with: "\\\\\"")
                                           .replacingOccurrences(of: "'", with: "\\'")
-										  .replacingOccurrences(of: "\"", with: "\\\"")
+                                          .replacingOccurrences(of: "\"", with: "\\\"")
             data["avilable_items_json"] = avilableItemJson.replacingOccurrences(of: "\\\"", with: "\\\\\"")
                                           .replacingOccurrences(of: "'", with: "\\'")
                                           .replacingOccurrences(of: "\"", with: "\\\"")
@@ -1556,7 +1556,7 @@ class WebReqeustHandler {
             .map({ (value) -> UInt16 in
             return value.toUInt16() ?? 0
         }) ?? [UInt16]()
-        
+
         var tileservers = [String: [String: String]]()
         for tileserverString in tileserversString.trimmingCharacters(in: .whitespacesAndNewlines)
             .components(separatedBy: "\n") {
@@ -1693,7 +1693,7 @@ class WebReqeustHandler {
         WebHookRequestHandler.hostWhitelistUsesProxy = deviceAPIhostWhitelistUsesProxy
         WebHookRequestHandler.loginSecret = deviceAPIloginSecret
         WebHookRequestHandler.dittoDisguises = dittoDisguises
-        
+
         data["title"] = title
         data["show_success"] = true
 

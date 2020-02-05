@@ -11,7 +11,7 @@ import POGOProtos
 import PerfectLib
 
 extension POGOProtos_Enums_Form {
-    
+
     public static var allCases: [POGOProtos_Enums_Form] = [
         .unownA,
         .unownB,
@@ -2070,7 +2070,7 @@ extension POGOProtos_Enums_Form {
         .melmetalShadow,
         .melmetalPurified,
     ]
-    
+
     static var allFormsInString: [String] {
         var formStrings = [String]()
         for form in POGOProtos_Enums_Form.allCases {
@@ -2080,7 +2080,7 @@ extension POGOProtos_Enums_Form {
         }
         return formStrings
     }
-    
+
     var formStrings: [String] {
         switch self {
         case .unownA: return ["201-1"]
