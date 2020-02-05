@@ -923,7 +923,7 @@ class ApiRequestHandler {
             let pokestopNormal = Localizer.global.get(value: "filter_pokestop_normal")
             let pokestopInvasion = Localizer.global.get(value: "filter_pokestop_invasion")
             let pokestopLeaders = Localizer.global.get(value: "filter_pokestop_leaders")
-            
+
             let filter = """
             <div class="btn-group btn-group-toggle" data-toggle="buttons">
             <label class="btn btn-sm btn-off select-button-new" data-id="normal"
@@ -1388,9 +1388,9 @@ class ApiRequestHandler {
             data["assignments"] = jsonArray
 
         }
-        
+
         if showIVQueue && perms.contains(.viewMapIV), let instance = instance {
-           
+
             let queue = InstanceController.global.getIVQueue(name: instance.decodeUrl() ?? "")
 
             var jsonArray = [[String: Any]]()

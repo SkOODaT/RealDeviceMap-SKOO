@@ -36,7 +36,7 @@ class AutoInstanceController: InstanceControllerProto {
     private var bootstrappLock = Threading.Lock()
     private var bootstrappCellIDs = [S2CellId]()
     private var bootstrappTotalCount = 0
-	
+
     private var spinLimit: Int
 
     private static let cooldownDataArray = [
