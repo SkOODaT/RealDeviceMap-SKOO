@@ -302,7 +302,9 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
 
     }
 
-    init(mysql: MySQL?=nil, fortData: POGOProtos_Map_Fort_FortData, mapPokemon: POGOProtos_Map_Pokemon_MapPokemon, cellId: UInt64, timestampMs: UInt64, username: String?) {
+    init(mysql: MySQL?=nil, fortData: POGOProtos_Map_Fort_FortData,
+         mapPokemon: POGOProtos_Map_Pokemon_MapPokemon, cellId: UInt64,
+         timestampMs: UInt64, username: String?) {
 
         id = mapPokemon.encounterID.description
         pokemonId = mapPokemon.pokedexTypeID.rawValue.toUInt16()
@@ -471,9 +473,9 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             let sql = """
                 INSERT INTO pokemon (
                     id, pokemon_id, lat, lon, spawn_id, expire_timestamp, atk_iv, def_iv, sta_iv, move_1, move_2, cp,
-                    level, weight, size, display_pokemon_id, capture_1, capture_2, capture_3, shiny, username, map_status,
-                    gender, form, weather, costume, pokestop_id, updated, first_seen_timestamp, changed, cell_id,
-                    expire_timestamp_verified
+                    level, weight, size, display_pokemon_id, capture_1, capture_2, capture_3,
+                    shiny, username, map_status, gender, form, weather, costume, pokestop_id,
+                    updated, first_seen_timestamp, changed, cell_id, expire_timestamp_verified
                 )
                 VALUES (
                     ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
@@ -516,7 +518,8 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
 
             if oldPokemon!.mapStatus != self.mapStatus && oldPokemon!.mapStatus != 2 {
                 self.mapStatus = oldPokemon!.mapStatus
-                //Log.debug(message: "[POKEMON] Pokemon \(id) Status Changed \(self.mapStatus) to \(oldPokemon!.mapStatus)")
+                //Log.debug(
+                //      message: "[POKEMON] Pokemon \(id) Changed \(self.mapStatus) to \(oldPokemon!.mapStatus)")
             }
 
             if oldPokemon!.cellId != nil && self.cellId == nil {
@@ -580,7 +583,8 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             let ivSQL: String
             if updateIV {
                 ivSQL = "atk_iv = ?, def_iv = ?, sta_iv = ?, move_1 = ?, move_2 = ?, cp = ?, level = ?, " +
-                        "weight = ?, size = ?, display_pokemon_id = ?, capture_1 = ?, capture_2 = ?, capture_3 = ?, shiny = ?,"
+                        "weight = ?, size = ?, display_pokemon_id = ?, " +
+                        "capture_1 = ?, capture_2 = ?, capture_3 = ?, shiny = ?,"
             } else {
                 ivSQL = ""
             }
@@ -771,8 +775,9 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
 
         let sql = """
             SELECT id, pokemon_id, lat, lon, spawn_id, expire_timestamp, atk_iv, def_iv, sta_iv, move_1, move_2,
-                   gender, form, cp, level, weather, costume, weight, size, display_pokemon_id, capture_1, capture_2, capture_3,
-                   pokestop_id, updated, first_seen_timestamp, changed, cell_id, expire_timestamp_verified, shiny, username, map_status
+                   gender, form, cp, level, weather, costume, weight, size, display_pokemon_id,
+                   capture_1, capture_2, capture_3, pokestop_id, updated, first_seen_timestamp,
+                   changed, cell_id, expire_timestamp_verified, shiny, username, map_status
             FROM pokemon
             WHERE expire_timestamp >= UNIX_TIMESTAMP() AND lat >= ? AND lat <= ? AND lon >= ? AND
                   lon <= ? AND updated > ? \(sqlAdd)
@@ -866,9 +871,10 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                 id: id, pokemonId: pokemonId, lat: lat, lon: lon, spawnId: spawnId, expireTimestamp: expireTimestamp,
                 atkIv: atkIv, defIv: defIv, staIv: staIv, move1: move1, move2: move2, gender: gender, form: form,
                 cp: cp, level: level, weight: weight, costume: costume, size: size, displayPokemonId: displayPokemonId,
-                capture1: capture1, capture2: capture2, capture3: capture3, weather: weather, shiny: shiny, username: username,
-                mapStatus: mapStatus, pokestopId: pokestopId, firstSeenTimestamp: firstSeenTimestamp, updated: updated,
-                changed: changed, cellId: cellId, expireTimestampVerified: expireTimestampVerified
+                capture1: capture1, capture2: capture2, capture3: capture3, weather: weather, shiny: shiny,
+                username: username, mapStatus: mapStatus, pokestopId: pokestopId,
+                firstSeenTimestamp: firstSeenTimestamp, updated: updated, changed: changed, cellId: cellId,
+                expireTimestampVerified: expireTimestampVerified
             ))
 
         }
@@ -885,8 +891,9 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
 
         let sql = """
             SELECT id, pokemon_id, lat, lon, spawn_id, expire_timestamp, atk_iv, def_iv, sta_iv, move_1, move_2,
-                   gender, form, cp, level, weather, costume, weight, size, display_pokemon_id, capture_1, capture_2, capture_3,
-                   pokestop_id, updated, first_seen_timestamp, changed, cell_id, expire_timestamp_verified, shiny, username, map_status
+                   gender, form, cp, level, weather, costume, weight, size, display_pokemon_id, 
+                   capture_1, capture_2, capture_3, pokestop_id, updated, first_seen_timestamp, 
+                   changed, cell_id, expire_timestamp_verified, shiny, username, map_status
             FROM pokemon
             WHERE id = ?
         """
@@ -942,10 +949,11 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
         return Pokemon(id: id, pokemonId: pokemonId, lat: lat, lon: lon, spawnId: spawnId,
                        expireTimestamp: expireTimestamp, atkIv: atkIv, defIv: defIv, staIv: staIv, move1: move1,
                        move2: move2, gender: gender, form: form, cp: cp, level: level, weight: weight,
-                       costume: costume, size: size, displayPokemonId: displayPokemonId, capture1: capture1, capture2: capture2, capture3: capture3,
-                       weather: weather, shiny: shiny, username: username, mapStatus: mapStatus, pokestopId:
-                       pokestopId, firstSeenTimestamp: firstSeenTimestamp, updated: updated, changed: changed, cellId: cellId,
-                       expireTimestampVerified: expireTimestampVerified)
+                       costume: costume, size: size, displayPokemonId: displayPokemonId,
+                       capture1: capture1, capture2: capture2, capture3: capture3, weather: weather,
+                       shiny: shiny, username: username, mapStatus: mapStatus, pokestopId: pokestopId,
+                       firstSeenTimestamp: firstSeenTimestamp, updated: updated, changed: changed,
+                       cellId: cellId, expireTimestampVerified: expireTimestampVerified)
     }
 
     static func == (lhs: Pokemon, rhs: Pokemon) -> Bool {

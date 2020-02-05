@@ -4,7 +4,7 @@
 //
 //  Created by Florian Kostenzer on 17.10.18.
 //
-// swiftlint:disable
+// swiftlint:disable all
 
 import Foundation
 import POGOProtos
