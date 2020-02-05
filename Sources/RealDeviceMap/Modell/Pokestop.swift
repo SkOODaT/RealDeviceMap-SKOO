@@ -92,9 +92,9 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
                 "last_modified": lastModifiedTimestamp ?? 0,
                 "enabled": enabled ?? true,
                 "lure_id": lureId ?? 0,
-                "pokestop_display":pokestopDisplay ?? 0,
-                "incident_expire_timestamp":incidentExpireTimestamp ?? 0,
-                "grunt_type":gruntType ?? 0,
+                "pokestop_display": pokestopDisplay ?? 0,
+                "incident_expire_timestamp": incidentExpireTimestamp ?? 0,
+                "grunt_type": gruntType ?? 0,
                 "updated": updated ?? 1
             ]
             return [
@@ -646,7 +646,8 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
                    incident_expire_timestamp, grunt_type, sponsor_id
             FROM pokestop
             WHERE lat >= ? AND lat <= ? AND lon >= ? AND lon <= ? AND updated > ? AND
-                  deleted = false \(excludeTypeSQL) \(excludePokemonSQL) \(excludeItemSQL) \(excludeInvasionButLeadersSQL) \(excludePokestopSQL)
+                  deleted = false \(excludeTypeSQL) \(excludePokemonSQL) \(excludeItemSQL)
+                  \(excludeInvasionButLeadersSQL) \(excludePokestopSQL)
         """
         if questsOnly {
             sql += " AND quest_reward_type IS NOT NULL"
