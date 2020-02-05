@@ -3059,7 +3059,7 @@ function getPokemonMarker (pokemon, ts) {
     bounceSpeed  : 54,   // bouncing speed coefficient
   })
   marker.bindPopup('')
-  marker.on('popupopen', function (popup) {
+  marker.on('popupopen', function () {
     openedPokemon = pokemon
     marker._popup.setContent(getPokemonPopupContent(pokemon))
   })
