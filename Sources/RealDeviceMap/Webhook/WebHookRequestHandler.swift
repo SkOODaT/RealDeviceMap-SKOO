@@ -179,11 +179,11 @@ class WebHookRequestHandler {
                 data = Data(base64Encoded: dataString) ?? Data()
                 method = rawData["method"] as? Int ?? 106
             } else if let madString = rawData["payload"] as? String {
-				data = Data(base64Encoded: madString) ?? Data()
-				method = rawData["type"] as? Int ?? 106
-				isMadData = true
-				username = "PogoDroid"
-				//Log.info(message: "[WebHookRequestHandler] PogoDroid Raw Data Type: \(method)")
+                data = Data(base64Encoded: madString) ?? Data()
+                method = rawData["type"] as? Int ?? 106
+                isMadData = true
+                username = "PogoDroid"
+                //Log.info(message: "[WebHookRequestHandler] PogoDroid Raw Data Type: \(method)")
             } else {
                 continue
             }
@@ -229,7 +229,7 @@ class WebHookRequestHandler {
                     var newWildPokemons = [(cell: UInt64, data: POGOProtos_Map_Pokemon_WildPokemon,
                                             timestampMs: UInt64)]()
                     var newNearbyPokemons = [(cell: UInt64, data: POGOProtos_Map_Pokemon_NearbyPokemon)]()
-                    var newMapPokemons = [(cell: UInt64, fortData: POGOProtos_Map_Fort_FortData, 
+                    var newMapPokemons = [(cell: UInt64, fortData: POGOProtos_Map_Fort_FortData,
                                             pokeData: POGOProtos_Map_Pokemon_MapPokemon, timestampMs: UInt64)]()
                     var newClientWeathers = [(cell: Int64, data: POGOProtos_Map_Weather_ClientWeather)]()
                     var newForts = [(cell: UInt64, data: POGOProtos_Map_Fort_FortData)]()
@@ -246,10 +246,10 @@ class WebHookRequestHandler {
                         }
                         for fort in mapCell.forts {
                             newForts.append((cell: mapCell.s2CellID, data: fort))
-							if fort.hasActivePokemon {
-							   newMapPokemons.append((cell: mapCell.s2CellID, fortData: fort, pokeData: fort.activePokemon,
+                            if fort.hasActivePokemon {
+                               newMapPokemons.append((cell: mapCell.s2CellID, fortData: fort, pokeData: fort.activePokemon,
                                             timestampMs: timestampMs))
-							}
+                            }
                         }
                         newCells.append(mapCell.s2CellID)
                     }
@@ -441,14 +441,14 @@ class WebHookRequestHandler {
             if !playerdatas.isEmpty && username != nil {
                 let start = Date()
                 for playerdata in playerdatas {
-					let account: Account?
-					do {
+                    let account: Account?
+                    do {
                         account = try Account.getWithUsername(mysql: mysql, username: username!)
                     } catch {
                         account = nil
                     }
                     if account != nil {
-						account!.responseInfo(accountData: playerdata)
+                        account!.responseInfo(accountData: playerdata)
                         try? account!.save(mysql: mysql, update: true)
                     }
                 }
@@ -476,19 +476,19 @@ class WebHookRequestHandler {
 
             }
 
-			let startclientWeathers = Date()
-			var raidWeather = UInt8()
-			for conditions in clientWeathers {
-				let ws2cell = S2Cell(cellId: S2CellId(id: conditions.cell))
-				let wlat = ws2cell.capBound.rectBound.center.lat.degrees
-				let wlon = ws2cell.capBound.rectBound.center.lng.degrees
-				let wlevel = ws2cell.level
+            let startclientWeathers = Date()
+            var raidWeather = UInt8()
+            for conditions in clientWeathers {
+                let ws2cell = S2Cell(cellId: S2CellId(id: conditions.cell))
+                let wlat = ws2cell.capBound.rectBound.center.lat.degrees
+                let wlon = ws2cell.capBound.rectBound.center.lng.degrees
+                let wlevel = ws2cell.level
                 let weather = Weather(mysql: mysql, id: ws2cell.cellId.id, level: UInt8(wlevel),
                                       latitude: wlat, longitude: wlon, conditions: conditions.data, updated: nil)
-				try? weather.save(mysql: mysql, update: true)
-                raidWeather = conditions.data.gameplayWeather.gameplayCondition.rawValue.toUInt8()				
-			}
-			Log.debug(message: "[WebHookRequestHandler] Weather Detail Count: \(clientWeathers.count) " +
+                try? weather.save(mysql: mysql, update: true)
+                raidWeather = conditions.data.gameplayWeather.gameplayCondition.rawValue.toUInt8()
+            }
+            Log.debug(message: "[WebHookRequestHandler] Weather Detail Count: \(clientWeathers.count) " +
                                "parsed in \(String(format: "%.3f", Date().timeIntervalSince(startclientWeathers)))s")
 
             let startWildPokemon = Date()
@@ -511,14 +511,14 @@ class WebHookRequestHandler {
 
             let startMapPokemon = Date()
             for mapPokemon in mapPokemons {
-                let pokemon = Pokemon(mysql: mysql, fortData: mapPokemon.fortData, 
-                                           mapPokemon: mapPokemon.pokeData, cellId: mapPokemon.cell, 
-										   timestampMs: mapPokemon.timestampMs, username: username)
+                let pokemon = Pokemon(mysql: mysql, fortData: mapPokemon.fortData,
+                                           mapPokemon: mapPokemon.pokeData, cellId: mapPokemon.cell,
+                                           timestampMs: mapPokemon.timestampMs, username: username)
                 try? pokemon.save(mysql: mysql)
             }
             Log.debug(message: "[WebHookRequestHandler] Lured Pokemon Count: \(mapPokemons.count) parsed in " +
                                "\(String(format: "%.3f", Date().timeIntervalSince(startMapPokemon)))s")
-			
+
             let startForts = Date()
             for fort in forts {
                 if fort.data.type == .gym {

@@ -597,9 +597,10 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
 
             let sql = """
                 UPDATE pokemon
-                SET pokemon_id = ?, lat = ?, lon = ?, spawn_id = ?, expire_timestamp = ?, \(ivSQL) username = ?, map_status = ?,
-                    gender = ?, form = ?, weather = ?, costume = ?, pokestop_id = ?, updated = UNIX_TIMESTAMP(),
-                    first_seen_timestamp = ?, changed = \(changedSQL), cell_id = ?, expire_timestamp_verified = ?
+                SET pokemon_id = ?, lat = ?, lon = ?, spawn_id = ?, expire_timestamp = ?, \(ivSQL) username = ?,
+                    map_status = ?, gender = ?, form = ?, weather = ?, costume = ?, pokestop_id = ?,
+                    updated = UNIX_TIMESTAMP(), first_seen_timestamp = ?, changed = \(changedSQL),
+                    cell_id = ?, expire_timestamp_verified = ?
                 WHERE id = ?
             """
             _ = mysqlStmt.prepare(statement: sql)
@@ -891,8 +892,8 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
 
         let sql = """
             SELECT id, pokemon_id, lat, lon, spawn_id, expire_timestamp, atk_iv, def_iv, sta_iv, move_1, move_2,
-                   gender, form, cp, level, weather, costume, weight, size, display_pokemon_id, 
-                   capture_1, capture_2, capture_3, pokestop_id, updated, first_seen_timestamp, 
+                   gender, form, cp, level, weather, costume, weight, size, display_pokemon_id,
+                   capture_1, capture_2, capture_3, pokestop_id, updated, first_seen_timestamp,
                    changed, cell_id, expire_timestamp_verified, shiny, username, map_status
             FROM pokemon
             WHERE id = ?
