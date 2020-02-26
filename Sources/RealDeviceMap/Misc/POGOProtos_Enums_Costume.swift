@@ -21,7 +21,10 @@ extension POGOProtos_Enums_Costume {
         .november2018,
         .winter2018,
         .feb2019,
-        .may2019Noevolve
+        .may2019Noevolve,
+        .jan2020Noevolve,
+        .april2020Noevolve,
+        .safari2020Noevolve
     ]
 
     static var allCostumesInString: [String] {
@@ -37,16 +40,19 @@ extension POGOProtos_Enums_Costume {
     var costumeStrings: [String] {
 
         switch self {
-        case .holiday2016: return ["25-1"]
-        case .anniversary: return ["25-2"]
-        case .oneYearAnniversary: return ["25-3"]
-        case .halloween2017: return ["25-4"]
-        case .summer2018: return ["25-5"]
-        case .fall2018: return ["25-6"]
-        case .november2018: return ["25-7"]
-        case .winter2018: return ["25-8"]
-        case .feb2019: return ["25-9"]
-        case .may2019Noevolve: return ["25-10"]
+        case .holiday2016: return ["1"]
+        case .anniversary: return ["2"]
+        case .oneYearAnniversary: return ["3"]
+        case .halloween2017: return ["4"]
+        case .summer2018: return ["5"]
+        case .fall2018: return ["6"]
+        case .november2018: return ["7"]
+        case .winter2018: return ["8"]
+        case .feb2019: return ["9"]
+        case .may2019Noevolve: return ["10"]
+        case .jan2020Noevolve: return ["11"]
+        case .april2020Noevolve: return ["12"]
+        case .safari2020Noevolve: return ["13"]
         case .unset: return []
         case .UNRECOGNIZED: return []
         default:

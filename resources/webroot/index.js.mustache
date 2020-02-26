@@ -4330,19 +4330,21 @@ function getSize (size) {
 
 function getPokemonIconString (pokemonId, pokemonForm, pokemonCostume) {
   let pokemonIdString
-  if (pokemonCostume !== 0 && pokemonCostume !== null) {
-    const pokemonIdStringTmp = '' + pokemonId + '-' + pokemonCostume
-    if ($.inArray(pokemonIdStringTmp, avilableCostumes) !== -1) {
-      pokemonIdString = pokemonIdStringTmp
-    } else {
-      pokemonIdString = '' + pokemonId
-    }
-  } else if (pokemonForm !== 0 && pokemonForm !== null) {
+  if (pokemonCostume !== 0 && pokemonCostume !== null || pokemonForm !== 0 && pokemonForm !== null) {
+    if (pokemonCostume !== 0 && pokemonCostume !== null) {
+      const pokemonIdStringTmp = '' + pokemonCostume
+      if ($.inArray(pokemonIdStringTmp, avilableCostumes) !== -1) {
+        pokemonIdString = '' + pokemonId + '-' + pokemonIdStringTmp
+      } else {
+        pokemonIdString = '' + pokemonId
+      }
+    } else if (pokemonForm !== 0 && pokemonForm !== null) {
     const pokemonIdStringTmp = '' + pokemonId + '-' + pokemonForm
-    if ($.inArray(pokemonIdStringTmp, avilableForms) !== -1) {
-      pokemonIdString = pokemonIdStringTmp
-    } else {
-      pokemonIdString = '' + pokemonId
+      if ($.inArray(pokemonIdStringTmp, avilableForms) !== -1) {
+        pokemonIdString = pokemonIdStringTmp
+      } else {
+        pokemonIdString = '' + pokemonId
+      }
     }
   } else {
     pokemonIdString = '' + pokemonId
