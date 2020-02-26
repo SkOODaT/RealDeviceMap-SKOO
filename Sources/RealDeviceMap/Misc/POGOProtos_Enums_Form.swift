@@ -2068,7 +2068,12 @@ extension POGOProtos_Enums_Form {
         .meltanPurified,
         .melmetalNormal,
         .melmetalShadow,
-        .melmetalPurified
+        .melmetalPurified,
+        .wurmpleSpring2020,
+        .wobbuffetSpring2020,
+        .raticateSpring2020,
+        .frillishFemale,
+        .jellicentFemale
     ]
 
     static var allFormsInString: [String] {
@@ -4139,6 +4144,11 @@ extension POGOProtos_Enums_Form {
         case .melmetalNormal: return ["2324"]
         case .melmetalShadow: return ["2325"]
         case .melmetalPurified: return ["2326"]
+        case .wurmpleSpring2020: return ["265-2327"]
+        case .wobbuffetSpring2020: return ["202-2328"]
+        case .raticateSpring2020: return ["20-2329"]
+        case .frillishFemale: return ["593-2330"]
+        case .jellicentFemale: return ["593-2331"]
         case .unset: return []
         case .UNRECOGNIZED: return []
         default:
