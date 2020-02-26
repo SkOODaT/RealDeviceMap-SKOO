@@ -600,8 +600,9 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
                 raidSpawnTimestamp: raidSpawnTimestamp, raidBattleTimestamp: raidBattleTimestamp,
                 raidPokemonId: raidPokemonId, raidLevel: raidLevel, availbleSlots: availbleSlots, updated: updated,
                 exRaidEligible: exRaidEligible, inBattle: inBattle, raidPokemonMove1: raidPokemonMove1,
-                raidPokemonMove2: raidPokemonMove2, raidPokemonForm: raidPokemonForm, raidPokemonCostume: raidPokemonCostume,
-                raidPokemonCp: raidPokemonCp, raidPokemonGender: raidPokemonGender, raidIsExclusive: raidIsExclusive,
+                raidPokemonMove2: raidPokemonMove2, raidPokemonForm: raidPokemonForm,
+                raidPokemonCostume: raidPokemonCostume, raidPokemonCp: raidPokemonCp,
+                raidPokemonGender: raidPokemonGender, raidIsExclusive: raidIsExclusive,
                 cellId: cellId, totalCp: totalCp, sponsorId: sponsorId, gymWeather: gymWeather))
         }
         return gyms
@@ -680,8 +681,9 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
                    raidSpawnTimestamp: raidSpawnTimestamp, raidBattleTimestamp: raidBattleTimestamp,
                    raidPokemonId: raidPokemonId, raidLevel: raidLevel, availbleSlots: availbleSlots, updated: updated,
                    exRaidEligible: exRaidEligible, inBattle: inBattle, raidPokemonMove1: raidPokemonMove1,
-                   raidPokemonMove2: raidPokemonMove2, raidPokemonForm: raidPokemonForm, raidPokemonCostume: raidPokemonCostume,
-                   raidPokemonCp: raidPokemonCp, raidPokemonGender: raidPokemonGender, raidIsExclusive: raidIsExclusive,
+                   raidPokemonMove2: raidPokemonMove2, raidPokemonForm: raidPokemonForm,
+                   raidPokemonCostume: raidPokemonCostume, raidPokemonCp: raidPokemonCp,
+                   raidPokemonGender: raidPokemonGender, raidIsExclusive: raidIsExclusive,
                    cellId: cellId, totalCp: totalCp, sponsorId: sponsorId, gymWeather: gymWeather)
     }
 
@@ -719,8 +721,8 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
         SELECT id, lat, lon, name, url, guarding_pokemon_id, last_modified_timestamp, team_id,
                raid_end_timestamp, raid_spawn_timestamp, raid_battle_timestamp, raid_pokemon_id, enabled,
                availble_slots, updated, raid_level, ex_raid_eligible, in_battle, raid_pokemon_move_1,
-               raid_pokemon_move_2, raid_pokemon_form, raid_pokemon_costume, raid_pokemon_cp, raid_pokemon_gender, raid_is_exclusive,
-               cell_id, total_cp, sponsor_id, gym_weather
+               raid_pokemon_move_2, raid_pokemon_form, raid_pokemon_costume, raid_pokemon_cp,
+               raid_pokemon_gender, raid_is_exclusive, cell_id, total_cp, sponsor_id, gym_weather
         FROM gym
         WHERE id IN \(inSQL) AND deleted = false
         """
@@ -775,8 +777,9 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
                 raidSpawnTimestamp: raidSpawnTimestamp, raidBattleTimestamp: raidBattleTimestamp,
                 raidPokemonId: raidPokemonId, raidLevel: raidLevel, availbleSlots: availbleSlots, updated: updated,
                 exRaidEligible: exRaidEligible, inBattle: inBattle, raidPokemonMove1: raidPokemonMove1,
-                raidPokemonMove2: raidPokemonMove2, raidPokemonForm: raidPokemonForm, raidPokemonCostume: raidPokemonCostume, 
-                raidPokemonCp: raidPokemonCp, raidPokemonGender: raidPokemonGender, raidIsExclusive: raidIsExclusive, 
+                raidPokemonMove2: raidPokemonMove2, raidPokemonForm: raidPokemonForm,
+                raidPokemonCostume: raidPokemonCostume, raidPokemonCp: raidPokemonCp,
+                raidPokemonGender: raidPokemonGender, raidIsExclusive: raidIsExclusive,
                 cellId: cellId, totalCp: totalCp, sponsorId: sponsorId, gymWeather: gymWeather)
             )
         }
@@ -873,8 +876,9 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
                 raidSpawnTimestamp: raidSpawnTimestamp, raidBattleTimestamp: raidBattleTimestamp,
                 raidPokemonId: raidPokemonId, raidLevel: raidLevel, availbleSlots: availbleSlots, updated: updated,
                 exRaidEligible: exRaidEligible, inBattle: inBattle, raidPokemonMove1: raidPokemonMove1,
-                raidPokemonMove2: raidPokemonMove2, raidPokemonForm: raidPokemonForm, raidPokemonCostume: raidPokemonCostume,
-                raidPokemonCp: raidPokemonCp, raidPokemonGender: raidPokemonGender, raidIsExclusive: raidIsExclusive,
+                raidPokemonMove2: raidPokemonMove2, raidPokemonForm: raidPokemonForm,
+                raidPokemonCostume: raidPokemonCostume, raidPokemonCp: raidPokemonCp,
+                raidPokemonGender: raidPokemonGender, raidIsExclusive: raidIsExclusive,
                 cellId: cellId, totalCp: totalCp, sponsorId: sponsorId, gymWeather: gymWeather)
             )
         }
