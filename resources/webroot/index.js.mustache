@@ -2564,7 +2564,9 @@ function getGymPopupContent (gym) {
   if (isRaid) {
     var pokemonName
       if (hasRaidBoss) {
-        if (gym.raid_pokemon_form !== 0 && gym.raid_pokemon_form !== null) {
+        if (gym.raid_pokemon_costume !== 0 && gym.raid_pokemon_costume !== null) {
+          pokemonName = WeatherBoosted + '' + getCostumeName(gym.raid_pokemon_costume) + ' ' + getPokemonName(gym.raid_pokemon_id)
+        } else if (gym.raid_pokemon_form !== 0 && gym.raid_pokemon_form !== null) {
           pokemonName = WeatherBoosted + '' + getFormName(gym.raid_pokemon_form) + ' ' + getPokemonName(gym.raid_pokemon_id)
         } else {
           pokemonName = WeatherBoosted + '' +getPokemonName(gym.raid_pokemon_id)
@@ -2572,7 +2574,7 @@ function getGymPopupContent (gym) {
       } else if (isRaidBattle) {
         pokemonName = "Unknown Raid Boss"
       }
-    let pokemonIcon = getPokemonIconString(gym.raid_pokemon_id, gym.raid_pokemon_form)
+    let pokemonIcon = getPokemonIconString(gym.raid_pokemon_id, gym.raid_pokemon_form, gym.raid_pokemon_costume)
     content +=
       '<div class="row">' + //START PIC/IV ROW
         '<div class="' + (hasRaidBoss ? 'col-1 col-md-1' : '') + '"></div>' + //DUMMY SPACER COLUMN
@@ -3321,7 +3323,7 @@ function getGymMarkerIcon (gym, ts) {
   let iconSize
   if (gym.raid_battle_timestamp <= ts && gym.raid_end_timestamp >= ts && showRaids && parseInt(gym.raid_level) > 0) {
     if (gym.raid_pokemon_id !== 0 && gym.raid_pokemon_id !== null) {
-      const pokemonIdString = getPokemonIconString(gym.raid_pokemon_id, gym.raid_pokemon_form)
+      const pokemonIdString = getPokemonIconString(gym.raid_pokemon_id, gym.raid_pokemon_form, gym.raid_pokemon_costume)
       // Raid Boss
       iconSize = getRaidSize('p' + gym.raid_pokemon_id)
       icon = L.icon({
