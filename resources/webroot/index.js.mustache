@@ -3098,7 +3098,10 @@ function getPokemonMarkerIcon (pokemon, ts) {
     HTML += "<div class='marker-pin-mstatus'><img src='/static/img/misc/Nearby.png' height='10' width='10'/></img></div>"
   } else if (pokemon.map_status == 3) {
     HTML += "<div class='marker-pin-mstatus'><img src='/static/img/misc/Lured.png' height='10' width='10'/></img></div>"
-  } 
+  }
+  if (pokemon.weather) {
+    HTML += "<div class='marker-pin-wstatus'><img src='/static/img/weather/" + pokemon.weather + ".png' height='10' width='10'/></img></div>"
+  }  
   HTML += "<img src='/static/img/pokemon/" + pokemonIdString + ".png' height='" + size + "' width='" + size + "'/></img>"
   const icon = L.divIcon({      //L.icon({
     //iconUrl:  '/static/img/pokemon/' + pokemonIdString + '.png',
