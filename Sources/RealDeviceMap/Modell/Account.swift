@@ -96,7 +96,7 @@ class Account: WebHookEvent {
         self.banned = accountData.banned
 
         if accountData.warn == true {
-            self.failed = "GPR_RED_WARNING"
+            self.failed = "GPR_RED_WARNING_2"
             if self.firstWarningTimestamp == nil {
                 self.firstWarningTimestamp = UInt32(Date().timeIntervalSince1970)
                 self.failedTimestamp = UInt32(Date().timeIntervalSince1970)
