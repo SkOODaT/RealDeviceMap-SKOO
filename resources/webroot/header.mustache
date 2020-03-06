@@ -6,13 +6,14 @@
         <a class="navbar-brand" href="/">{{title}}</a>
     {{/is_logged_in}}
     {{#is_logged_in}}
-		{{^logo_url}}
-			<a class="navbar-brand" href="/">{{title}}</a>
-		{{/logo_url}}
-		{{#logo_url}}
+        {{^logo_url}}
+            <a class="navbar-brand" href="/">{{title}}</a>
+        {{/logo_url}}
+        {{#logo_url}}
+            <a class="navbar-brand" href="/"><img class="align-middle" src="/static/favicons/navbar.png" border="0" height="32px"></a>
             <a class="navbar-brand" href="/"><img src="{{logo_url}}" style="width:150px;height:34px;"></a>
-		{{/logo_url}}
-	{{/is_logged_in}}	
+        {{/logo_url}}
+    {{/is_logged_in}}
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
