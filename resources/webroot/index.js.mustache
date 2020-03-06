@@ -2030,13 +2030,15 @@ function addGym(gym, ts) {
     if (oldGym.availble_slots !== gym.availble_slots ||
         oldGym.team_id !== gym.team_id ||
         oldGym.raid_end_timestamp !== gym.raid_end_timestamp ||
-        oldGym.raid_pokemon_id !== gym.raid_pokemon_id) {
+        oldGym.raid_pokemon_id !== gym.raid_pokemon_id ||
+        oldGym.total_cp !== gym.total_cp) {
       oldGym.availble_slots = gym.availble_slots
       oldGym.team_id = gym.team_id
       oldGym.raid_end_timestamp = gym.raid_end_timestamp
       oldGym.raid_battle_timestamp = gym.raid_battle_timestamp
       oldGym.raid_spawn_timestamp = gym.raid_spawn_timestamp
       oldGym.raid_pokemon_id = gym.raid_pokemon_id
+      oldGym.total_cp = gym.total_cp
       oldGym.raid_pokemon_form = gym.raid_pokemon_form
       oldGym.raid_pokemon_cp = gym.raid_pokemon_cp
       oldGym.raid_pokemon_move_1 = gym.raid_pokemon_move_1
@@ -2292,9 +2294,9 @@ function getPokemonPopupContent (pokemon) {
     '</div>' + //END 3RD COLUMN
     '</div></center>' + //END 3RD ROW
     '<div class="text-center">' +
+			'<form><button class="button" type="submit" formaction="/@pokemon/'+pokemon.id+'">Link</button>&nbsp;&nbsp;&nbsp;&nbsp;' +
             '<button class="button" onclick="addPokemonFilter(' + pokemon.pokemon_id + ', false);return false;" href="#" title="Add Pokemon to Filter">Filter</button>&nbsp;&nbsp;&nbsp;&nbsp;' +
             '<button class="button" onclick="setIndividualPokemonHidden(\'' + pokemon.id + '\');return false;" id="h' + pokemon.id + '" href="#" title="Hide Individual Pokemon">Hide</button>' +
-			'<a title="Direct Link" href="/@pokemon/'+pokemon.id+'"><b>[Direct Link]</b></a>' +
             '<br>' +
             '<div class="row">' +
                 '<div class="col">' +
@@ -2502,7 +2504,7 @@ function getPokestopPopupContent (pokestop) {
     }
   content += '</div>'
   content +=
-        '<a title="Direct Link" href="/@pokestop/'+pokestop.id+'"><b>[Direct Link]</b></a>' +
+        '<form><button class="button" type="submit" formaction="/@pokestop/'+pokestop.id+'">Link</button>' +
         '<div class="row">' +
             '<div class="col">' +
                 '<a href="https://www.google.com/maps/place/'+pokestop.lat+','+pokestop.lon+'" target="_blank" title="Open in Google Maps">' +
@@ -2741,8 +2743,9 @@ function getGymPopupContent (gym) {
     content += "<small><b>Last Modified:</b> " + modifiedDate.toLocaleDateString() + ' ' + modifiedDate.toLocaleTimeString() + ' (' + getTimeSince(modifiedDate) + ')<br></small>'
   }
   content +=
-    '<a title="Direct Link" href="/@gym/'+gym.id+'"><b>[Direct Link]</b></a>' +
-    '</div><div class="row text-center">' +
+    '</div>' +
+    '<form><button class="button" type="submit" formaction="/@gym/'+gym.id+'">Link</button>' +
+    '<div class="row text-center">' +
         '<div class="col">' +
             '<a href="https://www.google.com/maps/place/'+gym.lat+','+gym.lon+'" target="_blank" title="Open in Google Maps">' +
                 '<img src="/static/img/navigation/gmaps.png" height="32" width="32">' +
@@ -3173,7 +3176,7 @@ function getPokemonMarker (pokemon, ts) {
   }
   const marker = L.marker([pokemon.lat, pokemon.lon], {
     icon: getPokemonMarkerIcon(pokemon, ts),
-    forceZIndex: forceZIndex: zIndex,
+    forceZIndex: zIndex,
     virtual: true
   })
   /* Define options of bouncing for all markers */
@@ -4298,7 +4301,7 @@ function manageConfigureButton (e, isNew) {
 function getTimeUntill (date) {
   const diff = Math.round((date - new Date()) / 1000)
   if (diff < 0) {
-    return 'expired'
+    return 'Expired'
   }
 
   const h = Math.floor(diff / 3600)
