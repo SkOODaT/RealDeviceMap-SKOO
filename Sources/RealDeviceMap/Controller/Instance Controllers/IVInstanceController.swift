@@ -108,7 +108,7 @@ class IVInstanceController: InstanceControllerProto {
             if username != nil {
                 let account = try Account.getWithUsername(mysql: mysql, username: username!)
                 if account != nil {
-                    if account!.failed == "GPR_RED_WARNING" || account!.failed == "GPR_BANNED" {
+                    if account!.failed == "GPR_RED_WARNING_2" || account!.failed == "GPR_BANNED" {
                         return ["action": "switch_account", "min_level": minLevel, "max_level": maxLevel]
                     }
                 }
