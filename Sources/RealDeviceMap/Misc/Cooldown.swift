@@ -55,7 +55,7 @@ class Cooldown {
 
         let lastLat: Double?
         let lastLon: Double?
-        let lastTime: UInt32?
+        var lastTime: UInt32?
         if let account = account {
             lastLat = account.lastEncounterLat
             lastLon = account.lastEncounterLon
@@ -76,18 +76,17 @@ class Cooldown {
         } else {
             let lastCoord = Coord(lat: lastLat!, lon: lastLon!)
             let distance = lastCoord.distance(to: location)
-            if lastTime == nil || lastTime! > now {
+            if lastTime! > now {
+                lastTime = now
+            }
+            let encounterTimeT = lastTime! + encounterCooldown(distM: distance)
+            if encounterTimeT < now {
                 encounterTime = now
             } else {
-                let encounterTimeT = lastTime! + encounterCooldown(distM: distance)
-                if encounterTimeT < now {
-                    encounterTime = now
-                } else {
-                    encounterTime = encounterTimeT
-                }
-                if encounterTime - now >= 7200 {
-                    encounterTime = now + 7200
-                }
+                encounterTime = encounterTimeT
+            }
+            if encounterTime - now >= 7200 {
+                encounterTime = now + 7200
             }
             let delayT = Int(Date(timeIntervalSince1970: Double(encounterTime)).timeIntervalSinceNow)
             if delayT < 0 {

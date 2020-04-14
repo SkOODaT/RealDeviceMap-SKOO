@@ -52,5 +52,3 @@ volumes:
     driver: local
 # favicons
 #   driver: local
-
-
