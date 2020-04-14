@@ -36,7 +36,6 @@ class AutoInstanceController: InstanceControllerProto {
     private var bootstrappLock = Threading.Lock()
     private var bootstrappCellIDs = [S2CellId]()
     private var bootstrappTotalCount = 0
-
     private var spinLimit: Int
 
     init(name: String, multiPolygon: MultiPolygon, type: AutoType, timezoneOffset: Int,
@@ -420,7 +419,7 @@ class AutoInstanceController: InstanceControllerProto {
                     stopsLock.unlock()
                 }
 
-                return ["action": "scan_quest", "lat": pokestop.lat, "lon": pokestop.lon,
+                return ["action": "scan_quest", "deploy_egg": false, "lat": pokestop.lat, "lon": pokestop.lon,
                         "delay": delay, "min_level": minLevel, "max_level": maxLevel]
             }
         }
