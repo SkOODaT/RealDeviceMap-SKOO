@@ -194,10 +194,10 @@ WebHookController.global.start()
 Log.debug(message: "[MAIN] Loading Avilable Forms")
 var avilableForms = [String]()
 do {
-	for formString in POGOProtos_Enums_Form.allFormsInString {
-		let file = File("\(projectroot)/resources/webroot/static/img/pokemon/\(formString).png")
-		if file.exists {
-			avilableForms.append(formString)
+    for formString in POGOProtos_Enums_Form.allFormsInString {
+        let file = File("\(projectroot)/resources/webroot/static/img/pokemon/\(formString).png")
+        if file.exists {
+            avilableForms.append(formString)
         }
     }
     WebReqeustHandler.avilableFormsJson = try avilableForms.jsonEncodedString()
@@ -209,13 +209,13 @@ do {
 Log.debug(message: "[MAIN] Loading Avilable Costumes")
 var avilableCostumes = [String]()
 do {
-	for costumeString in POGOProtos_Enums_Costume.allCostumesInString {
-		let file = File("\(projectroot)/resources/webroot/static/img/pokemon/\(costumeString).png")
-		if file.exists {
-			avilableCostumes.append(costumeString)
+    for costumeString in POGOProtos_Enums_Costume.allCostumesInString {
+        let file = File("\(projectroot)/resources/webroot/static/img/pokemon/\(costumeString).png")
+        if file.exists {
+            avilableCostumes.append(costumeString)
         }
-	}
-	WebReqeustHandler.avilableCostumesJson = try avilableCostumes.jsonEncodedString()
+    }
+    WebReqeustHandler.avilableCostumesJson = try avilableCostumes.jsonEncodedString()
 } catch {
     Log.error(message: "Failed to load costumes. Frontend will only display default costumes.")
 }
