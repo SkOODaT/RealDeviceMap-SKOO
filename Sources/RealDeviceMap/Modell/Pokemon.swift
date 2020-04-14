@@ -88,9 +88,6 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             "weight": weight as Any,
             "height": size as Any,
             "weather": weather as Any,
-            "capture_1": capture1 ?? 0,
-            "capture_2": capture2 ?? 0,
-            "capture_3": capture3 ?? 0,
             "shiny": shiny as Any,
             "username": username as Any,
             "display_pokemon_id": displayPokemonId as Any,
@@ -136,9 +133,6 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
     var changed: UInt32?
     var cellId: UInt64?
     var expireTimestampVerified: Bool
-    var capture1: Double?
-    var capture2: Double?
-    var capture3: Double?
     var isDitto: Bool = false
     var displayPokemonId: UInt16?
     var capture1: Double?
@@ -179,9 +173,6 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
         self.changed = changed
         self.cellId = cellId
         self.expireTimestampVerified = expireTimestampVerified
-        self.capture1 = capture1
-        self.capture2 = capture2
-        self.capture3 = capture3
         self.displayPokemonId = displayPokemonId
         self.capture1 = capture1
         self.capture2 = capture2
@@ -358,11 +349,6 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
         self.username = username
         self.form = UInt16(encounterData.wildPokemon.pokemonData.pokemonDisplay.form.rawValue)
         self.gender = UInt8(encounterData.wildPokemon.pokemonData.pokemonDisplay.gender.rawValue)
-        if encounterData.hasCaptureProbability {
-            self.capture1 = Double(encounterData.captureProbability.captureProbability[0])
-            self.capture2 = Double(encounterData.captureProbability.captureProbability[1])
-            self.capture3 = Double(encounterData.captureProbability.captureProbability[2])
-        }
         let cpMultiplier = encounterData.wildPokemon.pokemonData.cpMultiplier
         if encounterData.hasCaptureProbability {
             self.capture1 = Double(encounterData.captureProbability.captureProbability[0])
@@ -576,9 +562,6 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                     self.move1 = oldPokemon!.move1
                     self.move2 = oldPokemon!.move2
                     self.level = oldPokemon!.level
-                    self.capture1 = oldPokemon!.capture1
-                    self.capture2 = oldPokemon!.capture2
-                    self.capture3 = oldPokemon!.capture3
                     self.shiny = oldPokemon!.shiny
                     self.isDitto = Pokemon.isDittoDisguised(pokemon: oldPokemon!)
                     self.capture1 = oldPokemon!.capture1
@@ -837,9 +820,6 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             let level: UInt8?
             let weight: Double?
             let size: Double?
-            let capture1: Double?
-            let capture2: Double?
-            let capture3: Double?
             let displayPokemonId: UInt16?
             let capture1: Double?
             let capture2: Double?
@@ -868,9 +848,6 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                 level = nil
                 weight = nil
                 size = nil
-                capture1 = nil
-                capture2 = nil
-                capture3 = nil
                 displayPokemonId = nil
                 capture1 = nil
                 capture2 = nil
