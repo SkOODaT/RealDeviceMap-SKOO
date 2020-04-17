@@ -40,7 +40,18 @@ class ApiRequestHandler {
         let showQuests = request.param(name: "show_quests")?.toBool() ?? false
         let questFilterExclude = request.param(name: "quest_filter_exclude")?.jsonDecodeForceTry() as? [String]
         let showPokemon = request.param(name: "show_pokemon")?.toBool() ?? false
-        let pokemonFilterExclude = request.param(name: "pokemon_filter_exclude")?.jsonDecodeForceTry() as? [Int]
+        let pokemonFilterExcludeArray = request.param(name: "pokemon_filter_exclude")?
+            .jsonDecodeForceTry() as? [Any] ?? [Any]()
+        var pokemonFilterExclude = [String]()
+        for value in pokemonFilterExcludeArray {
+          if let key = value as? String {
+            // Value is "big_karp" or "tiny_rat"
+            pokemonFilterExclude.append(key)
+          } else if let key = value as? Int {
+            // Value is a pokemon_id
+            pokemonFilterExclude.append(String(key))
+          }
+        }
         let pokemonFilterIV = request.param(name: "pokemon_filter_iv")?.jsonDecodeForceTry() as? [String: String]
         let raidFilterExclude = request.param(name: "raid_filter_exclude")?.jsonDecodeForceTry() as? [String]
         let gymFilterExclude = request.param(name: "gym_filter_exclude")?.jsonDecodeForceTry() as? [String]
@@ -223,6 +234,10 @@ class ApiRequestHandler {
             let andString = Localizer.global.get(value: "filter_and")
             let orString = Localizer.global.get(value: "filter_or")
 
+            let generalTypeString = Localizer.global.get(value: "filter_general")
+            let bigKarpString = Localizer.global.get(value: "filter_big_karp")
+            let tinyRatString = Localizer.global.get(value: "filter_tiny_rat")
+
             var pokemonData = [[String: Any]]()
 
             if permShowIV {
@@ -271,6 +286,69 @@ class ApiRequestHandler {
                     ])
 
                 }
+            }
+
+            for i in 0...1 {
+                let id: String
+                if i == 0 {
+                    id = "big_karp"
+                } else {
+                    id = "tiny_rat"
+                }
+
+                let filter = """
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <label class="btn btn-sm btn-off select-button-new" data-id="\(id)"
+                            data-type="pokemon-size" data-info="hide">
+                            <input type="radio" name="options" id="hide" autocomplete="off">\(hideString)
+                        </label>
+                        <label class="btn btn-sm btn-on select-button-new" data-id="\(id)"
+                            data-type="pokemon-size" data-info="show">
+                            <input type="radio" name="options" id="show" autocomplete="off">\(showString)
+                        </label>
+                    </div>
+                """
+
+                let sizeString: String
+                if i == 0 {
+                    sizeString = bigKarpString
+                } else {
+                    sizeString = tinyRatString
+                }
+
+                let size = """
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <label class="btn btn-sm btn-size select-button-new" data-id="\(id)"
+                            data-type="pokemon-size" data-info="small">
+                            <input type="radio" name="options" id="hide" autocomplete="off">\(smallString)
+                        </label>
+                        <label class="btn btn-sm btn-size select-button-new" data-id="\(id)"
+                            data-type="pokemon-size" data-info="normal">
+                            <input type="radio" name="options" id="show" autocomplete="off">\(normalString)
+                        </label>
+                        <label class="btn btn-sm btn-size select-button-new" data-id="\(id)"
+                            data-type="pokemon-size" data-info="large">
+                            <input type="radio" name="options" id="show" autocomplete="off">\(largeString)
+                        </label>
+                        <label class="btn btn-sm btn-size select-button-new" data-id="\(id)"
+                            data-type="pokemon-size" data-info="huge">
+                            <input type="radio" name="options" id="show" autocomplete="off">\(hugeString)
+                        </label>
+                    </div>
+                """
+
+                pokemonData.append([
+                    "id": [
+                        "formatted": String(format: "%03d", i),
+                        "sort": i+2
+                    ],
+                    "name": sizeString,
+                    "image": "<img class=\"lazy_load\" data-src=\"/static/img/pokemon/\(i == 0 ? 129 : 19).png\" " +
+                             "style=\"height:50px; width:50px;\">",
+                    "filter": filter,
+                    "size": size,
+                    "type": generalTypeString
+                ])
             }
 
             for i in 1...WebReqeustHandler.maxPokemonId {
@@ -324,7 +402,7 @@ class ApiRequestHandler {
                 pokemonData.append([
                     "id": [
                         "formatted": String(format: "%03d", i),
-                        "sort": i+1
+                        "sort": i+10
                     ],
                     "name": Localizer.global.get(value: "poke_\(i)") ,
                     "image": "<img class=\"lazy_load\" data-src=\"/static/img/pokemon/\(i).png\"" +
