@@ -125,6 +125,7 @@ class WebHookRequestHandler {
         let trainerXP = json["trainerexp"] as? Int ?? 0
 
         var username = json["username"] as? String
+        //let username = json["username"] as? String
         if username != nil && trainerLevel > 0 {
             levelCacheLock.lock()
             let oldLevel = levelCache[username!]
@@ -139,7 +140,7 @@ class WebHookRequestHandler {
             }
         }
 
-        if username != nil {
+        if username != nil && trainerXP > 0 && trainerLevel > 0 {
             InstanceController.global.gotPlayerInfo(username: username!, level: trainerLevel, xp: trainerXP)
         }
 
@@ -462,6 +463,11 @@ class WebHookRequestHandler {
             try response.respondWithData(data: data)
         } catch {
             response.respondWithError(status: .internalServerError)
+        }
+
+        guard InstanceController.global.shouldStoreData(deviceUUID: uuid ?? "") else {
+            Log.info(message: "[WebHookRequestHandler] Ignoring data for \(uuid ?? "?")")
+            return
         }
 
         let queue = Threading.getQueue(name: Foundation.UUID().uuidString, type: .serial)
