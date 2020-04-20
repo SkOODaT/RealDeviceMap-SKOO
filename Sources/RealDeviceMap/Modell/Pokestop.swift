@@ -363,6 +363,9 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
                 infoData["form_id"] = info.pokemonDisplay.form.rawValue
                 infoData["gender_id"] = info.pokemonDisplay.gender.rawValue
                 infoData["shiny"] = info.pokemonDisplay.shiny
+            case .pokecoin:
+                let info = rewardData.pokecoin
+                infoData["amount"] = info
             case .avatarClothing: break
             case .quest: break
             case .unset: break
