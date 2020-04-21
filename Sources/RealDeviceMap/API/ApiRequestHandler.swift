@@ -13,7 +13,6 @@ import PerfectMustache
 import PerfectSessionMySQL
 import POGOProtos
 import S2Geometry
-import PerfectThread
 
 class ApiRequestHandler {
 
@@ -1352,63 +1351,48 @@ class ApiRequestHandler {
 
             let instances = try? Instance.getAll(mysql: mysql)
 
-            let jsonArrayLock = Threading.Lock()
             var jsonArray = [[String: Any]]()
-            let dispatchGroup = DispatchGroup()
 
             if instances != nil {
                 for instance in instances! {
-                    dispatchGroup.enter()
-                    let thread = Threading.getQueue(
-                        name: "ApiRequestHandler-getInstanceStatus-\(instance.name)-\(UUID().uuidString)",
-                        type: .serial
-                    )
-                    thread.dispatch {
-                        var instanceData = [String: Any]()
-                        instanceData["name"] = instance.name
-                        instanceData["count"] = instance.count
-                        switch instance.type {
-                        case .circleRaid:
-                            instanceData["type"] = "Circle Raid"
-                        case .circleSmartRaid:
-                            instanceData["type"] = "Circle Smart Raid"
-                        case .circlePokemon:
-                            instanceData["type"] = "Circle Pokemon"
-                        case .autoQuest:
-                            instanceData["type"] = "Auto Quest"
-                        case .pokemonIV:
-                            instanceData["type"] = "Pokemon IV"
-                        case .leveling:
-                            instanceData["type"] = "Leveling"
-                        }
-
-                        if formatted {
-                            let status = InstanceController.global.getInstanceStatus(instance: instance,
-                                                                                     formatted: true)
-                            if let status = status as? String {
-                                instanceData["status"] = status
-                            } else {
-                                instanceData["status"] = "?"
-                            }
-                        } else {
-                            instanceData["status"] = InstanceController.global.getInstanceStatus(
-                                instance: instance, formatted: false
-                            ) as Any
-                        }
-
-                        if formatted {
-                            instanceData["buttons"] =
-                                "<a href=\"/dashboard/instance/edit/\(instance.name.encodeUrl()!)\"" +
-                                " role=\"button\" class=\"btn btn-primary\">Edit Instance</a>"
-                        }
-                        jsonArrayLock.lock()
-                        jsonArray.append(instanceData)
-                        jsonArrayLock.unlock()
-                        dispatchGroup.leave()
+                    var instanceData = [String: Any]()
+                    instanceData["name"] = instance.name
+                    instanceData["count"] = instance.count
+                    switch instance.type {
+                    case .circleRaid:
+                        instanceData["type"] = "Circle Raid"
+                    case .circleSmartRaid:
+                        instanceData["type"] = "Circle Smart Raid"
+                    case .circlePokemon:
+                        instanceData["type"] = "Circle Pokemon"
+                    case .autoQuest:
+                        instanceData["type"] = "Auto Quest"
+                    case .pokemonIV:
+                        instanceData["type"] = "Pokemon IV"
+                    case .leveling:
+                        instanceData["type"] = "Leveling"
                     }
+
+                    if formatted {
+                        let status = InstanceController.global.getInstanceStatus(instance: instance, formatted: true)
+                        if let status = status as? String {
+                            instanceData["status"] = status
+                        } else {
+                            instanceData["status"] = "?"
+                        }
+                    } else {
+                        instanceData["status"] = InstanceController.global.getInstanceStatus(
+                            instance: instance, formatted: false
+                        ) as Any
+                    }
+
+                    if formatted {
+                        instanceData["buttons"] = "<a href=\"/dashboard/instance/edit/\(instance.name.encodeUrl()!)\"" +
+                                                  " role=\"button\" class=\"btn btn-primary\">Edit Instance</a>"
+                    }
+                    jsonArray.append(instanceData)
                 }
             }
-            dispatchGroup.wait()
             data["instances"] = jsonArray
 
         }
