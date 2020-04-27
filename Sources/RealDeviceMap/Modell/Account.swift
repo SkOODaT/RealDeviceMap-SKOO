@@ -233,7 +233,7 @@ class Account: WebHookEvent {
     public func isFailed(ignoringWarning: Bool=false) -> Bool {
         return (
             self.failed == nil ||
-            self.failed! == "GPR_RED_WARNING" &&
+            self.failed! == "GPR_RED_WARNING_2" &&
             (ignoringWarning || self.warnExpireTimestamp ?? UInt32.max <= UInt32(Date().timeIntervalSince1970))
         )
     }
@@ -352,14 +352,14 @@ class Account: WebHookEvent {
         if ignoringWarning {
             failedSQL = """
             AND (
-                failed IS NULL OR failed = 'GPR_RED_WARNING'
+                failed IS NULL OR failed = 'GPR_RED_WARNING_2'
             )
             """
         } else {
             failedSQL = """
             AND (
                 (failed IS NULL AND first_warning_timestamp IS NULL) OR
-                (failed = 'GPR_RED_WARNING' AND warn_expire_timestamp <= UNIX_TIMESTAMP())
+                (failed = 'GPR_RED_WARNING_2' AND warn_expire_timestamp <= UNIX_TIMESTAMP())
             )
             """
         }
@@ -522,7 +522,7 @@ class Account: WebHookEvent {
                 failed_timestamp is NULL and device.uuid IS NULL AND
                 (
                     (failed IS NULL AND first_warning_timestamp is NULL) OR
-                    (failed = 'GPR_RED_WARNING' AND warn_expire_timestamp <= UNIX_TIMESTAMP())
+                    (failed = 'GPR_RED_WARNING_2' AND warn_expire_timestamp <= UNIX_TIMESTAMP())
                 ) AND (
                     last_encounter_time IS NULL OR
                     UNIX_TIMESTAMP() - CAST(last_encounter_time AS SIGNED INTEGER) >= 7200 AND
@@ -665,7 +665,7 @@ class Account: WebHookEvent {
         let sql = """
             SELECT COUNT(*)
             FROM account
-            WHERE (failed IS NULL OR failed = 'GPR_RED_WARNING') AND first_warning_timestamp IS NOT NULL
+            WHERE (failed IS NULL OR failed = 'GPR_RED_WARNING_2') AND first_warning_timestamp IS NOT NULL
         """
 
         let mysqlStmt = MySQLStmt(mysql)
@@ -722,12 +722,12 @@ class Account: WebHookEvent {
               COUNT(level) as total,
               SUM(
                   (failed IS NULL AND first_warning_timestamp is NULL) OR
-                  (failed = 'GPR_RED_WARNING' AND warn_expire_timestamp <= UNIX_TIMESTAMP())
+                  (failed = 'GPR_RED_WARNING_2' AND warn_expire_timestamp <= UNIX_TIMESTAMP())
               ) as good,
               SUM(failed IN('banned', 'GPR_BANNED')) as banned,
               SUM(first_warning_timestamp IS NOT NULL) as warning,
               SUM(failed = 'invalid_credentials') as invalid_creds,
-              SUM(failed NOT IN('banned', 'invalid_credentials', 'GPR_RED_WARNING', 'GPR_BANNED')) as other,
+              SUM(failed NOT IN('banned', 'invalid_credentials', 'GPR_RED_WARNING_2', 'GPR_BANNED')) as other,
               SUM(
                 last_encounter_time IS NOT NULL AND UNIX_TIMESTAMP() -
                 CAST(last_encounter_time AS SIGNED INTEGER) < 7200
