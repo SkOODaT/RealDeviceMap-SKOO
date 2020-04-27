@@ -196,7 +196,7 @@ class AutoInstanceController: InstanceControllerProto {
         }
     }
 
-    func getTask(mysql: MySQL, uuid: String, username: String?) -> [String: Any] {
+    func getTask(mysql: MySQL, uuid: String, username: String?, account: Account?) -> [String: Any] {
 
         switch type {
         case .quest:
@@ -292,29 +292,7 @@ class AutoInstanceController: InstanceControllerProto {
                 }
                 stopsLock.unlock()
 
-                var account: Account?
-
-                do {
-                    if username != nil, let accountT = try Account.getWithUsername(mysql: mysql, username: username!) {
-                        account = accountT
-                    }
-                } catch {
-                    Log.error(message: "[InstanceControllerProto] Failed to connect get account.")
-                    return [String: Any]()
-                }
-
-                if username != nil && account != nil {
-                    if account!.spins >= spinLimit ||
-                       account!.failed == "GPR_RED_WARNING_2" ||
-                       account!.failed == "GPR_BANNED" {
-                        return ["action": "switch_account", "min_level": minLevel, "max_level": maxLevel]
-                    } else {
-                        try? Account.spin(mysql: mysql, username: username!)
-                    }
-                }
-
                 let pokestop: Pokestop
-
                 let lastCoord: Coord?
                 do {
                     lastCoord = try Cooldown.lastLocation(account: account, deviceUUID: uuid)
@@ -528,5 +506,22 @@ class AutoInstanceController: InstanceControllerProto {
         if questClearerQueue != nil {
             Threading.destroyQueue(questClearerQueue!)
         }
+    }
+
+    func getAccount(mysql: MySQL, uuid: String) throws -> Account? {
+        return try Account.getNewAccount(
+            mysql: mysql,
+            minLevel: minLevel,
+            maxLevel: maxLevel,
+            ignoringWarning: false,
+            spins: spinLimit,
+            noCooldown: true
+        )
+    }
+
+    func accountValid(account: Account) -> Bool {
+        return account.level >= minLevel &&
+            account.level <= maxLevel && account.isFailed() &&
+            account.hasSpinsLeft(spins: spinLimit)
     }
 }

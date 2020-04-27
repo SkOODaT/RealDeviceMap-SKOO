@@ -23,9 +23,10 @@ protocol InstanceControllerProto {
     var minLevel: UInt8 { get }
     var maxLevel: UInt8 { get }
     var delegate: InstanceControllerDelegate? { get set }
-    func getTask(mysql: MySQL, uuid: String, username: String?) -> [String: Any]
+    func getTask(mysql: MySQL, uuid: String, username: String?, account: Account?) -> [String: Any]
     func getStatus(mysql: MySQL, formatted: Bool) -> JSONConvertible?
     func getAccount(mysql: MySQL, uuid: String) throws -> Account?
+    func accountValid(account: Account) -> Bool
     func reload()
     func stop()
     func shouldStoreData() -> Bool
@@ -43,6 +44,9 @@ extension InstanceControllerProto {
     func gotPlayerInfo(username: String, level: Int, xp: Int) { }
     func getAccount(mysql: MySQL, uuid: String) throws -> Account? {
         return try Account.getNewAccount(mysql: mysql, minLevel: minLevel, maxLevel: maxLevel)
+    }
+    func accountValid(account: Account) -> Bool {
+        return account.level >= minLevel && account.level <= maxLevel && account.isFailed()
     }
 }
 
@@ -309,6 +313,13 @@ class InstanceController {
             return try instanceController.getAccount(mysql: mysql, uuid: deviceUUID)
         }
         return try Account.getNewAccount(minLevel: 0, maxLevel: 29)
+    }
+
+    public func accountValid(deviceUUID: String, account: Account) -> Bool {
+        if let instanceController = getInstanceController(deviceUUID: deviceUUID) {
+            return instanceController.accountValid(account: account)
+        }
+        return account.isFailed()
     }
 
     public func getDeviceUUIDsInInstance(instanceName: String) -> [String] {

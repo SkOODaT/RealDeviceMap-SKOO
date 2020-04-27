@@ -104,18 +104,7 @@ class CircleSmartRaidInstanceController: CircleInstanceController {
     }
 
     // swiftlint:disable:next function_body_length cyclomatic_complexity
-    override func getTask(mysql: MySQL, uuid: String, username: String?) -> [String: Any] {
-
-        do {
-            if username != nil {
-                let account = try Account.getWithUsername(mysql: mysql, username: username!)
-                if account != nil {
-                    if account!.failed == "GPR_RED_WARNING_2" || account!.failed == "GPR_BANNED" {
-                        return ["action": "switch_account", "min_level": minLevel, "max_level": maxLevel]
-                    }
-                }
-            }
-        } catch { }
+    override func getTask(mysql: MySQL, uuid: String, username: String?, account: Account?) -> [String: Any] {
 
         // Get gyms without raid and gyms without boss where updated ago > ignoreTime
         var gymsNoRaid = [(Gym, Date, Coord)]()
@@ -207,6 +196,23 @@ class CircleSmartRaidInstanceController: CircleInstanceController {
             return ["scans_per_h": scansh]
         }
 
+    }
+
+    override func getAccount(mysql: MySQL, uuid: String) throws -> Account? {
+        return try Account.getNewAccount(
+            mysql: mysql,
+            minLevel: minLevel,
+            maxLevel: maxLevel,
+            ignoringWarning: true,
+            spins: nil,
+            noCooldown: false
+        )
+    }
+
+    override func accountValid(account: Account) -> Bool {
+        return account.level >= minLevel &&
+            account.level <= maxLevel &&
+            account.isFailed(ignoringWarning: true)
     }
 
 }
