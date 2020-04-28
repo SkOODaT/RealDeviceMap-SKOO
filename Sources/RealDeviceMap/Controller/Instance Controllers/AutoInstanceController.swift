@@ -372,6 +372,9 @@ class AutoInstanceController: InstanceControllerProto {
                 }
 
                 do {
+                    if let username = username {
+                        try Account.spin(mysql: mysql, username: username)
+                    }
                     try Cooldown.encounter(
                         mysql: mysql,
                         account: account,
