@@ -24,7 +24,19 @@ extension POGOProtos_Enums_Costume {
         .may2019Noevolve,
         .jan2020Noevolve,
         .april2020Noevolve,
-        .safari2020Noevolve
+        .safari2020Noevolve,
+        .spring2020Noevolve,
+        .summer2020Noevolve,
+        .fall2020Noevolve,
+        .winter2020Noevolve,
+        .notForReleaseAlpha,
+        .notForReleaseBeta,
+        .notForReleaseGamma,
+        .notForReleaseNoevolve,
+        .kanto2020Noevolve,
+        .johto2020Noevolve,
+        .hoenn2020Noevolve,
+        .sinnoh2020Noevolve
     ]
 
     static var allCostumesInString: [String] {
@@ -53,6 +65,18 @@ extension POGOProtos_Enums_Costume {
         case .jan2020Noevolve: return ["11"]
         case .april2020Noevolve: return ["12"]
         case .safari2020Noevolve: return ["13"]
+        case .spring2020Noevolve: return ["14"]
+        case .summer2020Noevolve: return ["15"]
+        case .fall2020Noevolve: return ["16"]
+        case .winter2020Noevolve: return ["17"]
+        case .notForReleaseAlpha: return ["18"]
+        case .notForReleaseBeta: return ["19"]
+        case .notForReleaseGamma: return ["20"]
+        case .notForReleaseNoevolve: return ["21"]
+        case .kanto2020Noevolve: return ["22"]
+        case .johto2020Noevolve: return ["23"]
+        case .hoenn2020Noevolve: return ["24"]
+        case .sinnoh2020Noevolve: return ["25"]
         case .unset: return []
         case .UNRECOGNIZED: return []
         default:

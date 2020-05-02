@@ -2073,7 +2073,10 @@ extension POGOProtos_Enums_Form {
         .wobbuffetSpring2020,
         .raticateSpring2020,
         .frillishFemale,
-        .jellicentFemale
+        .jellicentFemale,
+        .pikachuCostume2020,
+        .dragoniteCostume2020,
+        .onixCostume2020
     ]
 
     static var allFormsInString: [String] {
@@ -4149,6 +4152,9 @@ extension POGOProtos_Enums_Form {
         case .raticateSpring2020: return ["20-2329"]
         case .frillishFemale: return ["593-2330"]
         case .jellicentFemale: return ["593-2331"]
+        case .pikachuCostume2020: return ["25-2332"]
+        case .dragoniteCostume2020: return ["149-2333"]
+        case .onixCostume2020: return ["95-2334"]
         case .unset: return []
         case .UNRECOGNIZED: return []
         default:
