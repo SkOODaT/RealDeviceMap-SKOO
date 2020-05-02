@@ -4,7 +4,6 @@
 //
 //  Created by Florian Kostenzer on 23.10.18.
 //
-//  swiftlint:disable:next superfluous_disable_command
 //  swiftlint:disable file_length type_body_length function_body_length cyclomatic_complexity
 
 import Foundation
