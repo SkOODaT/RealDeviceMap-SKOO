@@ -336,7 +336,6 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
             reward["type"] = rewardData.type.rawValue
 
             switch rewardData.type {
-
             case .experience:
                 let info = rewardData.exp
                 infoData["amount"] = info
