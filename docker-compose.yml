@@ -28,6 +28,9 @@ services:
       WEBHOOK_SERVER_ADDRESS: 0.0.0.0
       WEBHOOK_SERVER_PORT: 9001
       RAW_THREAD_LIMIT: 100
+      LOG_LEVEL: debug
+#     LOGINLIMIT_COUNT: 15
+#     LOGINLIMIT_INTERVALL: 300
     command: /bin/sh -c "apt update;apt install tzdata; ln -fs /usr/share/zoneinfo/America/Toronto /etc/localtime; dpkg-reconfigure --frontend noninteractive tzdata; cd '/app/' && ./RealDeviceMap"
     logging:
       driver: "json-file"
