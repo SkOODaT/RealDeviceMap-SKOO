@@ -170,7 +170,8 @@ class WebHookRequestHandler {
             return
         }
 
-        let uuid = json["uuid"] as? String
+        var uuid = json["uuid"] as? String
+        //let uuid = json["uuid"] as? String
         let latTarget = json["lat_target"] as? Double
         let lonTarget = json["lon_target"] as? Double
         if uuid != nil && latTarget != nil && lonTarget != nil {
@@ -231,6 +232,7 @@ class WebHookRequestHandler {
                 data = Data(base64Encoded: madString) ?? Data()
                 method = rawData["type"] as? Int ?? 106
                 isMadData = true //
+                uuid = 'MAD DATA'
                 username = "PogoDroid" //
                 //Log.info(message: "[WebHookRequestHandler] PogoDroid Raw Data Type: \(method)") //
             } else {
@@ -603,7 +605,7 @@ class WebHookRequestHandler {
                                            timestampMs: mapPokemon.timestampMs, username: username)
                 try? pokemon.save(mysql: mysql)
             }
-            Log.debug(message: "[WebHookRequestHandler] Lured Pokemon Count: \(mapPokemons.count) parsed in " +
+            Log.debug(message: "[WebHookRequestHandler] [\(uuid ?? "?")] Lured Pokemon Count: \(mapPokemons.count) parsed in " +
                                "\(String(format: "%.3f", Date().timeIntervalSince(startMapPokemon)))s")
 
             let startForts = Date()
