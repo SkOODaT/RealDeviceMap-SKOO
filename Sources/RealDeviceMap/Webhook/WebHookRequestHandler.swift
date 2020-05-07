@@ -605,8 +605,9 @@ class WebHookRequestHandler {
                                            timestampMs: mapPokemon.timestampMs, username: username)
                 try? pokemon.save(mysql: mysql)
             }
-            Log.debug(message: "[WebHookRequestHandler] [\(uuid ?? "?")] Lured Pokemon Count: \(mapPokemons.count) parsed in " +
-                               "\(String(format: "%.3f", Date().timeIntervalSince(startMapPokemon)))s")
+            Log.debug(message: "[WebHookRequestHandler] [\(uuid ?? "?")] Lured Pokemon Count: \(mapPokemons.count) " +
+                         "parsed in \(String(format: "%.3f", Date().timeIntervalSince(startMapPokemon)))s"
+            )
 
             let startForts = Date()
             for fort in forts {
