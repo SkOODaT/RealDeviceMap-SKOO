@@ -27,17 +27,19 @@ class AutoInstanceController: InstanceControllerProto {
 
     private var multiPolygon: MultiPolygon
     private var type: AutoType
-    private var stopsLock = Threading.Lock()
+    private let stopsLock = Threading.Lock()
     private var allStops: [Pokestop]?
     private var todayStops: [Pokestop]?
     private var todayStopsTries: [Pokestop: UInt8]?
     private var questClearerQueue: ThreadQueue?
     private var timezoneOffset: Int
     private var shouldExit = false
-    private var bootstrappLock = Threading.Lock()
+    private let bootstrappLock = Threading.Lock()
     private var bootstrappCellIDs = [S2CellId]()
     private var bootstrappTotalCount = 0
     private var spinLimit: Int
+    private let accountsLock = Threading.Lock()
+    private var accounts = [String: String]()
     public var delayLogout: Int
 
     init(name: String, multiPolygon: MultiPolygon, type: AutoType, timezoneOffset: Int,
@@ -196,7 +198,7 @@ class AutoInstanceController: InstanceControllerProto {
         }
     }
 
-    func getTask(mysql: MySQL, uuid: String, username: String?) -> [String: Any] {
+    func getTask(mysql: MySQL, uuid: String, username: String?, account: Account?) -> [String: Any] {
 
         switch type {
         case .quest:
@@ -283,29 +285,7 @@ class AutoInstanceController: InstanceControllerProto {
                 }
                 stopsLock.unlock()
 
-                var account: Account?
-
-                do {
-                    if username != nil, let accountT = try Account.getWithUsername(mysql: mysql, username: username!) {
-                        account = accountT
-                    }
-                } catch {
-                    Log.error(message: "[InstanceControllerProto] Failed to connect get account.")
-                    return [String: Any]()
-                }
-
-                if username != nil && account != nil {
-                    if account!.spins >= spinLimit ||
-                       account!.failed == "GPR_RED_WARNING_2" ||
-                       account!.failed == "GPR_BANNED" {
-                        return ["action": "switch_account", "min_level": minLevel, "max_level": maxLevel]
-                    } else {
-                        try? Account.spin(mysql: mysql, username: username!)
-                    }
-                }
-
                 let pokestop: Pokestop
-
                 let lastCoord: Coord?
                 do {
                     lastCoord = try Cooldown.lastLocation(account: account, deviceUUID: uuid)
@@ -381,10 +361,35 @@ class AutoInstanceController: InstanceControllerProto {
                 }
 
                 if delay >= delayLogout {
+                    var newUsername: String?
+                    do {
+                        accountsLock.lock()
+                        if accounts[uuid] == nil {
+                            accountsLock.unlock()
+                            let account = try getAccount(
+                                mysql: mysql,
+                                uuid: uuid,
+                                encounterTarget: Coord(lat: pokestop.lat, lon: pokestop.lon)
+                            )
+                            newUsername = account?.username
+                            accountsLock.lock()
+                            accounts[uuid] = account?.username
+                        }
+                        accountsLock.unlock()
+                    } catch {
+                        Log.error(message: "[InstanceControllerProto] Failed to get account in advance.")
+                    }
+                    Log.debug(
+                        message: "[InstanceControllerProto] Over Logout Delay. " +
+                                 "Switching Account from \(username ?? "?") to \(newUsername ?? "?")"
+                    )
                     return ["action": "switch_account", "min_level": minLevel, "max_level": maxLevel]
                 }
 
                 do {
+                    if let username = username {
+                        try Account.spin(mysql: mysql, username: username)
+                    }
                     try Cooldown.encounter(
                         mysql: mysql,
                         account: account,
@@ -519,5 +524,33 @@ class AutoInstanceController: InstanceControllerProto {
         if questClearerQueue != nil {
             Threading.destroyQueue(questClearerQueue!)
         }
+    }
+
+    func getAccount(mysql: MySQL, uuid: String, encounterTarget: Coord?=nil) throws -> Account? {
+        accountsLock.lock()
+        if let usernane = accounts[uuid] {
+            accounts[uuid] = nil
+            accountsLock.unlock()
+            return try Account.getWithUsername(username: usernane)
+        } else {
+            accountsLock.unlock()
+            return try Account.getNewAccount(
+                mysql: mysql,
+                minLevel: minLevel,
+                maxLevel: maxLevel,
+                ignoringWarning: true,
+                spins: spinLimit,
+                noCooldown: true,
+                encounterTarget: encounterTarget
+            )
+        }
+    }
+
+    func accountValid(account: Account) -> Bool {
+        return
+            account.level >= minLevel &&
+            account.level <= maxLevel &&
+            account.isValid(ignoringWarning: true) &&
+            account.hasSpinsLeft(spins: spinLimit)
     }
 }

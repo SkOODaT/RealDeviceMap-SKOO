@@ -832,8 +832,28 @@ class WebHookRequestHandler {
             let controller = InstanceController.global.getInstanceController(deviceUUID: uuid)
             if controller != nil {
                 do {
+                    let account: Account?
+                    if let username = username {
+                        account = try Account.getWithUsername(mysql: mysql, username: username)
+                    } else {
+                        account = nil
+                    }
+                    if let account = account {
+                        guard controller!.accountValid(account: account) else {
+                            Log.debug(
+                                message: "[WebHookRequestHandler] Account \(account.username) not valid for " +
+                                         "Instance \(controller!.name). Switching Account."
+                            )
+                            try response.respondWithData(data: [
+                                "action": "switch_account",
+                                "min_level": controller!.minLevel,
+                                "max_level": controller!.maxLevel
+                            ])
+                            return
+                        }
+                    }
                     try response.respondWithData(
-                        data: controller!.getTask(mysql: mysql, uuid: uuid, username: username)
+                        data: controller!.getTask(mysql: mysql, uuid: uuid, username: username, account: account)
                     )
                 } catch {
                     response.respondWithError(status: .internalServerError)
@@ -847,24 +867,35 @@ class WebHookRequestHandler {
                     response.respondWithError(status: .notFound)
                     return
                 }
-                let account: Account
+                var account: Account?
                 if device.accountUsername != nil,
-                   let oldAccount = try Account.getWithUsername(mysql: mysql, username: device.accountUsername!),
-                   oldAccount.failed == nil {
-                    account = oldAccount
-                } else {
+                   let oldAccount = try Account.getWithUsername(mysql: mysql, username: device.accountUsername!) {
+                    if InstanceController.global.accountValid(deviceUUID: uuid, account: oldAccount) {
+                        account = oldAccount
+                    } else {
+                        Log.debug(
+                            message: "[WebHookRequestHandler] Previously Assigned Account \(oldAccount.username) not " +
+                                     "valid for Instance \(device.instanceName ?? "None"). Getting new Account."
+                        )
+                    }
+                }
+                if account == nil {
                     guard let newAccount = try InstanceController.global.getAccount(mysql: mysql, deviceUUID: uuid)
-                          else {
-                        Log.error(message: "[WebHookRequestHandler] [\(uuid)] Failed to get account for \(uuid)")
+                    else {
+                        Log.error(message: "[WebHookRequestHandler] Failed to get account for \(uuid)")
                         response.respondWithError(status: .notFound)
                         return
                     }
                     account = newAccount
                 }
-                device.accountUsername = account.username
+                device.accountUsername = account!.username
                 try device.save(mysql: mysql, oldUUID: device.uuid)
+                try response.respondWithData(data: [
+                    "username": account!.username,
+                    "password": account!.password
+                ])
 
-                if username != account.username, let loginLimit = self.loginLimit {
+                if username != account!.username, let loginLimit = self.loginLimit {
                     let currentTime = UInt32(Date().timeIntervalSince1970) / loginLimitIntervall
                     let left = loginLimitIntervall - UInt32(Date().timeIntervalSince1970) % loginLimitIntervall
                     self.loginLimitLock.lock()
@@ -893,9 +924,8 @@ class WebHookRequestHandler {
                     )
                 }
                 try response.respondWithData(data: [
-                    "username": account.username,
-                    "password": account.password,
-                    "first_warning_timestamp": account.firstWarningTimestamp as Any
+                    "username": account!.username,
+                    "password": account!.password
                 ])
             } catch {
                 response.respondWithError(status: .internalServerError)
@@ -921,8 +951,7 @@ class WebHookRequestHandler {
         } else if type == "account_banned" {
             do {
                 guard
-                    let device = try Device.getById(mysql: mysql, id: uuid),
-                    let username = device.accountUsername,
+                    let username = username,
                     let account = try Account.getWithUsername(mysql: mysql, username: username)
                 else {
                     response.respondWithError(status: .internalServerError)
@@ -937,11 +966,28 @@ class WebHookRequestHandler {
             } catch {
                 response.respondWithError(status: .internalServerError)
             }
+        } else if type == "account_suspended" {
+            do {
+                guard
+                    let username = username,
+                    let account = try Account.getWithUsername(mysql: mysql, username: username)
+                else {
+                    response.respondWithError(status: .internalServerError)
+                    return
+                }
+                if account.failedTimestamp == nil || account.failed == nil {
+                    account.failedTimestamp = UInt32(Date().timeIntervalSince1970)
+                    account.failed = "suspended"
+                    try account.save(mysql: mysql, update: true)
+                }
+                response.respondWithOk()
+            } catch {
+                response.respondWithError(status: .internalServerError)
+            }
         } else if type == "account_warning" {
             do {
                 guard
-                    let device = try Device.getById(mysql: mysql, id: uuid),
-                    let username = device.accountUsername,
+                    let username = username,
                     let account = try Account.getWithUsername(mysql: mysql, username: username)
                     else {
                         response.respondWithError(status: .notFound)
