@@ -241,17 +241,17 @@ class Account: WebHookEvent {
         return (
             self.failed == nil || (
                 self.failed! == "GPR_RED_WARNING_2" &&
-                (ignoringWarning || self.warnExpireTimestamp ?? UInt32.max <= UInt32(Date().timeIntervalSince1970))
+                (ignoringWarning || (self.warnExpireTimestamp ?? UInt32.max) <= UInt32(Date().timeIntervalSince1970))
             )
         )
     }
 
     public func hasSpinsLeft(spins: Int = 1000, noCooldown: Bool=false) -> Bool {
         return (
-            self.spins <= spins && (
+            self.spins < spins && (
                 !noCooldown || (
                     self.lastEncounterTime == nil ||
-                    UInt32(Date().timeIntervalSince1970) - self.lastEncounterTime! >= 7200
+                    (UInt32(Date().timeIntervalSince1970) - self.lastEncounterTime!) >= 7200
                 )
             )
         )
@@ -401,7 +401,7 @@ class Account: WebHookEvent {
         let spinSQL: String
         if spins != nil {
             spinSQL = """
-            AND spins <= ?
+            AND spins < ?
             """
         } else {
             spinSQL = ""
