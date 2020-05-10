@@ -38,7 +38,7 @@ RUN swift build -c debug
 ## Executable Image
 FROM base
 
-COPY --from=build /build/.build/debug/RealDeviceMap-SKOO /app/RealDeviceMap-SKOO
+COPY --from=build /build/.build/debug/RealDeviceMap-SKOO /app/RealDeviceMap
 COPY resources /app/resources
 COPY .gitsha /app/.gitsha
 COPY .gitref /app/.gitref
