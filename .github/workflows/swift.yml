@@ -24,7 +24,7 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: build-debug
-        path: .build/debug/SkOODaT
+        path: .build/debug/RealDeviceMap-SKOO
   DeployDebug:
     runs-on: ubuntu-16.04
     needs: BuildDebug
@@ -35,7 +35,7 @@ jobs:
       if: github.event_name == 'push'
       with:
         name: build-debug
-        path: .build/debug/SkOODaT
+        path: .build/debug/RealDeviceMap-SKOO
     - name: Set .gitsha
       run: "echo ${{github.sha}} > .gitsha"
     - name: Set .gitref
@@ -65,7 +65,7 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: build-release
-        path: .build/release/SkOODaT
+        path: .build/release/RealDeviceMap-SKOO
   DeployRelease:
     runs-on: ubuntu-16.04
     needs: BuildRelease
@@ -76,7 +76,7 @@ jobs:
       if: github.event_name == 'push'
       with:
         name: build-release
-        path: .build/release/SkOODaT
+        path: .build/release/RealDeviceMap-SKOO
     - name: Publish
       uses: 123FLO321/github-docker-temp@0.5.0
       if: github.event_name == 'push'
