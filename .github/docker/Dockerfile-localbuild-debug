@@ -1,5 +1,5 @@
 ## Base Image
-FROM docker.pkg.github.com/skoodat/realdevicemap-skoo/realdevicemap:base
+FROM docker.pkg.github.com/skoodat/realdevicemap-skoo/realdevicemap-skoo:base
 
 ## Copy Files
 COPY .build/debug/RealDeviceMap /app/
