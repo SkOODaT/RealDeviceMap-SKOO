@@ -55,8 +55,8 @@ internal class VersionManager {
         }
 
         if pullRequest == nil {
-            let tagsRequest = CURLRequest("https://api.github.com/repos/RealDeviceMap/RealDeviceMap/tags")
-            tagsRequest.addHeader(.userAgent, value: "RealDeviceMap")
+            let tagsRequest = CURLRequest("https://api.github.com/repos/SkOODaT/RealDeviceMap-SKOO/tags")
+            tagsRequest.addHeader(.userAgent, value: "RealDeviceMap-SKOO")
             if let tags = try? tagsRequest.perform().bodyJSON([TagsResponse].self),
                let first = tags.first(where: { $0.commit.sha == sha }) {
                 version = "Version \(first.name)"
@@ -68,9 +68,9 @@ internal class VersionManager {
         }
 
         if pullRequest == nil {
-            self.url = "https://github.com/RealDeviceMap/RealDeviceMap/releases"
+            self.url = "https://github.com/SkOODaT/RealDeviceMap-SKOO/releases"
         } else {
-            self.url = "https://github.com/RealDeviceMap/RealDeviceMap/pull/\(pullRequest!)"
+            self.url = "https://github.com/SkOODaT/RealDeviceMap-SKOO/pull/\(pullRequest!)"
         }
         self.version = version
         self.commit = sha
