@@ -27,7 +27,7 @@ internal class VersionManager {
     // swiftlint:disable:next function_body_length
     private init() {
         let sha: String
-        let pullRequest: String?
+        let gitBranch: String?
         let version: String
         let shaFile = File("\(projectroot)/.gitsha")
         do {
@@ -43,20 +43,19 @@ internal class VersionManager {
             try refFile.open()
             let ref = try refFile.readString().components(separatedBy: .newlines)[0]
                                  .trimmingCharacters(in: .whitespaces)
-            if ref.starts(with: "refs/pull/") && ref.contains(string: "/merge") {
-                pullRequest = ref.replacingOccurrences(of: "refs/pull/", with: "")
-                                 .replacingOccurrences(of: "/merge", with: "")
+            if ref.starts(with: "refs/heads/") {
+                gitBranch = ref.replacingOccurrences(of: "refs/heads/", with: "")
             } else {
-                pullRequest = nil
+                gitBranch = nil
             }
         } catch {
-            pullRequest = nil
+            gitBranch = nil
             Log.error(message: "[VersionManager] Failed to read .gitref")
         }
 
-        if pullRequest == nil {
-            let tagsRequest = CURLRequest("https://api.github.com/repos/RealDeviceMap/RealDeviceMap/tags")
-            tagsRequest.addHeader(.userAgent, value: "RealDeviceMap")
+        if gitBranch == nil {
+            let tagsRequest = CURLRequest("https://api.github.com/repos/SkOODaT/RealDeviceMap-SKOO/tags")
+            tagsRequest.addHeader(.userAgent, value: "RealDeviceMap-SKOO")
             if let tags = try? tagsRequest.perform().bodyJSON([TagsResponse].self),
                let first = tags.first(where: { $0.commit.sha == sha }) {
                 version = "Version \(first.name)"
@@ -64,13 +63,13 @@ internal class VersionManager {
                 version = "?"
             }
         } else {
-            version = "Pull Request #\(pullRequest!)"
+            version = "Git Branch #\(gitBranch!)"
         }
 
-        if pullRequest == nil {
-            self.url = "https://github.com/RealDeviceMap/RealDeviceMap/releases"
+        if gitBranch == nil {
+            self.url = "https://github.com/SkOODaT/RealDeviceMap-SKOO/releases"
         } else {
-            self.url = "https://github.com/RealDeviceMap/RealDeviceMap/pull/\(pullRequest!)"
+            self.url = "https://github.com/SkOODaT/RealDeviceMap-SKOO/tree/\(gitBranch!)"
         }
         self.version = version
         self.commit = sha
