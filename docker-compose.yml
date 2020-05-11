@@ -61,3 +61,4 @@ volumes:
     driver: local
 # favicons
 #   driver: local
+    network_mode: bridge
