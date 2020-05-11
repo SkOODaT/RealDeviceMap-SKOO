@@ -24,7 +24,6 @@ internal class VersionManager {
     internal let commit: String
     internal let url: String
 
-    // swiftlint:disable:next function_body_length
     private init() {
         let sha: String
         let gitBranch: String?
