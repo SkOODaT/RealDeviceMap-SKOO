@@ -48,9 +48,6 @@ extension InstanceControllerProto {
     func accountValid(account: Account) -> Bool {
         return account.level >= minLevel && account.level <= maxLevel && account.isValid()
     }
-    func accountValid(account: Account) -> Bool {
-        return account.level >= minLevel && account.level <= maxLevel && account.isValid()
-    }
 }
 
 extension InstanceControllerProto {
