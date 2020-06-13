@@ -151,8 +151,6 @@ class WebHookRequestHandler {
             return
         }
 
-        var uuid = json["uuid"] as? String
-        //let uuid = json["uuid"] as? String
         let latTarget = json["lat_target"] as? Double
         let lonTarget = json["lon_target"] as? Double
         if uuid != nil && latTarget != nil && lonTarget != nil {
