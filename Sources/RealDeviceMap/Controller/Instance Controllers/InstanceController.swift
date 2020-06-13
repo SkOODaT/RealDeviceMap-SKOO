@@ -325,13 +325,6 @@ class InstanceController {
         return account.isValid()
     }
 
-    public func accountValid(deviceUUID: String, account: Account) -> Bool {
-        if let instanceController = getInstanceController(deviceUUID: deviceUUID) {
-            return instanceController.accountValid(account: account)
-        }
-        return account.isValid()
-    }
-
     public func getDeviceUUIDsInInstance(instanceName: String) -> [String] {
         var deviceUUIDS = [String]()
         instancesLock.lock()
