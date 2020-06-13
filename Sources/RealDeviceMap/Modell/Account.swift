@@ -389,7 +389,7 @@ class Account: WebHookEvent {
         if ignoringWarning {
             failedSQL = """
             AND (
-                failed IS NULL OR failed = 'GPR_RED_WARNING'
+                failed IS NULL OR failed = 'GPR_RED_WARNING_2'
             )
             """
         } else {
