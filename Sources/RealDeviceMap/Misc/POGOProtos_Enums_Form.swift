@@ -2076,7 +2076,22 @@ extension POGOProtos_Enums_Form {
         .jellicentFemale,
         .pikachuCostume2020,
         .dragoniteCostume2020,
-        .onixCostume2020
+        .onixCostume2020,
+        .meowthGalarian,
+        .farfetchdGalarian,
+        .darumakaGalarian,
+        .darmanitanGalarianStandard,
+        .darmanitanGalarianZen,
+        .stunfiskGalarian,
+        .obstagoonNormal,
+        .obstagoonShadow,
+        .obstagoonPurified,
+        .perrserkerNormal,
+        .perrserkerShadow,
+        .perrserkerPurified,
+        .sirfetchdNormal,
+        .sirfetchdShadow,
+        .sirfetchdPurified
     ]
 
     static var allFormsInString: [String] {
@@ -4155,6 +4170,21 @@ extension POGOProtos_Enums_Form {
         case .pikachuCostume2020: return ["25-2332"]
         case .dragoniteCostume2020: return ["149-2333"]
         case .onixCostume2020: return ["95-2334"]
+        case .meowthGalarian: return ["52-2335"]
+        case .farfetchdGalarian: return ["83-2338"]
+        case .darumakaGalarian: return ["554-2341"]
+        case .darmanitanGalarianStandard: return ["554-2342"]
+        case .darmanitanGalarianZen: return ["554-2343"]
+        case .stunfiskGalarian: return ["618-2345"]
+        case .obstagoonNormal: return ["862-2501"]
+        case .obstagoonShadow: return ["862-2502"]
+        case .obstagoonPurified: return ["862-2503"]
+        case .perrserkerNormal: return ["863-2504"]
+        case .perrserkerShadow: return ["863-2505"]
+        case .perrserkerPurified: return ["863-2506"]
+        case .sirfetchdNormal: return ["865-2510"]
+        case .sirfetchdShadow: return ["865-2511"]
+        case .sirfetchdPurified: return ["865-2512"]
         case .unset: return []
         case .UNRECOGNIZED: return []
         default:
