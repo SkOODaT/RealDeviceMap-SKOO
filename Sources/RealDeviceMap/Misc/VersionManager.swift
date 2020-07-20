@@ -73,7 +73,7 @@ internal class VersionManager {
         self.version = version
         self.commit = sha
 
-        Log.info(message: "[VersionManager] \(version) (\(sha)")
+        Log.info(message: "[VersionManager] \(version) (\(sha))")
     }
 
 }

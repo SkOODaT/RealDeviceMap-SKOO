@@ -1344,7 +1344,7 @@ class ApiRequestHandler {
 
         if showInstances && perms.contains(.admin) {
 
-            let instances = try? Instance.getAll(mysql: mysql)
+            let instances = try? Instance.getAll(mysql: mysql, getData: false)
             var jsonArray = [[String: Any]]()
 
             if instances != nil {
