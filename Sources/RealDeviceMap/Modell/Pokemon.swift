@@ -141,7 +141,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
     var capture2: Double?
     var capture3: Double?
     var mapStatus: UInt8?
-    var isEvent: Bool = false
+    var isEvent: Bool
 
     init(id: String, pokemonId: UInt16, lat: Double, lon: Double, spawnId: UInt64?, expireTimestamp: UInt32?,
          atkIv: UInt8?, defIv: UInt8?, staIv: UInt8?, move1: UInt16?, move2: UInt16?, gender: UInt8?, form: UInt16?,
@@ -187,6 +187,8 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
 
     init(mysql: MySQL?=nil, wildPokemon: POGOProtos_Map_Pokemon_WildPokemon, cellId: UInt64,
          timestampMs: UInt64, username: String?, isEvent: Bool) {
+
+        self.isEvent = isEvent
         id = wildPokemon.encounterID.description
         pokemonId = wildPokemon.pokemonData.pokemonID.rawValue.toUInt16()
         lat = wildPokemon.latitude
@@ -310,8 +312,9 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
 
     init(mysql: MySQL?=nil, fortData: POGOProtos_Map_Fort_FortData,
          mapPokemon: POGOProtos_Map_Pokemon_MapPokemon, cellId: UInt64,
-         timestampMs: UInt64, username: String?) {
+         timestampMs: UInt64, username: String?, isEvent: Bool) {
 
+        self.isEvent = isEvent
         id = mapPokemon.encounterID.description
         pokemonId = mapPokemon.pokedexTypeID.rawValue.toUInt16()
         pokestopId = fortData.id

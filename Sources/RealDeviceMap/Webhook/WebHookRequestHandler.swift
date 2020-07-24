@@ -586,7 +586,7 @@ class WebHookRequestHandler {
             for mapPokemon in mapPokemons {
                 let pokemon = Pokemon(mysql: mysql, fortData: mapPokemon.fortData,
                                            mapPokemon: mapPokemon.pokeData, cellId: mapPokemon.cell,
-                                           timestampMs: mapPokemon.timestampMs, username: username)
+                                           timestampMs: mapPokemon.timestampMs, username: username, isEvent: isEvent)
                 try? pokemon.save(mysql: mysql)
             }
             Log.debug(message: "[WebHookRequestHandler] [\(uuid ?? "?")] Lured Pokemon Count: \(mapPokemons.count) " +
