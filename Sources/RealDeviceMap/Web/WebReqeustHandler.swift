@@ -238,9 +238,11 @@ class WebReqeustHandler {
             }
 
             if let id = id {
+                let isEvent = (request.urlVariables["is_event"]?.toBool() ?? false)
+                              && perms.contains(.viewMapEventPokemon)
                 do {
                     if request.pathComponents[1] == "@pokemon" {
-                        if let pokemon = try Pokemon.getWithId(id: id) {
+                        if let pokemon = try Pokemon.getWithId(id: id, isEvent: isEvent) {
                             data["start_pokemon"] = try pokemon.jsonEncodedString()
                             lat = pokemon.lat
                             lon = pokemon.lon
@@ -698,6 +700,8 @@ class WebReqeustHandler {
                 data["radius"] = 10000
                 data["store_data"] = false
                 data["nothing_selected"] = true
+                data["account_group"] = nil
+                data["is_event"] = false
             }
         case .dashboardInstanceIVQueue:
             data["locale"] = "en"
@@ -1961,6 +1965,8 @@ class WebReqeustHandler {
         let delayLogout = Int(request.param(name: "delay_logout") ?? "" ) ?? 900
         let radius = UInt64(request.param(name: "radius") ?? "" ) ?? 10000
         let storeData = request.param(name: "store_data") == "true"
+        let accountGroup = request.param(name: "account_group")?.emptyToNil()
+        let isEvent = request.param(name: "is_event") == "true"
 
         data["name"] = name
         data["area"] = area
@@ -1974,6 +1980,8 @@ class WebReqeustHandler {
         data["delay_logout"] = delayLogout
         data["radius"] = radius
         data["store_data"] = storeData
+        data["account_group"] = accountGroup
+        data["is_event"] = isEvent
 
         if type == nil {
             data["nothing_selected"] = true
@@ -2093,6 +2101,8 @@ class WebReqeustHandler {
                 oldInstance!.data["timezone_offset"] = timezoneOffset
                 oldInstance!.data["min_level"] = minLevel
                 oldInstance!.data["max_level"] = maxLevel
+                oldInstance!.data["account_group"] = accountGroup
+                oldInstance!.data["is_event"] = isEvent
 
                 if type == .pokemonIV {
                     oldInstance!.data["pokemon_ids"] = pokemonIDs
@@ -2119,8 +2129,14 @@ class WebReqeustHandler {
                 throw CompletedEarly()
             }
         } else {
-            var instanceData: [String: Any] = ["area": newCoords, "timezone_offset": timezoneOffset,
-                                               "min_level": minLevel, "max_level": maxLevel]
+            var instanceData: [String: Any] = [
+                "area": newCoords,
+                "timezone_offset": timezoneOffset,
+                "min_level": minLevel,
+                "max_level": maxLevel,
+                "account_group": accountGroup as Any,
+                "is_event": isEvent
+            ]
             if type == .pokemonIV {
                 instanceData["pokemon_ids"] = pokemonIDs
                 instanceData["iv_queue_limit"] = ivQueueLimit
@@ -2206,6 +2222,8 @@ class WebReqeustHandler {
             data["delay_logout"] = oldInstance!.data["delay_logout"] as? Int ?? 900
             data["radius"] = (oldInstance!.data["radius"] as? Int)?.toUInt64() ?? 100000
             data["store_data"] = oldInstance!.data["store_data"] as? Bool ?? false
+            data["account_group"] = (oldInstance!.data["account_group"] as? String)?.emptyToNil()
+            data["is_event"] = oldInstance!.data["is_event"] as? Bool ?? false
 
             let pokemonIDs = oldInstance!.data["pokemon_ids"] as? [Int]
             if pokemonIDs != nil {
@@ -2854,9 +2872,11 @@ class WebReqeustHandler {
                 data["error"] = "Invalid Request."
                 return data
         }
+        let group = request.param(name: "group")?.trimmingCharacters(in: .whitespacesAndNewlines)
 
         data["accounts"] = accounts
         data["level"] = level
+        data["group"] = group
 
         var accs = [Account]()
         let accountsRows = accounts.components(separatedBy: "\n")
@@ -2870,7 +2890,7 @@ class WebReqeustHandler {
                                     lastEncounterTime: nil, spins: 0, creationTimestamp: nil, warn: nil,
                                     warnExpireTimestamp: nil, warnMessageAcknowledged: nil,
                                     suspendedMessageAcknowledged: nil, wasSuspended: nil, banned: nil,
-                                    lastUsedTimestamp: nil))
+                                    lastUsedTimestamp: nil, group: group))
             }
         }
 
@@ -3058,6 +3078,7 @@ class WebReqeustHandler {
         let permViewMapLure = request.param(name: "perm_view_map_lure") != nil
         let permViewMapInvasion = request.param(name: "perm_view_map_invasion") != nil
         let permViewMapPokemon = request.param(name: "perm_view_map_pokemon") != nil
+        let permViewMapEventPokemon = request.param(name: "perm_view_map_event_pokemon") != nil
         let permViewMapIV = request.param(name: "perm_view_map_iv") != nil
         let permViewMapSpawnpoint = request.param(name: "perm_view_map_spawnpoint") != nil
         let permViewMapCell = request.param(name: "perm_view_map_cell") != nil
@@ -3076,6 +3097,7 @@ class WebReqeustHandler {
         data["perm_view_map_quest"] = permViewMapQuest
         data["perm_view_map_lure"] = permViewMapLure
         data["perm_view_map_invasion"] = permViewMapInvasion
+        data["perm_view_map_event_pokemon"] = permViewMapEventPokemon
         data["perm_view_map_pokemon"] = permViewMapPokemon
         data["perm_view_map_iv"] = permViewMapIV
         data["perm_view_map_spawnpoint"] = permViewMapSpawnpoint
@@ -3204,6 +3226,7 @@ class WebReqeustHandler {
         data["perm_view_map_lure"] = perms.contains(.viewMapLure)
         data["perm_view_map_invasion"] = perms.contains(.viewMapInvasion)
         data["perm_view_map_pokemon"] = perms.contains(.viewMapPokemon)
+        data["perm_view_map_event_pokemon"] = perms.contains(.viewMapEventPokemon)
         data["perm_view_map_iv"] = perms.contains(.viewMapIV)
         data["perm_view_map_spawnpoint"] = perms.contains(.viewMapSpawnpoint)
         data["perm_view_map_cell"] = perms.contains(.viewMapCell)

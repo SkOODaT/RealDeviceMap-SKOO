@@ -504,6 +504,7 @@ function loadStorage () {
     for (i = 1; i <= '{{max_pokemon_id}}'; i++) {
       defaultPokemonFilter[i] = { show: true, size: 'normal' }
     }
+    defaultPokemonFilter.event_only = { on: false }
     defaultPokemonFilter.iv_and = { on: false, filter: '0-100' }
     defaultPokemonFilter.iv_or = { on: false, filter: '0-100' }
     defaultPokemonFilter.big_karp = { show: false, size: 'normal' }
@@ -518,6 +519,9 @@ function loadStorage () {
       if (pokemonFilter[i] === undefined) {
         pokemonFilter[i] = { show: true, size: 'normal' }
       }
+    }
+    if (pokemonFilter.event_only === undefined) {
+      pokemonFilter.event_only = { on: false }
     }
     if (pokemonFilter.iv_and === undefined) {
       pokemonFilter.iv_and = { on: false, filter: '0-100' }
@@ -784,6 +788,7 @@ function initMap () {
     for (i = 1; i <= '{{max_pokemon_id}}'; i++) {
       defaultPokemonFilter[i] = { show: true, size: 'normal' }
     }
+    defaultPokemonFilter.event_only = { on: false }
     defaultPokemonFilter.iv_and = { on: false, filter: '0-100' }
     defaultPokemonFilter.iv_or = { on: false, filter: '0-100' }
     defaultPokemonFilter.big_karp = { show: false, size: 'normal' }
@@ -801,6 +806,7 @@ function initMap () {
     for (i = 1; i <= '{{max_pokemon_id}}'; i++) {
       defaultPokemonFilter[i] = { show: false, size: pokemonFilterNew[i].size, filter: pokemonFilterNew[i].filter }
     }
+    defaultPokemonFilter.event_only = { on: false }
     defaultPokemonFilter.iv_and = { on: false, filter: pokemonFilterNew.iv_and.filter }
     defaultPokemonFilter.iv_or = { on: false, filter: pokemonFilterNew.iv_or.filter }
     defaultPokemonFilter.big_karp = { show: false, size: 'normal' }
@@ -1365,6 +1371,7 @@ function loadData () {
       pokemonFilterExclude.push('tiny_rat')
     }
   }
+  let pokemonFilterEventOnly = showPokemon && pokemonFilter['event_only'].on
 
   const questFilterExclude = []
   if (showQuests) {
@@ -1463,6 +1470,7 @@ function loadData () {
     show_quests: showQuests,
     show_pokemon: showPokemon,
     show_nests: showNests,
+    pokemon_filter_event_only: pokemonFilterEventOnly,
     pokemon_filter_exclude: JSON.stringify(pokemonFilterExclude),
     quest_filter_exclude: JSON.stringify(questFilterExclude),
     pokemon_filter_iv: JSON.stringify(pokemonFilterIV),
@@ -1897,7 +1905,7 @@ function addPokemon(pokemon, ts) {
     lastUpdateServer = pokemon.updated
   }
   const oldPokemon = pokemonMarkers.find(function (value) {
-    return pokemon.id === value.id
+    return pokemon.id === value.id && pokemon.is_event === value.is_event
   })
 
   if (oldPokemon === undefined || pokemon.is_start) {
@@ -2292,6 +2300,10 @@ function getPokemonPopupContent (pokemon) {
     '<center><div class="main-label">' +
     '<div class="row">' + //START 3RD ROW
       '<div class="col text-nowrap text-center">' //START 3RD COLUMN
+
+      if (pokemon.is_event == 1) {
+        content += '<b>Event Pokemon</b> <img src="/static/img/item/1105.png" height="15" width="15"/><br> '
+      }
       if (pokemon.map_status == 1) {
         content += '<b>Wild Pokemon</b> <img src="/static/img/misc/grass.png" height="15" width="15"/><br> '
       } else if (pokemon.map_status == 2) {
@@ -3630,6 +3642,12 @@ function manageSelectButton (e, isNew) {
       case 'on':
         shouldShow = pokemonFilterNew['iv_' + id].on
         break
+      case 'event_only_hide':
+        shouldShow = !pokemonFilterNew['event_only'].on
+        break
+      case 'event_only_show':
+        shouldShow = pokemonFilterNew['event_only'].on
+        break
     }
   } else if (type === 'pokemon-size') {
     switch (info) {
@@ -4009,6 +4027,12 @@ function manageSelectButton (e, isNew) {
             break
           case 'on':
             pokemonFilterNew['iv_' + id].on = true
+            break
+          case 'event_only_show':
+            pokemonFilterNew['event_only'].on = true
+            break
+          case 'event_only_hide':
+            pokemonFilterNew['event_only'].on = false
             break
         }
       } else if (type === 'pokemon-size') {
@@ -5065,7 +5089,7 @@ function loadFilterSettings (e) {
 
     showPokemon = obj.show_pokemon
     pokemonFilterNew = obj.pokemon
-    store('show_pokemon', showRaids)
+    store('show_pokemon', showPokemon)
     store('pokemon_filter', JSON.stringify(pokemonFilterNew))
 
     showNests = obj.show_nests
