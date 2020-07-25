@@ -260,7 +260,7 @@ class ApiRequestHandler {
                         "sort": -1
                     ],
                     "name": eventOnlyString,
-                    "image": "Event",
+                    "image": "Rescan",
                     "filter": filter,
                     "size": "",
                     "type": eventsTypeString
