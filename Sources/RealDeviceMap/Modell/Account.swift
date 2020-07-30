@@ -35,7 +35,7 @@ class Account: WebHookEvent {
             "suspended_message_acknowledged": suspendedMessageAcknowledged ?? 0,
             "was_suspended": wasSuspended ?? 0,
             "banned": banned ?? 0,
-            "group": group ?? "None"
+            "group": group as Any
         ]
         return [
             "type": "account",
