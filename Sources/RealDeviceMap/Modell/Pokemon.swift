@@ -1008,7 +1008,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                 capture1: capture1, capture2: capture2, capture3: capture3, weather: weather, shiny: shiny,
                 username: username, mapStatus: mapStatus, pokestopId: pokestopId,
                 firstSeenTimestamp: firstSeenTimestamp, updated: updated, changed: changed, cellId: cellId,
-                expireTimestampVerified: expireTimestampVerified, isEvent: isEvent, 
+                expireTimestampVerified: expireTimestampVerified, isEvent: isEvent,
                 pvpRankingsGreatLeague: pvpRankingsGreatLeague, pvpRankingsUltraLeague: pvpRankingsUltraLeague
             ))
         }
