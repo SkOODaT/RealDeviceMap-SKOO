@@ -532,8 +532,6 @@ class WebHookRequestHandler {
                           "Currently processing: \(limitCount) (\(Int(percentage*100))%)"
             if percentage >= 0.5 {
                 Log.info(message: message)
-            } else {
-                Log.debug(message: message)
             }
 
             defer {
