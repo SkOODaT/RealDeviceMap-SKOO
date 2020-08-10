@@ -3,7 +3,7 @@ name: Swift
 on: [push, pull_request]
 
 jobs:
-  BuildDebug:
+  Test:
     runs-on: ubuntu-16.04
     steps:
     - uses: actions/checkout@v2
@@ -15,27 +15,15 @@ jobs:
     - uses: actions/cache@v1
       with:
         path: .build
-        key: ${{ runner.os }}-debug-4.2-spm-${{ hashFiles('Package.resolved') }}
+        key: ${{ runner.os }}-debug-5-spm-${{ hashFiles('Package.resolved') }}
     - name: Build
-      run: swift build -v -c debug
+      run: swift build --enable-test-discovery -Xswiftc -g -c debug
     - name: Test
-      run: swift test -v -c debug
-    - name: Upload executeable
-      uses: actions/upload-artifact@v1
-      with:
-        name: build-debug
-        path: .build/debug/RealDeviceMap
-  DeployDebug:
+      run: swift test --enable-test-discovery -Xswiftc -g -c debug
+  Deploy:
     runs-on: ubuntu-16.04
-    needs: BuildDebug
     steps:
     - uses: actions/checkout@v2
-    - name: Download executeable
-      uses: actions/download-artifact@v1
-      if: github.event_name == 'push'
-      with:
-        name: build-debug
-        path: .build/debug/RealDeviceMap
     - name: Set .gitsha
       run: "echo ${{github.sha}} > .gitsha"
     - name: Set .gitref
@@ -74,12 +62,9 @@ jobs:
     - name: Download executeable
       uses: actions/download-artifact@v1
       if: github.event_name == 'push'
-      with:
-        name: build-release
-        path: .build/release/RealDeviceMap
-    - name: Set .gitsha
       run: "echo ${{github.sha}} > .gitsha"
     - name: Set .gitref
+      if: github.event_name == 'push'
       run: "echo ${{github.ref}} > .gitref"
     - name: Publish
       uses: 123FLO321/github-docker-temp@0.5.0

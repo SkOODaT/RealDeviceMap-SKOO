@@ -12,6 +12,9 @@ import PerfectThread
 import PerfectHTTPServer
 import TurnstileCrypto
 import POGOProtos
+import Backtrace
+
+Backtrace.install()
 
 let logDebug = (ProcessInfo.processInfo.environment["LOG_LEVEL"]?.lowercased() ?? "debug") == "debug"
 extension Log {
@@ -243,8 +246,15 @@ for itemId in POGOProtos_Inventory_Item_ItemId.allAvilable {
 }
 WebReqeustHandler.avilableItemJson = try! aviableItems.jsonEncodedString()
 
-Log.info(message: "[MAIN] Getting PVP Stats")
-_ = PVPStatsManager.global
+let enviroment = ProcessInfo.processInfo.environment
+Pokemon.noPVP = enviroment["NO_PVP"] != nil
+
+if !Pokemon.noPVP {
+    Log.info(message: "[MAIN] Getting PVP Stats")
+    _ = PVPStatsManager.global
+} else {
+    Log.info(message: "[MAIN] PVP Stats deactivated")
+}
 
 Log.info(message: "[MAIN] Starting Webhook")
 WebHookController.global.webhookURLStrings = webhookUrlStrings.components(separatedBy: ";")
