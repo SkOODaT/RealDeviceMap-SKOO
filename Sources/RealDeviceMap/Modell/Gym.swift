@@ -278,6 +278,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
 
         updated = UInt32(Date().timeIntervalSince1970)
 
+        let now = UInt32(Date().timeIntervalSince1970)
         if oldGym == nil {
             let sql = """
                 INSERT INTO gym (
@@ -291,6 +292,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
                     ?, ?, ?, ?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP()
                 )
             """
+            self.updated = now
             _ = mysqlStmt.prepare(statement: sql)
             mysqlStmt.bindParam(id)
         } else {
@@ -347,6 +349,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
                     raid_is_exclusive = ?, cell_id = ?, deleted = false, total_cp = ?, sponsor_id = ?, gym_weather = ?
                 WHERE id = ?
             """
+            self.updated = now
             _ = mysqlStmt.prepare(statement: sql)
         }
 

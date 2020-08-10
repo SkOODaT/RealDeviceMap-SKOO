@@ -400,6 +400,7 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
 
         updated = UInt32(Date().timeIntervalSince1970)
 
+        let now = UInt32(Date().timeIntervalSince1970)
         if oldPokestop == nil {
             let sql = """
                 INSERT INTO pokestop (
@@ -409,6 +410,7 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
                 )
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP())
             """
+            self.updated = now
             _ = mysqlStmt.prepare(statement: sql)
             mysqlStmt.bindParam(id)
         } else {
@@ -464,6 +466,7 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
                     deleted = false, sponsor_id = ?
                 WHERE id = ?
             """
+            self.updated = now
             _ = mysqlStmt.prepare(statement: sql)
         }
 
