@@ -613,8 +613,9 @@ class WebHookRequestHandler {
                 try? pokemon.save(mysql: mysql)
             }
             if mapPokemons.count > 0 {
-                Log.debug(message: "[WebHookRequestHandler] [\(uuid ?? "?")] Lured Pokemon Count: \(mapPokemons.count) " +
-                             "parsed in \(String(format: "%.3f", Date().timeIntervalSince(startMapPokemon)))s"
+                Log.debug(message: "[WebHookRequestHandler] [\(uuid ?? "?")] Lured Pokemon Count: " +
+                                   "\(mapPokemons.count) parsed in " +
+                                   "\(String(format: "%.3f", Date().timeIntervalSince(startMapPokemon)))s"
                 )
             }
 
