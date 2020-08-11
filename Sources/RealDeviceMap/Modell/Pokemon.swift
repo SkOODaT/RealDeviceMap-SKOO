@@ -153,6 +153,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
     var pvpRankingsUltraLeague: [[String: Any]]?
 
     var hasChanges = false
+    var hasIvChanges = false
 
     init(id: String, pokemonId: UInt16, lat: Double, lon: Double, spawnId: UInt64?, expireTimestamp: UInt32?,
          atkIv: UInt8?, defIv: UInt8?, staIv: UInt8?, move1: UInt16?, move2: UInt16?, gender: UInt8?, form: UInt16?,
@@ -401,8 +402,9 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
            costume != self.costume ||
            form != self.form ||
            gender != self.gender {
-            self.hasChanges = true
-        )
+               self.hasChanges = true
+               self.hasIvChanges = true
+            }
 
         self.pokemonId = pokemonId
         self.cp = cp
@@ -840,7 +842,8 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             if self.atkIv != nil {
                 InstanceController.global.gotIV(pokemon: self)
             }
-        } else if updateIV && oldPokemon!.atkIv == nil && self.atkIv != nil {
+        } else if updateIV && ((oldPokemon!.atkIv == nil && self.atkIv != nil) || oldPokemon?.hasIvChanges == true) {
+            oldPokemon?.hasIvChanges = false
             WebHookController.global.addPokemonEvent(pokemon: self)
             InstanceController.global.gotIV(pokemon: self)
         }
