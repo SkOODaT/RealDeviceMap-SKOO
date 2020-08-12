@@ -62,7 +62,7 @@ class WebHookRequestHandler {
 
         let host = request.host
 
-        //let isMadData = request.header(.origin) != nil
+        let isMadData = request.header(.origin) != nil
 
         if let hostWhitelist = hostWhitelist {
             guard hostWhitelist.contains(host) else {
@@ -75,18 +75,17 @@ class WebHookRequestHandler {
                 return response.respondWithError(status: .unauthorized)
             }
 
-            //var loginSecretHeader = request.header(.authorization)
-            let loginSecretHeader = request.header(.authorization) //
+            var loginSecretHeader = request.header(.authorization)
 
-            //if isMadData {
-            //    if let madAuth = Data(base64Encoded: loginSecretHeader?.components(separatedBy: " ").last ?? ""),
-            //        let madString = String(data: madAuth, encoding: .utf8),
-            //        let madSecret = madString.components(separatedBy: ":").last {
-            //            loginSecretHeader = "Bearer \(madSecret)"
-            //    } else {
-            //        return response.respondWithError(status: .badRequest)
-            //    }
-            //}
+            if isMadData {
+                if let madAuth = Data(base64Encoded: loginSecretHeader?.components(separatedBy: " ").last ?? ""),
+                    let madString = String(data: madAuth, encoding: .utf8),
+                    let madSecret = madString.components(separatedBy: ":").last {
+                        loginSecretHeader = "Bearer \(madSecret)"
+                } else {
+                    return response.respondWithError(status: .badRequest)
+                }
+            }
             guard loginSecretHeader == "Bearer \(loginSecret)" else {
                 WebHookRequestHandler.limiter.failed(host: host)
                 return response.respondWithError(status: .unauthorized)
@@ -105,27 +104,19 @@ class WebHookRequestHandler {
     static func rawHandler(request: HTTPRequest, response: HTTPResponse, host: String) {
 
         let json: [String: Any]
-        //let isMadData = request.header(.origin) != nil
-        do {
-            guard var jsonOpt = try (request.postBodyString ?? "").jsonDecode() as? [String: Any] else {  //
-            //if isMadData, let madRaw = try request.postBodyString?.jsonDecode() as? [[String: Any]] {
-            //    json = ["contents": madRaw,
-            //            "uuid": request.header(.origin)!,
-            //            "username": "PogoDroid"]
-            //} else if let rdmRaw = try request.postBodyString?.jsonDecode() as? [String: Any] {
-            //    json = rdmRaw
-            //} else {
-                response.respondWithError(status: .badRequest)
-                return
-            }
-            if jsonOpt["payload"] != nil { jsonOpt["contents"] = [jsonOpt] }  //
-            json = jsonOpt  //
-        } catch {
+        let isMadData = request.header(.origin) != nil
+        if isMadData, let madRaw = request.postBodyString?.jsonDecodeForceTry() as? [[String: Any]] {
+            json = ["contents": madRaw,
+                    "uuid": request.header(.origin)!,
+                    "username": "PogoDroid"]
+        } else if let rdmRaw = request.postBodyString?.jsonDecodeForceTry() as? [String: Any] {
+            json = rdmRaw
+        } else {
             response.respondWithError(status: .badRequest)
             return
         }
-        var uuid = json["uuid"] as? String
-        //let uuid = json["uuid"] as? String
+
+        let uuid = json["uuid"] as? String
 
         guard let mysql = DBController.global.mysql else {
             Log.error(message: "[WebHookRequestHandler] [\(uuid ?? "?")] Failed to connect to database.")
@@ -136,8 +127,7 @@ class WebHookRequestHandler {
         let trainerLevel = json["trainerlvl"] as? Int ?? (json["trainerLevel"] as? String)?.toInt() ?? 0
         let trainerXP = json["trainerexp"] as? Int ?? 0
 
-        var username = json["username"] as? String
-        //let username = json["username"] as? String
+        let username = json["username"] as? String
         let controller = uuid != nil ? InstanceController.global.getInstanceController(deviceUUID: uuid!) : nil
         let isEvent = controller?.isEvent ?? false
         if username != nil && trainerLevel > 0 {
@@ -192,7 +182,6 @@ class WebHookRequestHandler {
         var isEmtpyGMO = true
         var isInvalidGMO = true
         var containsGMO = false
-        var isMadData = false //
 
         for rawData in contents {
 
@@ -224,10 +213,6 @@ class WebHookRequestHandler {
             } else if let madString = rawData["payload"] as? String {
                 data = Data(base64Encoded: madString) ?? Data()
                 method = rawData["type"] as? Int ?? 106
-                isMadData = true //
-                uuid = "MAD DATA"
-                username = "PogoDroid" //
-                //Log.info(message: "[WebHookRequestHandler] PogoDroid Raw Data Type: \(method)") //
             } else {
                 continue
             }
@@ -532,6 +517,8 @@ class WebHookRequestHandler {
                           "Currently processing: \(limitCount) (\(Int(percentage*100))%)"
             if percentage >= 0.5 {
                 Log.info(message: message)
+            } else {
+                Log.debug(message: message)
             }
 
             defer {
@@ -788,17 +775,9 @@ class WebHookRequestHandler {
 
     static func controlerHandler(request: HTTPRequest, response: HTTPResponse, host: String) {
 
-        let jsonO: [String: Any]?
-        let typeO: String?
-        let uuidO: String?
-        do {
-            jsonO = try request.postBodyString?.jsonDecode() as? [String: Any]
-            typeO = jsonO?["type"] as? String
-            uuidO = jsonO?["uuid"] as? String
-        } catch {
-            response.respondWithError(status: .badRequest)
-            return
-        }
+        let jsonO = request.postBodyString?.jsonDecodeForceTry() as? [String: Any]
+        let typeO = jsonO?["type"] as? String
+        let uuidO = jsonO?["uuid"] as? String
 
         guard let type = typeO, let uuid = uuidO else {
             response.respondWithError(status: .badRequest)
