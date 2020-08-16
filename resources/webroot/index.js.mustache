@@ -3328,7 +3328,7 @@ function getPokemonMarker (pokemon, ts) {
     marker._popup.setContent(getPokemonPopupContent(pokemon))
   })
   const ivPercent = Math.round( (pokemon.atk_iv + pokemon.def_iv + pokemon.sta_iv) / 45 * 1000 ) / 10
-  if (ivPercent >= 98) {
+  if (ivPercent >= 97) {
     marker.bounce()
   }
   return marker
