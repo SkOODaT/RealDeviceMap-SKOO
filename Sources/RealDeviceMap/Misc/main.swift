@@ -328,6 +328,9 @@ startupServerContext = nil
 
 ApiRequestHandler.start = Date()
 
+// Ignore SIGPIPE
+signal(SIGPIPE, SIG_IGN)
+
 Log.info(message: "[MAIN] Starting Webserves")
 do {
     try HTTPServer.launch(

@@ -37,6 +37,14 @@ services:
 #     NO_MEMORY_CACHE: 1
 #     NO_BACKUP: 1
     command: /bin/sh -c "apt update;apt install tzdata; ln -fs /usr/share/zoneinfo/America/Toronto /etc/localtime; dpkg-reconfigure --frontend noninteractive tzdata; cd '/app/' && ./RealDeviceMap"
+### Uncommenting The following lines will start RDM in lldb and store crash reports in the backups folder
+### Running in lldb will use a bit more resources. (Running RDM works like usual)
+#   entrypoint: ["/bin/sh", "-c", "lldb -b -o \"file ./RealDeviceMap\" -o \"run\" -k \"bugreport unwind --outfile ./backups/crash-$$(date +%s).log\" -k \"exit\""]
+#   cap_add:
+#     - SYS_ADMIN
+#   security_opt:
+#     - seccomp=unconfined
+#     - apparmor=unconfined
     logging:
       driver: "json-file"
       options:
