@@ -155,7 +155,7 @@ struct Group {
         let permViewMapDevice = (result[14] as? UInt8)!.toBool()
         let permViewMapSubmissionCells = (result[15] as? UInt8)!.toBool()
         let permViewMapNests = (result[16] as? UInt8)!.toBool()
-        let permViewMapEventPokemon = (result[16] as? UInt8)!.toBool()
+        let permViewMapEventPokemon = (result[17] as? UInt8)!.toBool()
 
         var perms = [Perm]()
         if permViewMap {

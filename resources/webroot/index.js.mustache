@@ -1390,7 +1390,7 @@ function loadData () {
       pokemonFilterExclude.push('tiny_rat')
     }
   }
-  let pokemonFilterEventOnly = showPokemon && pokemonFilter['event_only'].on
+  let pokemonFilterEventOnly = showPokemon && pokemonFilter['event_only'] && pokemonFilter['event_only'].on
 
   const questFilterExclude = []
   if (showQuests) {
@@ -3737,10 +3737,10 @@ function manageSelectButton (e, isNew) {
         shouldShow = pokemonFilterNew['iv_' + id].on
         break
       case 'event_only_hide':
-        shouldShow = !pokemonFilterNew['event_only'].on
+        shouldShow = !pokemonFilterNew['event_only'] || !pokemonFilterNew['event_only'].on
         break
       case 'event_only_show':
-        shouldShow = pokemonFilterNew['event_only'].on
+        shouldShow = pokemonFilterNew['event_only'] && pokemonFilterNew['event_only'].on
         break
     }
   } else if (type === 'pokemon-size') {

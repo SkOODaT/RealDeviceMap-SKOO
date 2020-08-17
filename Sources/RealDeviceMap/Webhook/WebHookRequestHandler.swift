@@ -759,7 +759,8 @@ class WebHookRequestHandler {
                                 cellId: cellID.uid,
                                 timestampMs: UInt64(Date().timeIntervalSince1970 * 1000),
                                 username: username,
-                                isEvent: isEvent)
+                                isEvent: isEvent
+                            )
                             newPokemon.addEncounter(mysql: mysql, encounterData: encounter, username: username)
                             try? newPokemon.save(mysql: mysql, updateIV: true)
                         }

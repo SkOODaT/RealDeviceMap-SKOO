@@ -263,7 +263,7 @@ class ApiRequestHandler {
                         "sort": -1
                     ],
                     "name": eventOnlyString,
-                    "image": "Rescan",
+                    "image": "Event",
                     "filter": filter,
                     "size": "",
                     "type": eventsTypeString

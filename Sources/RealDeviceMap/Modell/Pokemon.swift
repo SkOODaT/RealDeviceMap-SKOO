@@ -447,82 +447,56 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                 Log.debug(message: "[POKEMON] Pokemon \(id) Ditto found, disguised as \(self.pokemonId)")
                 self.setDittoAttributes(displayPokemonId: self.pokemonId)
             }
-
-            if !Pokemon.noPVP {
-                let form = encounterData.wildPokemon.pokemonData.pokemonDisplay.form
-                self.pvpRankingsGreatLeague = PVPStatsManager.global.getPVPStatsWithEvolutions(
-                    pokemon: encounterData.wildPokemon.pokemonData.pokemonID,
-                    form: form == .unset ? nil : form,
-                    costume: encounterData.wildPokemon.pokemonData.pokemonDisplay.costume,
-                    iv: .init(attack: Int(self.atkIv!), defense: Int(self.defIv!), stamina: Int(self.staIv!)),
-                    level: Double(self.level!),
-                    league: .great
-                ).map({ (ranking) -> [String: Any] in
-                    return [
-                        "pokemon": ranking.pokemon.pokemon.rawValue,
-                        "form": ranking.pokemon.form?.rawValue ?? 0,
-                        "rank": ranking.response?.rank as Any,
-                        "percentage": ranking.response?.percentage as Any,
-                        "cp": ranking.response?.ivs.first?.cp as Any,
-                        "level": ranking.response?.ivs.first?.level as Any
-                    ]
-                })
-
-                self.pvpRankingsUltraLeague = PVPStatsManager.global.getPVPStatsWithEvolutions(
-                    pokemon: encounterData.wildPokemon.pokemonData.pokemonID,
-                    form: form == .unset ? nil : form,
-                    costume: encounterData.wildPokemon.pokemonData.pokemonDisplay.costume,
-                    iv: .init(attack: Int(self.atkIv!), defense: Int(self.defIv!), stamina: Int(self.staIv!)),
-                    level: Double(self.level!),
-                    league: .ultra
-                ).map({ (ranking) -> [String: Any] in
-                    return [
-                        "pokemon": ranking.pokemon.pokemon.rawValue,
-                        "form": ranking.pokemon.form?.rawValue ?? 0,
-                        "rank": ranking.response?.rank as Any,
-                        "percentage": ranking.response?.percentage as Any,
-                        "cp": ranking.response?.ivs.first?.cp as Any,
-                        "level": ranking.response?.ivs.first?.level as Any
-                    ]
-                })
-            }
+            setPVP()
         }
 
-        if self.spawnId == nil {
-            let spawnId = UInt64(encounterData.wildPokemon.spawnPointID, radix: 16)
-            self.spawnId = spawnId
-            self.lat = encounterData.wildPokemon.latitude
-            self.lon = encounterData.wildPokemon.longitude
+        let wildPokemon = encounterData.wildPokemon
+        let timestampMs = Date().timeIntervalSince1970 * 1000
+        if wildPokemon.timeTillHiddenMs <= 90000 && wildPokemon.timeTillHiddenMs > 0 {
+            expireTimestamp = UInt32((timestampMs + Double(UInt64(wildPokemon.timeTillHiddenMs))) / 1000)
+            expireTimestampVerified = true
+            let date = Date(timeIntervalSince1970: Double(self.expireTimestamp!))
+            let components = Calendar.current.dateComponents([.second, .minute], from: date)
+            let secondOfHour = (components.second ?? 0) + (components.minute ?? 0) * 60
+            let spawnPoint = SpawnPoint(id: spawnId!, lat: lat, lon: lon,
+                                       updated: updated, despawnSecond: UInt16(secondOfHour))
+            try? spawnPoint.save(mysql: mysql, update: true)
+        } else {
+            expireTimestampVerified = false
+        }
 
-            if !expireTimestampVerified && spawnId != nil {
-                let spawnpoint: SpawnPoint?
-                do {
-                    spawnpoint = try SpawnPoint.getWithId(mysql: mysql, id: spawnId!)
-                } catch {
-                    spawnpoint = nil
+        if !expireTimestampVerified && spawnId != nil {
+            let spawnpoint: SpawnPoint?
+            do {
+                spawnpoint = try SpawnPoint.getWithId(mysql: mysql, id: spawnId!)
+            } catch {
+                spawnpoint = nil
+            }
+            if let spawnpoint = spawnpoint, let despawnSecond = spawnpoint.despawnSecond {
+                let date = Date(timeIntervalSince1970: Double(timestampMs) / 1000)
+
+                let formatter = DateFormatter()
+                formatter.dateFormat = "mm:ss"
+                let formattedDate = formatter.string(from: date)
+
+                let split = formattedDate.components(separatedBy: ":")
+                let minute = Int(split[0])!
+                let second = Int(split[1])!
+                let secondOfHour = second + minute * 60
+
+                let depsawnOffset: Int
+                if despawnSecond < secondOfHour {
+                    depsawnOffset = 3600 + Int(despawnSecond) - secondOfHour
+                } else {
+                    depsawnOffset = Int(despawnSecond) - secondOfHour
                 }
-                if let spawnpoint = spawnpoint, let despawnSecond = spawnpoint.despawnSecond {
-                    let date = Date()
 
-                    let formatter = DateFormatter()
-                    formatter.dateFormat = "mm:ss"
-                    let formattedDate = formatter.string(from: date)
-
-                    let split = formattedDate.components(separatedBy: ":")
-                    let minute = Int(split[0])!
-                    let second = Int(split[1])!
-                    let secondOfHour = second + minute * 60
-
-                    let depsawnOffset: Int
-                    if despawnSecond < secondOfHour {
-                        depsawnOffset = 3600 + Int(despawnSecond) - secondOfHour
-                    } else {
-                        depsawnOffset = Int(despawnSecond) - secondOfHour
-                    }
-
-                    self.expireTimestamp = UInt32(Int(date.timeIntervalSince1970) + depsawnOffset)
-                    self.expireTimestampVerified = true
-                }
+                self.expireTimestamp = UInt32(Int(date.timeIntervalSince1970) + depsawnOffset)
+                self.expireTimestampVerified = true
+            } else if spawnpoint == nil {
+                let spawnPoint = SpawnPoint(id: spawnId!, lat: lat, lon: lon,
+                                            updated: updated, despawnSecond: nil)
+                try? spawnPoint.save(mysql: mysql, update: true)
             }
         }
 
@@ -530,6 +504,50 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
         self.changed = self.updated
         self.mapStatus = 1
 
+    }
+
+    private func setPVP() {
+        if Pokemon.noPVP {
+            return
+        }
+        let form = POGOProtos_Enums_Form.init(rawValue: Int(self.form ?? 0)) ?? .unset
+        let pokemonID = POGOProtos_Enums_PokemonId(rawValue: Int(self.pokemonId)) ?? .missingno
+        let costume = POGOProtos_Enums_Costume(rawValue: Int(self.costume ?? 0)) ?? .unset
+        self.pvpRankingsGreatLeague = PVPStatsManager.global.getPVPStatsWithEvolutions(
+            pokemon: pokemonID,
+            form: form == .unset ? nil : form,
+            costume: costume,
+            iv: .init(attack: Int(self.atkIv!), defense: Int(self.defIv!), stamina: Int(self.staIv!)),
+            level: Double(self.level!),
+            league: .great
+        ).map({ (ranking) -> [String: Any] in
+            return [
+                "pokemon": ranking.pokemon.pokemon.rawValue,
+                "form": ranking.pokemon.form?.rawValue ?? 0,
+                "rank": ranking.response?.rank as Any,
+                "percentage": ranking.response?.percentage as Any,
+                "cp": ranking.response?.ivs.first?.cp as Any,
+                "level": ranking.response?.ivs.first?.level as Any
+            ]
+        })
+
+        self.pvpRankingsUltraLeague = PVPStatsManager.global.getPVPStatsWithEvolutions(
+            pokemon: pokemonID,
+            form: form == .unset ? nil : form,
+            costume: costume,
+            iv: .init(attack: Int(self.atkIv!), defense: Int(self.defIv!), stamina: Int(self.staIv!)),
+            level: Double(self.level!),
+            league: .ultra
+        ).map({ (ranking) -> [String: Any] in
+            return [
+                "pokemon": ranking.pokemon.pokemon.rawValue,
+                "form": ranking.pokemon.form?.rawValue ?? 0,
+                "rank": ranking.response?.rank as Any,
+                "percentage": ranking.response?.percentage as Any,
+                "cp": ranking.response?.ivs.first?.cp as Any,
+                "level": ranking.response?.ivs.first?.level as Any
+            ]
+        })
     }
 
     public static func shouldUpdate(old: Pokemon, new: Pokemon) -> Bool {
@@ -580,27 +598,35 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
         }
         let mysqlStmt = MySQLStmt(mysql)
 
-        if isEvent && atkIv == nil && (oldPokemon == nil || oldPokemon!.atkIv == nil) {
+        if isEvent && atkIv == nil {
             do {
                 if let oldPokemonNoneEvent = try Pokemon.getWithId(mysql: mysql, id: id, isEvent: false),
                    oldPokemonNoneEvent.atkIv != nil,
-                   (weather == nil && oldPokemonNoneEvent.weather == nil) ||
-                   (weather != nil && oldPokemonNoneEvent.weather != nil) {
+                   (weather?.zeroToNull() == nil && oldPokemonNoneEvent.weather?.zeroToNull() == nil) ||
+                   (weather?.zeroToNull() != nil && oldPokemonNoneEvent.weather?.zeroToNull() != nil) {
                     self.atkIv = oldPokemonNoneEvent.atkIv
                     self.defIv = oldPokemonNoneEvent.defIv
                     self.staIv = oldPokemonNoneEvent.staIv
                     self.level = oldPokemonNoneEvent.level
-                    self.cp = 0
-                    self.weight = 0
-                    self.size = 0
-                    self.move1 = 0
-                    self.move2 = 0
-                    self.capture1 = 0
-                    self.capture2 = 0
-                    self.capture3 = 0
+                    self.cp = nil
+                    self.weight = nil
+                    self.size = nil
+                    self.move1 = nil
+                    self.move2 = nil
+                    self.capture1 = nil
+                    self.capture2 = nil
+                    self.capture3 = nil
                     updateIV = true
+                    setPVP()
                 }
             } catch { /* ignore */ }
+        }
+        if isEvent && expireTimestampVerified == false {
+            if let oldPokemonNoneEvent = try Pokemon.getWithId(mysql: mysql, id: id, isEvent: false),
+                oldPokemonNoneEvent.expireTimestampVerified {
+                self.expireTimestamp = oldPokemonNoneEvent.expireTimestamp
+                self.expireTimestampVerified = oldPokemonNoneEvent.expireTimestampVerified
+            }
         }
 
         let now = UInt32(Date().timeIntervalSince1970)
@@ -617,9 +643,10 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             let sql = """
                 INSERT INTO pokemon (
                     id, pokemon_id, lat, lon, spawn_id, expire_timestamp, atk_iv, def_iv, sta_iv, move_1, move_2, cp,
-                    level, weight, size, display_pokemon_id, pvp_rankings_great_league, pvp_rankings_ultra_league,
-                    capture_1, capture_2, capture_3, shiny, username, map_status, gender, form, weather, costume,
-                    pokestop_id, updated, first_seen_timestamp, changed, cell_id, expire_timestamp_verified, is_event
+                    level, weight, size, display_pokemon_id, capture_1, capture_2, capture_3, shiny,
+                    pvp_rankings_great_league, pvp_rankings_ultra_league, username, map_status, gender, form, weather,
+                    costume, pokestop_id, updated, first_seen_timestamp, changed, cell_id, expire_timestamp_verified,
+                    is_event
                 )
                 VALUES (
                     ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
@@ -725,6 +752,13 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                     Log.debug(message: "[POKEMON] oldPokemon \(id) Ditto found, disguised as \(self.pokemonId)")
                     self.setDittoAttributes(displayPokemonId: self.pokemonId)
                 }
+            } else if !weatherChanged && (
+                (self.atkIv != nil && oldPokemon?.atkIv == nil) ||
+                (self.cp != nil && oldPokemon?.cp == nil) ||
+                hasIvChanges
+            ) {
+                setIVForWeather = false
+                updateIV = true
             } else if weatherChanged && oldPokemon!.atkIv != nil {
                 setIVForWeather = true
                 self.atkIv = nil
@@ -848,8 +882,8 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             WebHookController.global.addPokemonEvent(pokemon: self)
             InstanceController.global.gotIV(pokemon: self)
         }
-
-        Pokemon.cache?.set(id: self.id, value: self)
+        let uuid = self.isEvent ? "\(self.id)-1" : self.id
+        Pokemon.cache?.set(id: uuid, value: self)
     }
 
     //  swiftlint:disable:next function_parameter_count
@@ -1090,8 +1124,8 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
     }
 
     public static func getWithId(mysql: MySQL?=nil, id: String, isEvent: Bool) throws -> Pokemon? {
-
-        if let cached = cache?.get(id: id) {
+        let uuid = isEvent ? "\(id)-1" : id
+        if let cached = cache?.get(id: uuid) {
             return cached
         }
 
@@ -1173,7 +1207,8 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             cellId: cellId, expireTimestampVerified: expireTimestampVerified, isEvent: isEvent,
             pvpRankingsGreatLeague: pvpRankingsGreatLeague, pvpRankingsUltraLeague: pvpRankingsUltraLeague
         )
-        cache?.set(id: pokemon.id, value: pokemon)
+        let uuidNew = pokemon.isEvent ? "\(pokemon.id)-1" : pokemon.id
+        cache?.set(id: uuidNew, value: pokemon)
         return pokemon
     }
 
