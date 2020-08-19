@@ -2745,7 +2745,9 @@ function getGymPopupContent (gym) {
   content +=
   '<center>' + //START TITLE ROW
     '<div class="title-label">' +
-      '<h6><b>'+gymName+'</b></h6>' +
+        '<h6><b>{{#perm_admin}}<a href="#" onclick="editGymName(\''+gym.id+'\',\''+gym.name+'\')">{{/perm_admin}}' +
+            gymName +
+        '{{#perm_admin}}</a>{{/perm_admin}}</b></h6></span>' +
     '</div>' +
   '</center>'  //END TITLE ROW
   if (isRaid) {
@@ -5319,4 +5321,28 @@ function toggleUltraLeague() {
   if (openedPokemon !== undefined) {
     openedPokemon.marker._popup.setContent(getPokemonPopupContent(openedPokemon))
   }
+}
+
+// eslint-disable-next-line no-unused-vars
+function editGymName(id, oldName) {
+  const newName = prompt('Edit Name for Gym: ' + id, oldName !== 'null' ? oldName : '')
+  if (!newName) return
+  $.ajax({
+    url: '/api/set_data',
+    data: {
+      set_gym_name: true,
+      gym_id: id,
+      gym_name: newName,
+      _csrf: '{{csrf}}'
+    },
+    type: 'post',
+    success: function() {
+      const gym = gymMarkers.find(function (value) { return value.id === id })
+      gym.name = newName
+      updateOpenedPopupLoop()
+    },
+    error: function(xhr) {
+      console.error('/api/get_data returned status code ' + xhr.status + ' (' + xhr.statusText + ')')
+    }
+  })
 }

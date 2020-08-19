@@ -25,6 +25,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
     static var weatherBoostMinLevel: UInt8 = 6
     static var weatherBoostMinIvStat: UInt8 = 4
     static var noPVP = false
+    static var noWeatherIVClearing = false
 
     static var cache: MemoryCache<Pokemon>?
 
@@ -467,7 +468,6 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             }
             if let spawnpoint = spawnpoint, let despawnSecond = spawnpoint.despawnSecond {
                 let date = Date(timeIntervalSince1970: Double(timestampMs) / 1000)
-
                 let components = Calendar.current.dateComponents([.second, .minute], from: date)
                 let secondOfHour = (components.second ?? 0) + (components.minute ?? 0) * 60
                 let depsawnOffset: Int
@@ -737,14 +737,13 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                     Log.debug(message: "[POKEMON] oldPokemon \(id) Ditto found, disguised as \(self.pokemonId)")
                     self.setDittoAttributes(displayPokemonId: self.pokemonId)
                 }
-            } else if !weatherChanged && (
-                (self.atkIv != nil && oldPokemon?.atkIv == nil) ||
-                (self.cp != nil && oldPokemon?.cp == nil) ||
-                hasIvChanges
-            ) {
+            } else if (self.atkIv != nil && oldPokemon?.atkIv == nil) ||
+                      (self.cp != nil && oldPokemon?.cp == nil) ||
+                      hasIvChanges {
                 setIVForWeather = false
                 updateIV = true
-            } else if weatherChanged && oldPokemon!.atkIv != nil {
+            } else if weatherChanged && oldPokemon!.atkIv != nil && !Pokemon.noWeatherIVClearing {
+                Log.debug(message: "[POKEMON] Pokemon \(id) changed Weatherboosted State. Clearing IVs.")
                 setIVForWeather = true
                 self.atkIv = nil
                 self.defIv = nil
@@ -758,8 +757,6 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                 self.capture1 = nil
                 self.capture2 = nil
                 self.capture3 = nil
-                self.shiny = nil
-                self.isDitto = false
                 self.pvpRankingsGreatLeague = nil
                 self.pvpRankingsUltraLeague = nil
                 Log.debug(message: "[POKEMON] Weather-Boosted state changed. Clearing IVs")
