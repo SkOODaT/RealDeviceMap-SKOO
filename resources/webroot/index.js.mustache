@@ -577,7 +577,7 @@ function loadStorage () {
       defaultRaidFilter.timers = { show: true, size: 'normal' }
     }
     let i
-    for (i = 1; i <= 5; i++) {
+    for (i = 1; i <= 6; i++) {
       if (defaultRaidFilter['l' + i] === undefined) {
         defaultRaidFilter['l' + i] = { show: true, size: 'normal' }
       }
@@ -599,7 +599,7 @@ function loadStorage () {
       showRaidTimers = raidFilter.timers.show
     }
     let i
-    for (i = 1; i <= 5; i++) {
+    for (i = 1; i <= 6; i++) {
       if (raidFilter['l' + i] === undefined) {
         raidFilter['l' + i] = { show: true, size: 'normal' }
       }
@@ -873,7 +873,7 @@ function initMap () {
     const defaultRaidFilter = {}
     defaultRaidFilter.timers = { show: true, size: 'normal' }
     let i
-    for (i = 1; i <= 5; i++) {
+    for (i = 1; i <= 6; i++) {
       defaultRaidFilter['l' + i] = { show: true, size: 'normal' }
     }
     for (i = 1; i <= '{{max_pokemon_id}}'; i++) {
@@ -890,7 +890,7 @@ function initMap () {
     const defaultRaidFilter = {}
     defaultRaidFilter.timers = { show: false, size: raidFilterNew.timers.size }
     let i
-    for (i = 1; i <= 5; i++) {
+    for (i = 1; i <= 6; i++) {
       defaultRaidFilter['l' + i] = { show: false, size: raidFilterNew['l' + i].size }
     }
     for (i = 1; i <= '{{max_pokemon_id}}'; i++) {
@@ -1414,7 +1414,7 @@ function loadData () {
       raidFilterExclude.push('timers')
     }
     let i
-    for (i = 1; i <= 5; i++) {
+    for (i = 1; i <= 6; i++) {
       if (raidFilter['l' + i].show === false) {
         raidFilterExclude.push('l' + i)
       }
@@ -2563,15 +2563,19 @@ function getPokestopPopupContent (pokestop) {
 
   //TIP START
   let content = '<div class="text-center">'
+  let pokestopName
   if (pokestop.url !== null) {
     content += '<div style="background-image: url(/static/img/background/' + stopBG + '.png); background-size: cover; border-radius: 12px; background-repeat: no-repeat; background-position: center bottom; background-color: #009FDD;">'
   }
   content +='<div class="title-label">'
   if (pokestop.name === null || pokestop.name === "") {
-    content += '<h6><b>Unknown Pokestop Name</b></h6>'
+    pokestopName = 'Unknown Pokestop Name'
   } else {
-    content += '<h6><b>' + pokestop.name + '</b></h6>'
+    pokestopName = pokestop.name
   }
+  content += '<span class="text-nowrap"><h6><b>{{#perm_admin}}<a href="#" onclick="editPokestopName(\''+pokestop.id+'\',\''+pokestop.name+'\')">{{/perm_admin}}' +
+      pokestopName +
+  '{{#perm_admin}}</a>{{/perm_admin}}</b></h6></span>'
   content +='</div>'
   content +='<div class="center-aligned">'
     if (pokestop.url !== null) {
@@ -2762,6 +2766,10 @@ function getGymPopupContent (gym) {
         }
       } else if (isRaidBattle) {
         pokemonName = "Unknown Raid Boss"
+      } else if (gym.raid_is_exclusive) {
+        pokemonName = 'EX Egg'
+      } else if (gym.raid_level === 6) {
+        pokemonName = 'Mega Egg'
       }
     let pokemonIcon = getPokemonIconString(gym.raid_pokemon_id, gym.raid_pokemon_form, gym.raid_pokemon_costume)
     content +=
@@ -2778,7 +2786,7 @@ function getGymPopupContent (gym) {
          content +=
         '</div>'  //END 2ND COLUMN
           '<div class="col-8 col-md-8 text-nowrap">'
-            if (hasRaidBoss) {
+            if (isRaidBattle) {
               content += '<div class="iv-label">' +
               '<h7><b>' + pokemonName + '</b></h7><br>'
               if (raidtypesIcon) {
@@ -2787,10 +2795,14 @@ function getGymPopupContent (gym) {
               if (gym.raid_pokemon_cp !== null) {
                 if (gym.raid_is_exclusive) {
                   content += '<b>Level:</b> EX<br>'
+                } else if (gym.raid_level === 6) {
+                  content += '<b>Level:</b> Mega<br>'
                 } else {
                   content += '<b>Level:</b> ' + gym.raid_level + '<br>'
                 }
                   }
+            }
+            if (hasRaidBoss && isRaidBattle) {
               if (gym.raid_pokemon_cp !== null) {
                 content += '<b>CP:</b> ' + gym.raid_pokemon_cp + '<br>'
               }
@@ -3853,22 +3865,22 @@ function manageSelectButton (e, isNew) {
   } else if (type === 'raid-level') {
     switch (info) {
       case 'hide':
-        shouldShow = raidFilterNew['l' + id].show === false
+        shouldShow = raidFilterNew['l' + id] && raidFilterNew['l' + id].show === false
         break
       case 'show':
-        shouldShow = raidFilterNew['l' + id].show === true
+        shouldShow = !raidFilterNew['l' + id] || raidFilterNew['l' + id].show === true
         break
       case 'small':
-        shouldShow = raidFilterNew['l' + id].size === 'small'
+        shouldShow = raidFilterNew['l' + id] && raidFilterNew['l' + id].size === 'small'
         break
       case 'normal':
-        shouldShow = raidFilterNew['l' + id].size === 'normal'
+        shouldShow = !raidFilterNew['l' + id] || raidFilterNew['l' + id].size === 'normal'
         break
       case 'large':
-        shouldShow = raidFilterNew['l' + id].size === 'large'
+        shouldShow = raidFilterNew['l' + id] && raidFilterNew['l' + id].size === 'large'
         break
       case 'huge':
-        shouldShow = raidFilterNew['l' + id].size === 'huge'
+        shouldShow = raidFilterNew['l' + id] && raidFilterNew['l' + id].size === 'huge'
         break
     }
   } else if (type === 'raid-pokemon') {
@@ -5339,6 +5351,30 @@ function editGymName(id, oldName) {
     success: function() {
       const gym = gymMarkers.find(function (value) { return value.id === id })
       gym.name = newName
+      updateOpenedPopupLoop()
+    },
+    error: function(xhr) {
+      console.error('/api/get_data returned status code ' + xhr.status + ' (' + xhr.statusText + ')')
+    }
+  })
+}
+
+// eslint-disable-next-line no-unused-vars
+function editPokestopName(id, oldName) {
+  const newName = prompt('Edit Name for pokestop: ' + id, oldName !== 'null' ? oldName : '')
+  if (!newName) return
+  $.ajax({
+    url: '/api/set_data',
+    data: {
+      set_pokestop_name: true,
+      pokestop_id: id,
+      pokestop_name: newName,
+      _csrf: '{{csrf}}'
+    },
+    type: 'post',
+    success: function() {
+      const pokestop = pokestopMarkers.find(function (value) { return value.id === id })
+      pokestop.name = newName
       updateOpenedPopupLoop()
     },
     error: function(xhr) {

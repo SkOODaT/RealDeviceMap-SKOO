@@ -562,7 +562,7 @@ class WebHookRequestHandler {
                 try? weather.save(mysql: mysql)
                 raidWeather = conditions.data.gameplayWeather.gameplayCondition.rawValue.toUInt8()
             }
-            if clientWeathers.count > 0 {
+            if !clientWeathers.isEmpty {
                 Log.debug(
                     message: "[WebHookRequestHandler] " +
                              "[\(uuid ?? "?")] " +
@@ -577,7 +577,7 @@ class WebHookRequestHandler {
                                       timestampMs: wildPokemon.timestampMs, username: username, isEvent: isEvent)
                 try? pokemon.save(mysql: mysql)
             }
-            if wildPokemons.count > 0 {
+            if !wildPokemons.isEmpty {
                 Log.debug(
                     message: "[WebHookRequestHandler] " +
                              "[\(uuid ?? "?")] " +
@@ -608,7 +608,7 @@ class WebHookRequestHandler {
                                            timestampMs: mapPokemon.timestampMs, username: username, isEvent: isEvent)
                 try? pokemon.save(mysql: mysql)
             }
-            if mapPokemons.count > 0 {
+            if !nearbyPokemons.isEmpty {
                 Log.debug(message: "[WebHookRequestHandler] " +
                                    "[\(uuid ?? "?")] " +
                                    "Lured Pokemon Count: \(mapPokemons.count) ".magenta +
@@ -634,7 +634,7 @@ class WebHookRequestHandler {
                     stopsIdsPerCell[fort.cell]!.append(fort.data.id)
                 }
             }
-            if forts.count > 0 {
+            if !forts.isEmpty {
                 Log.debug(message: "[WebHookRequestHandler] " +
                                    "[\(uuid ?? "?")] " +
                                    "Forts Count: \(forts.count) ".blue +

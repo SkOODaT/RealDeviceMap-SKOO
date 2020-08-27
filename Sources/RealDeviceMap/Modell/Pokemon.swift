@@ -240,7 +240,6 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             }
             if let spawnpoint = spawnpoint, let despawnSecond = spawnpoint.despawnSecond {
                 let date = Date(timeIntervalSince1970: Double(timestampMs) / 1000)
-
                 let components = Calendar.current.dateComponents([.second, .minute], from: date)
                 let secondOfHour = (components.second ?? 0) + (components.minute ?? 0) * 60
                 let depsawnOffset: Int

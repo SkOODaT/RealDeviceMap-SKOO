@@ -702,7 +702,7 @@ class ApiRequestHandler {
                 ])
 
             //Level
-            for i in 1...5 {
+            for i in 1...6 {
 
                 let raidLevel = Localizer.global.get(value: "filter_raid_level_\(i)")
 
@@ -1750,6 +1750,9 @@ class ApiRequestHandler {
         let setGymName = request.param(name: "set_gym_name")?.toBool() ?? false
         let gymId = request.param(name: "gym_id")
         let gymName = request.param(name: "gym_name")
+        let setPokestopName = request.param(name: "set_pokestop_name")?.toBool() ?? false
+        let pokestopId = request.param(name: "pokestop_id")
+        let pokestopName = request.param(name: "pokestop_name")
 
         if setGymName, perms.contains(.admin), let id = gymId, let name = gymName {
             do {
@@ -1763,9 +1766,22 @@ class ApiRequestHandler {
             } catch {
                 response.respondWithError(status: .internalServerError)
             }
+        } else  if setPokestopName, perms.contains(.admin), let id = pokestopId, let name = pokestopName {
+           do {
+               guard let oldPokestop = try Pokestop.getWithId(id: id) else {
+                   return response.respondWithError(status: .custom(code: 404, message: "Pokestop not found"))
+               }
+               oldPokestop.name = name
+               oldPokestop.hasChanges = true
+               try oldPokestop.save()
+               response.respondWithOk()
+           } catch {
+               response.respondWithError(status: .internalServerError)
+           }
         } else {
             response.respondWithError(status: .badRequest)
         }
     }
 
 }
+ 
