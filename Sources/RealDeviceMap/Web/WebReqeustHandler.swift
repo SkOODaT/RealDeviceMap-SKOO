@@ -33,6 +33,7 @@ class WebReqeustHandler {
     static var title: String = "RealDeviceMap"
     static var avilableFormsJson: String = ""
     static var avilableCostumesJson: String = ""
+    static var avilablePokemonEvolutionsJson: String = ""
     static var avilableItemJson: String = ""
     //static var avilableFormsJson: String = "[]"
     //static var avilableCostumesJson: String = "[]"
@@ -1498,6 +1499,10 @@ class WebReqeustHandler {
                                           .replacingOccurrences(of: "'", with: "\\'")
                                           .replacingOccurrences(of: "\"", with: "\\\"")
             data["avilable_costumes_json"] = avilableCostumesJson.replacingOccurrences(of: "\\\"", with: "\\\\\"")
+                                          .replacingOccurrences(of: "'", with: "\\'")
+                                          .replacingOccurrences(of: "\"", with: "\\\"")
+            data["avilable_pokemonevolutions_json"] = avilablePokemonEvolutionsJson
+                                          .replacingOccurrences(of: "\\\"", with: "\\\\\"")
                                           .replacingOccurrences(of: "'", with: "\\'")
                                           .replacingOccurrences(of: "\"", with: "\\\"")
             data["avilable_items_json"] = avilableItemJson.replacingOccurrences(of: "\\\"", with: "\\\\\"")

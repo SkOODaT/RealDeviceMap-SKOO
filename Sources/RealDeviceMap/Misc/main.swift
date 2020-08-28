@@ -208,22 +208,23 @@ Log.info(message: "[MAIN] Starting Webhook Controller")
 WebHookController.global.start()
 
 // Load Forms
-//Log.debug(message: "[MAIN] Loading Avilable Forms")
+//Log.info(message: "[MAIN] Loading Avilable Forms")
 //var avilableForms = [String]()
-//for file in try! FileManager().contentsOfDirectory(atPath: "\(projectroot)/resources/webroot/static/img/pokemon") {
-//    let split = file.components(separatedBy: "-")
-//    if split.count == 2, let pokemonID = Int(split[0]), let formID = Int(split[1]) {
-//        avilableForms.append("\(pokemonID)-\(formID)")
 //do {
-//    for file in try FileManager().contentsOfDirectory(atPath: "\(projectroot)/resources/webroot/static/img/pokemon") {
-//        let split = file.components(separatedBy: "-")
+//    try Dir("\(projectroot)/resources/webroot/static/img/pokemon").forEachEntry { (file) in
+//        let split = file.replacingOccurrences(of: ".png", with: "").components(separatedBy: "-")
 //        if split.count == 2, let pokemonID = Int(split[0]), let formID = Int(split[1]) {
 //            avilableForms.append("\(pokemonID)-\(formID)")
+//        } else if split.count == 3, let pokemonID = Int(split[0]),
+//                 let formID = Int(split[1]), let evoId = Int(split[2]) {
+//            avilableForms.append("\(pokemonID)-\(formID)-\(evoId)")
 //        }
 //    }
 //    WebReqeustHandler.avilableFormsJson = try avilableForms.jsonEncodedString()
 //} catch {
-//    Log.error(message: "Failed to load forms. Frontend will only display default forms.")
+//    Log.error(
+//        message: "Failed to load forms. Frontend will only display default forms. Error: \(error.localizedDescription)"
+//    )
 //}
 
 // Load Forms
@@ -255,7 +256,22 @@ do {
     }
     WebReqeustHandler.avilableCostumesJson = try avilableCostumes.jsonEncodedString()
 } catch {
-    Log.error(message: "Failed to load costumes. Frontend will only display default costumes.")
+    Log.error(message: "Failed to load costumes. Error: \(error.localizedDescription)")
+}
+
+// Load Pokemon Evolutions
+Log.debug(message: "[MAIN] Loading Avilable Pokemon Evolutions")
+var avilablePokemonEvolutions = [String]()
+do {
+    for pokemonevolutionString in POGOProtos_Enums_PokemonEvolution.allPokemonEvolutionsInString {
+        let file = File("\(projectroot)/resources/webroot/static/img/pokemon/\(pokemonevolutionString).png")
+        if file.exists {
+            avilablePokemonEvolutions.append(pokemonevolutionString)
+        }
+    }
+    WebReqeustHandler.avilablePokemonEvolutionsJson = try avilablePokemonEvolutions.jsonEncodedString()
+} catch {
+    Log.error(message: "Failed to load pokemon evolutions. Error: \(error.localizedDescription)")
 }
 
 Log.info(message: "[MAIN] Loading Avilable Items")

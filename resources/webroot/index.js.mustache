@@ -66,6 +66,7 @@ let showUltraLeague
 
 let avilableForms = []
 let avilableCostumes = []
+let avilablePokemonEvolutions = []
 let avilableItems = []
 let avilableTileservers = {}
 let selectedTileserver = 'Default'
@@ -166,6 +167,7 @@ $(function () {
 
   avilableForms = JSON.parse('{{{avilable_forms_json}}}')
   avilableCostumes = JSON.parse('{{{avilable_costumes_json}}}')
+  avilablePokemonEvolutions = JSON.parse('{{{avilable_pokemonevolutions_json}}}')
   avilableItems = JSON.parse('{{{avilable_items_json}}}')
   avilableTileservers = JSON.parse('{{{avilable_tileservers_json}}}')
 
@@ -2119,6 +2121,7 @@ function addGym(gym, ts) {
       oldGym.total_cp = gym.total_cp
       oldGym.raid_pokemon_form = gym.raid_pokemon_form
       oldGym.raid_pokemon_gender = gym.raid_pokemon_gender
+      oldGym.raid_pokemon_evolution = gym.raid_pokemon_evolution
       oldGym.raid_pokemon_costume = gym.raid_pokemon_costume
       oldGym.raid_pokemon_cp = gym.raid_pokemon_cp
       oldGym.raid_pokemon_move_1 = gym.raid_pokemon_move_1
@@ -2252,6 +2255,13 @@ function getPokemonNameString(pokemonId, pokemonForm, pokemonCostume) {
     } else {
       pokemonNameString = getPokemonName(pokemonId)
     }
+  } else if (pokemonForm !== 0 && pokemonForm !== null) {
+    const pokemonNameStringTmp = getFormName(pokemonForm) + ' ' + getPokemonName(pokemonId)
+    if (pokemonForm) {
+      pokemonNameString = pokemonNameStringTmp
+    } else {
+      pokemonNameString = getPokemonName(pokemonId)
+    }
   } else {
     pokemonNameString = getPokemonName(pokemonId)
   }
@@ -2263,8 +2273,8 @@ function getPokemonPopupContent (pokemon) {
   const despawnDate = new Date(pokemon.expire_timestamp * 1000)
   const hasIV = pokemon.atk_iv !== null
 
-  let pokemonIcon = getPokemonIconString(pokemon.pokemon_id, pokemon.form, pokemon.costume)
-  let pokemonName = getPokemonNameString(pokemon.pokemon_id, pokemon.form, pokemon.costume)
+  let pokemonIcon = getPokemonIconString(pokemon.pokemon_id, pokemon.form, pokemon.costume, null)
+  let pokemonName = getPokemonNameString(pokemon.pokemon_id, pokemon.form, pokemon.costume, null)
   if (pokemon.display_pokemon_id > 0) {
     pokemonName += " (" + getPokemonNameNoId(pokemon.display_pokemon_id) + ")"
   }
@@ -2759,6 +2769,8 @@ function getGymPopupContent (gym) {
       if (hasRaidBoss) {
         if (gym.raid_pokemon_costume !== 0 && gym.raid_pokemon_costume !== null) {
           pokemonName = WeatherBoosted + '' + getCostumeName(gym.raid_pokemon_costume) + ' ' + getPokemonName(gym.raid_pokemon_id)
+        } else if (gym.raid_pokemon_evolution !== 0 && gym.raid_pokemon_evolution !== null) {
+          pokemonName = WeatherBoosted + '' + getEvolutionName(gym.raid_pokemon_evolution) + ' ' + getPokemonName(gym.raid_pokemon_id)
         } else if (gym.raid_pokemon_form !== 0 && gym.raid_pokemon_form !== null) {
           pokemonName = WeatherBoosted + '' + getFormName(gym.raid_pokemon_form) + ' ' + getPokemonName(gym.raid_pokemon_id)
         } else {
@@ -2773,7 +2785,7 @@ function getGymPopupContent (gym) {
       } else {
         pokemonName = 'Raid Egg'
       }
-    let pokemonIcon = getPokemonIconString(gym.raid_pokemon_id, gym.raid_pokemon_form, gym.raid_pokemon_costume)
+    let pokemonIcon = getPokemonIconString(gym.raid_pokemon_id, gym.raid_pokemon_form, gym.raid_pokemon_costume, gym.raid_pokemon_evolution)
     content +=
         //'<div class="row">' + //START PIC/IV ROW
         //'<div class="' + (hasRaidBoss ? 'col-1 col-md-1' : '') + '"></div>' + //DUMMY SPACER COLUMN
@@ -2811,6 +2823,9 @@ function getGymPopupContent (gym) {
                   }
             //}
             //if (hasRaidBoss && isRaidBattle) {
+              if (hasRaidBoss && isRaidBattle && gym.raid_pokemon_evolution) {
+                content += '<b>Evolution:</b> ' + getEvolutionName(gym.raid_pokemon_evolution) + '<br>'
+              }
               if (gym.raid_pokemon_cp !== null && gym.raid_pokemon_cp > 0) {
                 content += '<b>CP:</b> ' + gym.raid_pokemon_cp + '<br>'
               }
@@ -3027,6 +3042,10 @@ function getFormName (formId) {
 
 function getCostumeName(costumeId) {
   return i18n('costume_'+costumeId)
+}
+
+function getEvolutionName (evoId) {
+  return i18n('evo_' + evoId)
 }
 
 function getMoveName (moveId) {
@@ -3300,7 +3319,7 @@ function getWeatherStyle (weather, ts) {
 // eslint-disable-next-line no-unused-vars
 function getPokemonMarkerIcon (pokemon, ts) {
   const size = getPokemonSize(pokemon.pokemon_id)
-  let pokemonIdString = getPokemonIconString(pokemon.pokemon_id, pokemon.form, pokemon.costume)
+  let pokemonIdString = getPokemonIconString(pokemon.pokemon_id, pokemon.form, pokemon.costume, null)
   let HTML = ""
   if (!pokemon.expire_timestamp_verified) {
     HTML = "<div class='marker-pin-vtimer'><img src='/static/img/verified/estimated.png' height='10' width='10'/></img></div>"
@@ -3549,15 +3568,26 @@ function getGymMarkerIcon (gym, ts) {
   let iconSize
   if (gym.raid_battle_timestamp <= ts && gym.raid_end_timestamp >= ts && (showRaids || gym.is_start) && parseInt(gym.raid_level) > 0) {
     if (gym.raid_pokemon_id !== 0 && gym.raid_pokemon_id !== null) {
-      const pokemonIdString = getPokemonIconString(gym.raid_pokemon_id, gym.raid_pokemon_form, gym.raid_pokemon_costume)
-      // Raid Boss
-      iconSize = getRaidSize('p' + gym.raid_pokemon_id)
-      icon = L.icon({
-        iconUrl: '/static/img/raid/' + gym.team_id + '_' + size + '_' + pokemonIdString + '.png',
-        iconSize: [iconSize, iconSize * 1.667],
-        iconAnchor: [iconSize / 2, iconSize * 1.567],
-        popupAnchor: [0, iconSize * -1.567]
-      })
+      const pokemonIdString = getPokemonIconString(gym.raid_pokemon_id, gym.raid_pokemon_form, gym.raid_pokemon_costume, gym.raid_pokemon_evolution)
+      if (gym.raid_pokemon_evolution) {
+        // Raid Boss Pokemon Evolution
+        iconSize = getRaidSize('p' + gym.raid_pokemon_id)
+        icon = L.icon({
+          iconUrl: '/static/img/raid/' + gym.team_id + '_' + size + '_' + pokemonIdString + '.png',
+          iconSize: [iconSize, iconSize * 1.667],
+          iconAnchor: [iconSize / 2, iconSize * 1.567],
+          popupAnchor: [0, iconSize * -1.567]
+        })
+      } else {
+        // Raid Boss
+        iconSize = getRaidSize('p' + gym.raid_pokemon_id)
+        icon = L.icon({
+          iconUrl: '/static/img/raid/' + gym.team_id + '_' + size + '_' + pokemonIdString + '.png',
+          iconSize: [iconSize, iconSize * 1.667],
+          iconAnchor: [iconSize / 2, iconSize * 1.567],
+          popupAnchor: [0, iconSize * -1.567]
+        })
+      }
     } else {
       // Egg
       iconSize = getRaidSize('l' + raidLevel)
@@ -4616,9 +4646,9 @@ function getSize (size) {
   return 'Big'
 }
 
-function getPokemonIconString (pokemonId, pokemonForm, pokemonCostume) {
+function getPokemonIconString (pokemonId, pokemonForm, pokemonCostume, pokemonEvolution) {
   let pokemonIdString
-  if (pokemonCostume !== 0 && pokemonCostume !== null || pokemonForm !== 0 && pokemonForm !== null) {
+  if (pokemonCostume !== 0 && pokemonCostume !== null || pokemonForm !== 0 && pokemonForm !== null || pokemonEvolution !== 0 && pokemonEvolution !== null) {
     if (pokemonCostume !== 0 && pokemonCostume !== null) {
       const pokemonIdStringTmp = '' + pokemonCostume
       if ($.inArray(pokemonIdStringTmp, avilableCostumes) !== -1) {
@@ -4626,8 +4656,18 @@ function getPokemonIconString (pokemonId, pokemonForm, pokemonCostume) {
       } else {
         pokemonIdString = '' + pokemonId
       }
+    } else if (pokemonEvolution !== 0 && pokemonEvolution !== null) {
+
+      const pokemonIdStringTmp = '' +  pokemonEvolution
+      if ($.inArray(pokemonIdStringTmp, avilablePokemonEvolutions) !== -1) {
+        pokemonIdString = '' + pokemonId + '-0-' + pokemonIdStringTmp
+        console.log(pokemonIdStringTmp)
+      } else {
+        pokemonIdString = '' + pokemonId
+      }
+
     } else if (pokemonForm !== 0 && pokemonForm !== null) {
-    const pokemonIdStringTmp = '' + pokemonId + '-' + pokemonForm
+      const pokemonIdStringTmp = '' + pokemonId + '-' + pokemonForm
       if ($.inArray(pokemonIdStringTmp, avilableForms) !== -1) {
         pokemonIdString = pokemonIdStringTmp
       } else {
