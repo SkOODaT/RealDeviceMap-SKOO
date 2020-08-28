@@ -2765,20 +2765,28 @@ function getGymPopupContent (gym) {
           pokemonName = WeatherBoosted + '' +getPokemonName(gym.raid_pokemon_id)
         }
       } else if (isRaidBattle) {
-        pokemonName = "Unknown Raid Boss"
+        pokemonName = "Hatched Egg"
       } else if (gym.raid_is_exclusive) {
         pokemonName = 'EX Egg'
       } else if (gym.raid_level === 6) {
         pokemonName = 'Mega Egg'
+      } else {
+        pokemonName = 'Raid Egg'
       }
     let pokemonIcon = getPokemonIconString(gym.raid_pokemon_id, gym.raid_pokemon_form, gym.raid_pokemon_costume)
     content +=
-      '<div class="row">' + //START PIC/IV ROW
-        '<div class="' + (hasRaidBoss ? 'col-1 col-md-1' : '') + '"></div>' + //DUMMY SPACER COLUMN
-        '<div class="' + (hasRaidBoss ? 'col-4 col-md-4' : 'col text-center') + '">' + //START 2ND COLUMN
-          '<div class="row' + (hasRaidBoss ? '' : 'text-center') + '" style="margin-left:auto;">' 
+        //'<div class="row">' + //START PIC/IV ROW
+        //'<div class="' + (hasRaidBoss ? 'col-1 col-md-1' : '') + '"></div>' + //DUMMY SPACER COLUMN
+        //'<div class="' + (hasRaidBoss ? 'col-4 col-md-4' : 'col text-center') + '">' + //START 2ND COLUMN
+        //'<div class="row' + (hasRaidBoss ? '' : 'text-center') + '" style="margin-left:auto;">' 
+        '<div class="row">' + //START PIC/IV ROW
+        '<div class="col-1 col-md-1"></div>' + //DUMMY SPACER COLUMN
+        '<div class="col-4 col-md-4">' + //START 2ND COLUMN
+        '<br><div class="row" style="margin-left:auto;">' 
           if (hasRaidBoss) {
             content += '<img src="/static/img/pokemon/' + pokemonIcon + '.png" height="64" width="64">'
+          } else if (isRaidBattle) {
+            content += '<img src="/static/img/unkown_egg/' + gym.raid_level + '.png" height="64" width="64">'
           } else {
             content += '<img src="/static/img/egg/' + gym.raid_level + '.png" height="64" width="64">'
           }
@@ -2786,7 +2794,7 @@ function getGymPopupContent (gym) {
          content +=
         '</div>'  //END 2ND COLUMN
           '<div class="col-8 col-md-8 text-nowrap">'
-            if (isRaidBattle) {
+            //if (isRaidBattle) {
               content += '<div class="iv-label">' +
               '<h7><b>' + pokemonName + '</b></h7><br>'
               if (raidtypesIcon) {
@@ -2801,15 +2809,15 @@ function getGymPopupContent (gym) {
                   content += '<b>Level:</b> ' + gym.raid_level + '<br>'
                 }
                   }
-            }
-            if (hasRaidBoss && isRaidBattle) {
-              if (gym.raid_pokemon_cp !== null) {
+            //}
+            //if (hasRaidBoss && isRaidBattle) {
+              if (gym.raid_pokemon_cp !== null && gym.raid_pokemon_cp > 0) {
                 content += '<b>CP:</b> ' + gym.raid_pokemon_cp + '<br>'
               }
-              if (gym.raid_pokemon_move_1 !== null) {
+              if (gym.raid_pokemon_move_1 !== null && gym.raid_pokemon_move_1 > 0) {
                 content += '<b>Fast:</b> ' + getMoveName(gym.raid_pokemon_move_1) + '<br>'
               }
-              if (gym.raid_pokemon_move_2 !== null) {
+              if (gym.raid_pokemon_move_2 !== null && gym.raid_pokemon_move_2 > 0) {
                 content += '<b>Charge:</b> ' + getMoveName(gym.raid_pokemon_move_2) + '<br>'
               }
               if (gym.raid_pokemon_gender !== null && gym.raid_pokemon_gender > 0) {
@@ -2825,7 +2833,7 @@ function getGymPopupContent (gym) {
                 content += '<b>'+ wname +':</b> ' + wtypes
               }
               content += '</div>' 
-            }
+            //}
         content += '</div>'  //END PIC/IV ROW
   } else {
     content +=
@@ -2845,7 +2853,7 @@ function getGymPopupContent (gym) {
         var url = gym.url.replace("http://", "https://")
         content +=
         '<div class="col-4 col-md-4">' + //START 1ST COL
-          '<a href="' + url + '" target="_blank"><img src="' + url + '" class="circle-image ' + teamClass + '" style="height:96px; width:96px;"></a>' +
+          '<br><a href="' + url + '" target="_blank"><img src="' + url + '" class="circle-image ' + teamClass + '" style="height:96px; width:96px;"></a>' +
         '</div>' //END 1ST COL
       }
       content +=
