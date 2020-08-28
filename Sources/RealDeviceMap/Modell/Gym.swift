@@ -172,7 +172,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
          raidBattleTimestamp: UInt32?, raidPokemonId: UInt16?, raidLevel: UInt8?, availbleSlots: UInt16?,
          updated: UInt32?, exRaidEligible: Bool?, inBattle: Bool?, raidPokemonMove1: UInt16?, raidPokemonMove2: UInt16?,
          raidPokemonForm: UInt16?, raidPokemonCostume: UInt16?, raidPokemonCp: UInt32?, raidPokemonGender: UInt8?,
-         raidPokemonEvolution: UInt8?, raidIsExclusive: Bool?, cellId: UInt64?, totalCp: UInt32?, sponsorId: UInt16?, 
+         raidPokemonEvolution: UInt8?, raidIsExclusive: Bool?, cellId: UInt64?, totalCp: UInt32?, sponsorId: UInt16?,
          gymWeather: UInt8?) {
         self.id = id
         self.lat = lat
@@ -788,7 +788,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
                raid_end_timestamp, raid_spawn_timestamp, raid_battle_timestamp, raid_pokemon_id, enabled,
                availble_slots, updated, raid_level, ex_raid_eligible, in_battle, raid_pokemon_move_1,
                raid_pokemon_move_2, raid_pokemon_form, raid_pokemon_costume, raid_pokemon_cp,
-               raid_pokemon_gender, raid_is_exclusive, cell_id, total_cp, sponsor_id, raid_pokemon_evolution, 
+               raid_pokemon_gender, raid_is_exclusive, cell_id, total_cp, sponsor_id, raid_pokemon_evolution,
                gym_weather
         FROM gym
         WHERE id IN \(inSQL) AND deleted = false
