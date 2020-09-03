@@ -401,8 +401,8 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
         mysqlStmt.bindParam(cellId)
         mysqlStmt.bindParam(totalCp)
         mysqlStmt.bindParam(sponsorId)
-        mysqlStmt.bindParam(gymWeather)
         mysqlStmt.bindParam(raidPokemonEvolution)
+        mysqlStmt.bindParam(gymWeather)
 
         if oldGym != nil {
             mysqlStmt.bindParam(id)
