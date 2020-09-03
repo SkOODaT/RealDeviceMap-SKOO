@@ -45,11 +45,11 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
             "raid_pokemon_move_2": raidPokemonMove2 as Any,
             "raid_pokemon_cp": raidPokemonCp as Any,
             "raid_pokemon_gender": raidPokemonGender as Any,
-            "raid_pokemon_evolution": raidPokemonEvolution as Any,
             "raid_is_exclusive": raidIsExclusive as Any,
             "total_cp": totalCp as Any,
-            "gym_weather": gymWeather as Any,
-            "sponsor_od": sponsorId as Any
+            "sponsor_od": sponsorId as Any,
+            "raid_pokemon_evolution": raidPokemonEvolution as Any,
+            "gym_weather": gymWeather as Any
         ]
     }
 
@@ -152,7 +152,6 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
     var raidPokemonCostume: UInt16?
     var raidPokemonCp: UInt32?
     var raidPokemonGender: UInt8?
-    var raidPokemonEvolution: UInt8?
     var availbleSlots: UInt16?
     var updated: UInt32?
     var exRaidEligible: Bool?
@@ -161,6 +160,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
     var cellId: UInt64?
     var totalCp: UInt32?
     var sponsorId: UInt16?
+    var raidPokemonEvolution: UInt8?
     var gymWeather: UInt8?
 
     var hasChanges = false
@@ -172,7 +172,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
          raidBattleTimestamp: UInt32?, raidPokemonId: UInt16?, raidLevel: UInt8?, availbleSlots: UInt16?,
          updated: UInt32?, exRaidEligible: Bool?, inBattle: Bool?, raidPokemonMove1: UInt16?, raidPokemonMove2: UInt16?,
          raidPokemonForm: UInt16?, raidPokemonCostume: UInt16?, raidPokemonCp: UInt32?, raidPokemonGender: UInt8?,
-         raidPokemonEvolution: UInt8?, raidIsExclusive: Bool?, cellId: UInt64?, totalCp: UInt32?, sponsorId: UInt16?,
+         raidIsExclusive: Bool?, cellId: UInt64?, totalCp: UInt32?, sponsorId: UInt16?, raidPokemonEvolution: UInt8?,
          gymWeather: UInt8?) {
         self.id = id
         self.lat = lat
@@ -198,12 +198,12 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
         self.raidPokemonCostume = raidPokemonCostume
         self.raidPokemonCp = raidPokemonCp
         self.raidPokemonGender = raidPokemonGender
-        self.raidPokemonEvolution = raidPokemonEvolution
         self.raidIsExclusive = raidIsExclusive
         self.cellId = cellId
         self.totalCp = totalCp
-        self.gymWeather = gymWeather
         self.sponsorId = sponsorId
+        self.raidPokemonEvolution = raidPokemonEvolution
+        self.gymWeather = gymWeather
     }
 
     init(fortData: POGOProtos_Map_Fort_FortData, cellId: UInt64, weatherData: UInt8) {
@@ -217,9 +217,6 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
         self.lastModifiedTimestamp = UInt32(fortData.lastModifiedTimestampMs / 1000)
         self.exRaidEligible = fortData.isExRaidEligible
         self.inBattle = fortData.isInBattle
-        if weatherData > 0 {
-            self.gymWeather = weatherData
-        }
         if fortData.sponsor != .unsetSponsor {
             self.sponsorId = UInt16(fortData.sponsor.rawValue)
         }
@@ -246,6 +243,10 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
             self.raidIsExclusive = fortData.raidInfo.isExclusive
             self.raidPokemonCostume = UInt16(fortData.raidInfo.raidPokemon.pokemonDisplay.costume.rawValue)
             self.raidPokemonEvolution = UInt8(fortData.raidInfo.raidPokemon.pokemonDisplay.pokemonEvolution.rawValue)
+        }
+
+        if weatherData > 0 {
+            self.gymWeather = weatherData
         }
 
         self.cellId = cellId
@@ -647,8 +648,8 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
             let cellId = result[25] as? UInt64
             let totalCp = result[26] as? UInt32
             let sponsorId = result[27] as? UInt16
-            let gymWeather = result[28] as? UInt8
-            let raidPokemonEvolution = result[29] as? UInt8
+            let raidPokemonEvolution = result[28] as? UInt8
+            let gymWeather = result[29] as? UInt8
 
             gyms.append(Gym(
                 id: id, lat: lat, lon: lon, name: name, url: url, guardPokemonId: guardPokemonId, enabled: enabled,
@@ -658,8 +659,8 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
                 exRaidEligible: exRaidEligible, inBattle: inBattle, raidPokemonMove1: raidPokemonMove1,
                 raidPokemonMove2: raidPokemonMove2, raidPokemonForm: raidPokemonForm,
                 raidPokemonCostume: raidPokemonCostume, raidPokemonCp: raidPokemonCp,
-                raidPokemonGender: raidPokemonGender, raidPokemonEvolution: raidPokemonEvolution,
-                raidIsExclusive: raidIsExclusive, cellId: cellId, totalCp: totalCp, sponsorId: sponsorId,
+                raidPokemonGender: raidPokemonGender, raidIsExclusive: raidIsExclusive, cellId: cellId,
+                totalCp: totalCp, sponsorId: sponsorId, raidPokemonEvolution: raidPokemonEvolution,
                 gymWeather: gymWeather))
         }
         return gyms
@@ -735,8 +736,8 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
         let cellId = result[25] as? UInt64
         let totalCp = result[26] as? UInt32
         let sponsorId = result[27] as? UInt16
-        let gymWeather = result[28] as? UInt8
-        let raidPokemonEvolution = result[29] as? UInt8
+        let raidPokemonEvolution = result[28] as? UInt8
+        let gymWeather = result[29] as? UInt8
 
         let gym = Gym(
             id: id, lat: lat, lon: lon, name: name, url: url, guardPokemonId: guardPokemonId, enabled: enabled,
@@ -746,8 +747,8 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
             exRaidEligible: exRaidEligible, inBattle: inBattle, raidPokemonMove1: raidPokemonMove1,
             raidPokemonMove2: raidPokemonMove2, raidPokemonForm: raidPokemonForm,
             raidPokemonCostume: raidPokemonCostume, raidPokemonCp: raidPokemonCp,
-            raidPokemonGender: raidPokemonGender, raidPokemonEvolution: raidPokemonEvolution,
-            raidIsExclusive: raidIsExclusive, cellId: cellId, totalCp: totalCp, sponsorId: sponsorId,
+            raidPokemonGender: raidPokemonGender, raidIsExclusive: raidIsExclusive, cellId: cellId, 
+            totalCp: totalCp, sponsorId: sponsorId, raidPokemonEvolution: raidPokemonEvolution,
             gymWeather: gymWeather)
         cache?.set(id: gym.id, value: gym)
         return gym
@@ -836,8 +837,8 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
             let cellId = result[25] as? UInt64
             let totalCp = result[26] as? UInt32
             let sponsorId = result[27] as? UInt16
-            let gymWeather = result[28] as? UInt8
-            let raidPokemonEvolution = result[29] as? UInt8
+            let raidPokemonEvolution = result[28] as? UInt8
+            let gymWeather = result[29] as? UInt8
 
             gyms.append(Gym(
                 id: id, lat: lat, lon: lon, name: name, url: url, guardPokemonId: guardPokemonId, enabled: enabled,
@@ -847,8 +848,8 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
                 exRaidEligible: exRaidEligible, inBattle: inBattle, raidPokemonMove1: raidPokemonMove1,
                 raidPokemonMove2: raidPokemonMove2, raidPokemonForm: raidPokemonForm,
                 raidPokemonCostume: raidPokemonCostume, raidPokemonCp: raidPokemonCp,
-                raidPokemonGender: raidPokemonGender, raidPokemonEvolution: raidPokemonEvolution,
-                raidIsExclusive: raidIsExclusive, cellId: cellId, totalCp: totalCp, sponsorId: sponsorId,
+                raidPokemonGender: raidPokemonGender, raidIsExclusive: raidIsExclusive, cellId: cellId,
+                totalCp: totalCp, sponsorId: sponsorId, raidPokemonEvolution: raidPokemonEvolution,
                 gymWeather: gymWeather)
             )
         }
@@ -937,8 +938,8 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
             let cellId = result[25] as? UInt64
             let totalCp = result[26] as? UInt32
             let sponsorId = result[27] as? UInt16
-            let gymWeather = result[28] as? UInt8
-            let raidPokemonEvolution = result[29] as? UInt8
+            let raidPokemonEvolution = result[28] as? UInt8
+            let gymWeather = result[29] as? UInt8
 
             gyms.append(Gym(
                 id: id, lat: lat, lon: lon, name: name, url: url, guardPokemonId: guardPokemonId, enabled: enabled,
@@ -948,8 +949,8 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
                 exRaidEligible: exRaidEligible, inBattle: inBattle, raidPokemonMove1: raidPokemonMove1,
                 raidPokemonMove2: raidPokemonMove2, raidPokemonForm: raidPokemonForm,
                 raidPokemonCostume: raidPokemonCostume, raidPokemonCp: raidPokemonCp,
-                raidPokemonGender: raidPokemonGender, raidPokemonEvolution: raidPokemonEvolution,
-                raidIsExclusive: raidIsExclusive, cellId: cellId, totalCp: totalCp, sponsorId: sponsorId,
+                raidPokemonGender: raidPokemonGender, raidIsExclusive: raidIsExclusive, cellId: cellId,
+                totalCp: totalCp, sponsorId: sponsorId, raidPokemonEvolution: raidPokemonEvolution,
                 gymWeather: gymWeather)
             )
         }
