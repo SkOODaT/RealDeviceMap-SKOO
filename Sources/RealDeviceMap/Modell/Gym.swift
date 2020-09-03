@@ -747,7 +747,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
             exRaidEligible: exRaidEligible, inBattle: inBattle, raidPokemonMove1: raidPokemonMove1,
             raidPokemonMove2: raidPokemonMove2, raidPokemonForm: raidPokemonForm,
             raidPokemonCostume: raidPokemonCostume, raidPokemonCp: raidPokemonCp,
-            raidPokemonGender: raidPokemonGender, raidIsExclusive: raidIsExclusive, cellId: cellId, 
+            raidPokemonGender: raidPokemonGender, raidIsExclusive: raidIsExclusive, cellId: cellId,
             totalCp: totalCp, sponsorId: sponsorId, raidPokemonEvolution: raidPokemonEvolution,
             gymWeather: gymWeather)
         cache?.set(id: gym.id, value: gym)
