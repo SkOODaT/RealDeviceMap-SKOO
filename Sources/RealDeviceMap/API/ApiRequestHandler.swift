@@ -1719,7 +1719,7 @@ class ApiRequestHandler {
         }
 
         if showStatus && perms.contains(.admin) {
-            let passed = UInt32(Date().timeIntervalSince(start)).secondsToHoursMinutesSeconds()
+            let passed = UInt32(Date().timeIntervalSince(start)).secondsToDaysHoursMinutesSeconds()
             let limits = WebHookRequestHandler.getThreadLimits()
             data["status"] = [
                 "processing": [
@@ -1730,6 +1730,7 @@ class ApiRequestHandler {
                 ],
                 "uptime": [
                     "date": start.timeIntervalSince1970,
+                    "days": passed.days,
                     "hours": passed.hours,
                     "minutes": passed.minutes,
                     "seconds": passed.seconds
