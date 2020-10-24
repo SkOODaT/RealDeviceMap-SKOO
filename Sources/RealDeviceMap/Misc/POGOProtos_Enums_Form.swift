@@ -2078,10 +2078,15 @@ extension POGOProtos_Enums_Form {
         .dragoniteCostume2020,
         .onixCostume2020,
         .meowthGalarian,
+        .ponytaGalarian,
+        .rapidashGalarian,
         .farfetchdGalarian,
+        .mrMimeGalarian,
+        .corsolaGalarian,
         .darumakaGalarian,
         .darmanitanGalarianStandard,
         .darmanitanGalarianZen,
+        .yamaskGalarian,
         .stunfiskGalarian,
         .obstagoonNormal,
         .obstagoonShadow,
@@ -2091,7 +2096,15 @@ extension POGOProtos_Enums_Form {
         .perrserkerPurified,
         .sirfetchdNormal,
         .sirfetchdShadow,
-        .sirfetchdPurified
+        .sirfetchdPurified,
+        .runerigusNormal,
+        .runerigusShadow,
+        .runerigusPurified,
+        .slowpokeGalarian,
+        .slowbroGalarian,
+        .laprasCostume2020,
+        .gengarCostume2020,
+        .sableyeCostume2020
     ]
 
     static var allFormsInString: [String] {
@@ -4171,10 +4184,15 @@ extension POGOProtos_Enums_Form {
         case .dragoniteCostume2020: return ["149-2333"]
         case .onixCostume2020: return ["95-2334"]
         case .meowthGalarian: return ["52-2335"]
+        case .ponytaGalarian: return ["77-2336"]
+        case .rapidashGalarian: return ["78-2337"]
         case .farfetchdGalarian: return ["83-2338"]
+        case .mrMimeGalarian: return ["122-2339"]
+        case .corsolaGalarian: return ["222-2340"]
         case .darumakaGalarian: return ["554-2341"]
         case .darmanitanGalarianStandard: return ["554-2342"]
         case .darmanitanGalarianZen: return ["554-2343"]
+        case .yamaskGalarian: return ["562-2344"]
         case .stunfiskGalarian: return ["618-2345"]
         case .obstagoonNormal: return ["862-2501"]
         case .obstagoonShadow: return ["862-2502"]
@@ -4185,6 +4203,14 @@ extension POGOProtos_Enums_Form {
         case .sirfetchdNormal: return ["865-2510"]
         case .sirfetchdShadow: return ["865-2511"]
         case .sirfetchdPurified: return ["865-2512"]
+        case .runerigusNormal: return ["867-2516"]
+        case .runerigusShadow: return ["867-2517"]
+        case .runerigusPurified: return ["867-2518"]
+        case .slowpokeGalarian: return ["79-2582"]
+        case .slowbroGalarian: return ["80-2583"]
+        case .laprasCostume2020: return ["131-2585"]
+        case .gengarCostume2020: return ["94-2586"]
+        case .sableyeCostume2020: return ["302-2668"]
         case .unset: return []
         case .UNRECOGNIZED: return []
         default:

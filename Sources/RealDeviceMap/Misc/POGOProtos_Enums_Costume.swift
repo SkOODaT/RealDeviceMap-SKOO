@@ -36,7 +36,27 @@ extension POGOProtos_Enums_Costume {
         .kanto2020Noevolve,
         .johto2020Noevolve,
         .hoenn2020Noevolve,
-        .sinnoh2020Noevolve
+        .sinnoh2020Noevolve,
+        .costume1,
+        .costume2,
+        .costume3,
+        .costume4,
+        .costume5,
+        .costume6,
+        .costume7,
+        .costume8,
+        .costume9,
+        .costume10,
+        .costume1Noevolve,
+        .costume2Noevolve,
+        .costume3Noevolve,
+        .costume4Noevolve,
+        .costume5Noevolve,
+        .costume6Noevolve,
+        .costume7Noevolve,
+        .costume8Noevolve,
+        .costume9Noevolve,
+        .costume10Noevolve
     ]
 
     static var allCostumesInString: [String] {
@@ -77,6 +97,26 @@ extension POGOProtos_Enums_Costume {
         case .johto2020Noevolve: return ["23"]
         case .hoenn2020Noevolve: return ["24"]
         case .sinnoh2020Noevolve: return ["25"]
+        case .costume1: return ["27"]
+        case .costume2: return ["28"]
+        case .costume3: return ["29"]
+        case .costume4: return ["30"]
+        case .costume5: return ["31"]
+        case .costume6: return ["32"]
+        case .costume7: return ["33"]
+        case .costume8: return ["34"]
+        case .costume9: return ["35"]
+        case .costume10: return ["36"]
+        case .costume1Noevolve: return ["37"]
+        case .costume2Noevolve: return ["38"]
+        case .costume3Noevolve: return ["39"]
+        case .costume4Noevolve: return ["40"]
+        case .costume5Noevolve: return ["41"]
+        case .costume6Noevolve: return ["42"]
+        case .costume7Noevolve: return ["43"]
+        case .costume8Noevolve: return ["44"]
+        case .costume9Noevolve: return ["45"]
+        case .costume10Noevolve: return ["46"]
         case .unset: return []
         case .UNRECOGNIZED: return []
         default:
