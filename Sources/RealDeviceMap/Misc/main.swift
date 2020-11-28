@@ -264,10 +264,10 @@ do {
 Log.debug(message: "[MAIN] Loading Avilable Pokemon Evolutions")
 var avilablePokemonEvolutions = [String]()
 do {
-    for pokemonevolutionString in POGOProtos_Enums_PokemonEvolution.allPokemonEvolutionsInString {
-        let file = File("\(projectroot)/resources/webroot/static/img/pokemon/\(pokemonevolutionString).png")
+    for temporaryevolutionString in POGOProtos_Enums_TemporaryEvolutionId.allTemporaryEvolutionIdsInString {
+        let file = File("\(projectroot)/resources/webroot/static/img/pokemon/\(temporaryevolutionString).png")
         if file.exists {
-            avilablePokemonEvolutions.append(pokemonevolutionString)
+            avilablePokemonEvolutions.append(temporaryevolutionString)
         }
     }
     WebReqeustHandler.avilablePokemonEvolutionsJson = try avilablePokemonEvolutions.jsonEncodedString()
