@@ -5,7 +5,7 @@
 //  Created by Florian Kostenzer on 18.09.18.
 //
 //  swiftlint:disable:next superfluous_disable_command
-//  swiftlint:disable file_length type_body_length function_body_length cyclomatic_complexity force_cast
+//  swiftlint:disable file_length type_body_length function_body_length cyclomatic_complexity force_cast line_length
 
 import Foundation
 import PerfectLib
