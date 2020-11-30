@@ -2104,7 +2104,80 @@ extension POGOProtos_Enums_Form {
         .slowbroGalarian,
         .laprasCostume2020,
         .gengarCostume2020,
-        .sableyeCostume2020
+        .pyroarNormal,
+        .pyroarFemale,
+        .meowsticNormal,
+        .meowsticFemale,
+        .zygardeTenPercent,
+        .zygardeFiftyPercent,
+        .zygardeComplete,
+        .vivillonArchipelago,
+        .vivillonContinental,
+        .vivillonElegant,
+        .vivillonFancy,
+        .vivillonGarden,
+        .vivillonHighPlains,
+        .vivillonIcySnow,
+        .vivillonJungle,
+        .vivillonMarine,
+        .vivillonMeadow,
+        .vivillonModern,
+        .vivillonMonsoon,
+        .vivillonOcean,
+        .vivillonPokeball,
+        .vivillonPolar,
+        .vivillonRiver,
+        .vivillonSandstorm,
+        .vivillonSavanna,
+        .vivillonSun,
+        .vivillonTundra,
+        .flabebeRed,
+        .flabebeYellow,
+        .flabebeOrange,
+        .flabebeBlue,
+        .flabebeWhite,
+        .floetteRed,
+        .floetteYellow,
+        .floetteOrange,
+        .floetteBlue,
+        .floetteWhite,
+        .florgesRed,
+        .florgesYellow,
+        .florgesOrange,
+        .florgesBlue,
+        .florgesWhite,
+        .furfrouNatural,
+        .furfrouHeart,
+        .furfrouStar,
+        .furfrouDiamond,
+        .furfrouDebutante,
+        .furfrouMatron,
+        .furfrouDandy,
+        .furfrouLaReine,
+        .furfrouKabuki,
+        .furfrouPharaoh,
+        .aegislashShield,
+        .aegislashBlade,
+        .pumpkabooSmall,
+        .pumpkabooAverage,
+        .pumpkabooLarge,
+        .pumpkabooSuper,
+        .gourgeistSmall,
+        .gourgeistAverage,
+        .gourgeistLarge,
+        .gourgeistSuper,
+        .xerneasNeutral,
+        .xerneasActive,
+        .hoopaConfined,
+        .hoopaUnbound,
+        .sableyeCostume2020Deprecated,
+        .sableyeCostume2020,
+        .pikachuAdventureHat2020,
+        .pikachuWinter2020,
+        .delibirdWinter2020,
+        .cubchooWinter2020,
+        .slowpoke2020,
+        .slowbro2021
     ]
 
     static var allFormsInString: [String] {
@@ -4210,7 +4283,80 @@ extension POGOProtos_Enums_Form {
         case .slowbroGalarian: return ["80-2583"]
         case .laprasCostume2020: return ["131-2585"]
         case .gengarCostume2020: return ["94-2586"]
+        case .pyroarNormal: return ["668-2587"]
+        case .pyroarFemale: return ["668-2588"]
+        case .meowsticNormal: return ["678-2589"]
+        case .meowsticFemale: return ["678-2590"]
+        case .zygardeTenPercent: return ["718-2591"]
+        case .zygardeFiftyPercent: return ["718-2592"]
+        case .zygardeComplete: return ["718-2593"]
+        case .vivillonArchipelago: return ["666-2594"]
+        case .vivillonContinental: return ["666-2595"]
+        case .vivillonElegant: return ["666-2596"]
+        case .vivillonFancy: return ["666-2597"]
+        case .vivillonGarden: return ["666-2598"]
+        case .vivillonHighPlains: return ["666-2599"]
+        case .vivillonIcySnow: return ["666-2600"]
+        case .vivillonJungle: return ["666-2601"]
+        case .vivillonMarine: return ["666-2602"]
+        case .vivillonMeadow: return ["666-2603"]
+        case .vivillonModern: return ["666-2604"]
+        case .vivillonMonsoon: return ["666-2605"]
+        case .vivillonOcean: return ["666-2606"]
+        case .vivillonPokeball: return ["666-2607"]
+        case .vivillonPolar: return ["666-2608"]
+        case .vivillonRiver: return ["666-2609"]
+        case .vivillonSandstorm: return ["666-2610"]
+        case .vivillonSavanna: return ["666-2611"]
+        case .vivillonSun: return ["666-2612"]
+        case .vivillonTundra: return ["666-2613"]
+        case .flabebeRed: return ["669-2614"]
+        case .flabebeYellow: return ["669-2615"]
+        case .flabebeOrange: return ["669-2616"]
+        case .flabebeBlue: return ["669-2617"]
+        case .flabebeWhite: return ["669-2618"]
+        case .floetteRed: return ["670-2619"]
+        case .floetteYellow: return ["670-2620"]
+        case .floetteOrange: return ["670-2621"]
+        case .floetteBlue: return ["670-2622"]
+        case .floetteWhite: return ["670-2623"]
+        case .florgesRed: return ["671-2624"]
+        case .florgesYellow: return ["671-2625"]
+        case .florgesOrange: return ["671-2626"]
+        case .florgesBlue: return ["671-2627"]
+        case .florgesWhite: return ["671-2628"]
+        case .furfrouNatural: return ["676-2629"]
+        case .furfrouHeart: return ["676-2630"]
+        case .furfrouStar: return ["676-2631"]
+        case .furfrouDiamond: return ["676-2632"]
+        case .furfrouDebutante: return ["676-2633"]
+        case .furfrouMatron: return ["676-2634"]
+        case .furfrouDandy: return ["676-2635"]
+        case .furfrouLaReine: return ["676-2636"]
+        case .furfrouKabuki: return ["676-2637"]
+        case .furfrouPharaoh: return ["676-2638"]
+        case .aegislashShield: return ["681-2639"]
+        case .aegislashBlade: return ["681-2640"]
+        case .pumpkabooSmall: return ["710-2641"]
+        case .pumpkabooAverage: return ["710-2642"]
+        case .pumpkabooLarge: return ["710-2643"]
+        case .pumpkabooSuper: return ["710-2644"]
+        case .gourgeistSmall: return ["711-2645"]
+        case .gourgeistAverage: return ["711-2646"]
+        case .gourgeistLarge: return ["711-2647"]
+        case .gourgeistSuper: return ["711-2648"]
+        case .xerneasNeutral: return ["716-2649"]
+        case .xerneasActive: return ["716-2650"]
+        case .hoopaConfined: return ["720-2651"]
+        case .hoopaUnbound: return ["720-2652"]
+        case .sableyeCostume2020Deprecated: return ["302-2666"]
         case .sableyeCostume2020: return ["302-2668"]
+        case .pikachuAdventureHat2020: return ["25-2669"]
+        case .pikachuWinter2020: return ["25-2670"]
+        case .delibirdWinter2020: return ["225-2671"]
+        case .cubchooWinter2020: return ["613-2672"]
+        case .slowpoke2020: return ["79-2673"]
+        case .slowbro2021: return ["80-2674"]
         case .unset: return []
         case .UNRECOGNIZED: return []
         default:
