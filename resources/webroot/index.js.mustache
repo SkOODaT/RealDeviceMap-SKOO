@@ -661,7 +661,7 @@ function loadStorage () {
       defaultPokestopFilter.normal = { show: true, size: 'normal' }
     }
     let i
-    for (i = 1; i < 5; i++) {
+    for (i = 1; i < 6; i++) {
       if (defaultPokestopFilter['l' + i] === undefined) {
         defaultPokestopFilter['l' + i] = { show: true, size: 'normal' }
       }
@@ -687,7 +687,7 @@ function loadStorage () {
       pokestopFilter.normal = { show: true, size: 'normal' }
     }
     let i
-    for (i = 1; i < 5; i++) {
+    for (i = 1; i < 6; i++) {
       if (pokestopFilter['l' + i] === undefined) {
         pokestopFilter['l' + i] = { show: true, size: 'normal' }
       }
@@ -943,7 +943,7 @@ function initMap () {
     const defaultPokestopFilter = {}
     defaultPokestopFilter.timers = {show: true, size: 'normal'}
     defaultPokestopFilter.normal = { show: true, size: 'normal' }
-    for (var i = 1; i < 5; i++) {
+    for (var i = 1; i < 6; i++) {
       defaultPokestopFilter['l' + i] = { show: true, size: 'normal' }
     }
     defaultPokestopFilter.invasion = { show: true, size: 'normal' }
@@ -959,7 +959,7 @@ function initMap () {
     const defaultPokestopFilter = {}
     defaultPokestopFilter.timers = {show: false, size: raidFilterNew.timers.size}
     defaultPokestopFilter.normal = { show: false, size: pokestopFilterNew.normal.size }
-    for (var i = 1; i < 5; i++) {
+    for (var i = 1; i < 6; i++) {
       defaultPokestopFilter['l' + i] = { show: false, size: pokestopFilterNew['l' + i].size }
     }
     defaultPokestopFilter.invasion = { show: false, size: pokestopFilterNew.invasion.size }
@@ -2510,6 +2510,8 @@ function getPokestopPopupContent (pokestop) {
       stopBG = 'mossy'
     } else if (pokestop.lure_id === 504) {
       stopBG = 'magnetic'
+    } else if (pokestop.lure_id === 505) {
+      stopBG = 'rainy'
     } else {
       stopBG = 'regular'
     }
@@ -2552,6 +2554,8 @@ function getPokestopPopupContent (pokestop) {
           icon = 'quest/3_' + rewardString + '.png'
         } else if (pokestop.lure_id === 504) {
           icon = 'quest/4_' + rewardString + '.png'
+        } else if (pokestop.lure_id === 505) {
+          icon = 'quest/5_' + rewardString + '.png'
         } else {
           icon = 'quest/0_' + rewardString + '.png'
         }
@@ -2568,6 +2572,8 @@ function getPokestopPopupContent (pokestop) {
         icon = 'pokestop/3.png'
       } else if (pokestop.lure_id === 504) {
         icon = 'pokestop/4.png'
+      } else if (pokestop.lure_id === 505) {
+        icon = 'pokestop/5.png'
       } else {
         icon = 'pokestop/0.png'
       }
@@ -2604,6 +2610,8 @@ function getPokestopPopupContent (pokestop) {
         ? "lure-mossy"
         : pokestop.lure_id === 504
         ? "lure-magnetic"
+        : pokestop.lure_id === 505
+        ? "lure-rainy"
         : "lure-normal")
       : "stop-normal"
     content += '<img src="' + pokestop.url.replace("http://", "https://") + '" class="circle-image ' + lureClass + ' background-image"/>'
@@ -3393,6 +3401,10 @@ function getPokemonMarker (pokemon, ts) {
   if (ivPercent >= 97) {
     marker.bounce()
   }
+  if (pokemon.pokemon_id == 201) {
+    marker.bounce()
+  }
+  console.log(pokemon.pokemon_id)
   return marker
 }
 
@@ -4675,6 +4687,8 @@ function getLureIconId (lureId) {
       return 3
     case 504:
       return 4
+    case 505:
+      return 5
   }
   return 1
 }

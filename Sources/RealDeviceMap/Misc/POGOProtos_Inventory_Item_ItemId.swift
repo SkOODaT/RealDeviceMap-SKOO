@@ -32,6 +32,7 @@ extension POGOProtos_Inventory_Item_ItemId {
         .itemTroyDiskGlacial,
         .itemTroyDiskMossy,
         .itemTroyDiskMagnetic,
+        .itemTroyDiskRainy,
         //.itemXAttack,
         //.itemXDefense,
         //.itemXMiracle,
