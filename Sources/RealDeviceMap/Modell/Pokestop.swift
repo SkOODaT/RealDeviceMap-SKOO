@@ -381,6 +381,10 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
                 let info = rewardData.candy
                 infoData["amount"] = info.amount
                 infoData["pokemon_id"] = info.pokemonID.rawValue
+            case .xlCandy: break
+                let info = rewardData.xlCandy
+                infoData["amount"] = info.amount
+                infoData["pokemon_id"] = info.pokemonID.rawValue
             case .pokemonEncounter:
                 let info = rewardData.pokemonEncounter
                 if info.isHiddenDitto {

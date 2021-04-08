@@ -242,15 +242,14 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
             self.raidPokemonGender = UInt8(fortData.raidInfo.raidPokemon.pokemonDisplay.gender.rawValue)
             self.raidIsExclusive = fortData.raidInfo.isExclusive
             self.raidPokemonCostume = UInt16(fortData.raidInfo.raidPokemon.pokemonDisplay.costume.rawValue)
-            self.raidPokemonEvolution = UInt8(fortData.raidInfo.raidPokemon.pokemonDisplay.currentTempEvolution.rawValue)
+            self.raidPokemonEvolution = UInt8(
+                fortData.raidInfo.raidPokemon.pokemonDisplay.currentTempEvolution.rawValue
+            )
         }
-
         if weatherData > 0 {
             self.gymWeather = weatherData
         }
-
         self.cellId = cellId
-
     }
 
     public func addDetails(fortData: POGOProtos_Networking_Responses_FortDetailsResponse) {
