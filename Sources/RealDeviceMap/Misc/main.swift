@@ -232,7 +232,7 @@ WebHookController.global.start()
 Log.info(message: "[MAIN] Loading Avilable Forms")
 var avilableForms = [String]()
 do {
-    for formString in POGOProtos_Enums_Form.allFormsInString {
+    for formString in PokemonDisplayProto.Form.allFormsInString {
         let file = File("\(projectroot)/resources/webroot/static/img/pokemon/\(formString).png")
         if file.exists {
             avilableForms.append(formString)
@@ -249,7 +249,7 @@ do {
 Log.debug(message: "[MAIN] Loading Avilable Costumes")
 var avilableCostumes = [String]()
 do {
-    for costumeString in POGOProtos_Enums_Costume.allCostumesInString {
+    for costumeString in PokemonDisplayProto.Costume.allCostumesInString {
         let file = File("\(projectroot)/resources/webroot/static/img/pokemon/\(costumeString).png")
         if file.exists {
             avilableCostumes.append(costumeString)
@@ -264,7 +264,7 @@ do {
 Log.debug(message: "[MAIN] Loading Avilable Pokemon Evolutions")
 var avilablePokemonEvolutions = [String]()
 do {
-    for temporaryevolutionString in POGOProtos_Enums_TemporaryEvolutionId.allTemporaryEvolutionIdsInString {
+    for temporaryevolutionString in HoloTemporaryEvolutionId.allTemporaryEvolutionIdsInString {
         let file = File("\(projectroot)/resources/webroot/static/img/pokemon/\(temporaryevolutionString).png")
         if file.exists {
             avilablePokemonEvolutions.append(temporaryevolutionString)
@@ -277,7 +277,7 @@ do {
 
 Log.info(message: "[MAIN] Loading Avilable Items")
 var aviableItems = [-6, -5, -4, -3, -2, -1]
-for itemId in POGOProtos_Inventory_Item_ItemId.allAvilable {
+for itemId in Item.allAvilable {
     aviableItems.append(itemId.rawValue)
 }
 WebReqeustHandler.avilableItemJson = try! aviableItems.jsonEncodedString()

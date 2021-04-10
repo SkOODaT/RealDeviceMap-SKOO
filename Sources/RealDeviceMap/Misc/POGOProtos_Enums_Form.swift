@@ -10,9 +10,9 @@ import Foundation
 import POGOProtos
 import PerfectLib
 
-extension POGOProtos_Enums_Form {
+extension PokemonDisplayProto.Form {
 
-    public static var allCases: [POGOProtos_Enums_Form] = [
+    public static var allCases: [PokemonDisplayProto.Form] = [
         .unownA,
         .unownB,
         .unownC,
@@ -2182,7 +2182,7 @@ extension POGOProtos_Enums_Form {
 
     static var allFormsInString: [String] {
         var formStrings = [String]()
-        for form in POGOProtos_Enums_Form.allCases {
+        for form in PokemonDisplayProto.Form.allCases {
             for formString in form.formStrings {
                 formStrings.append(formString)
             }

@@ -9,18 +9,18 @@ import Foundation
 import POGOProtos
 import PerfectLib
 
-extension POGOProtos_Enums_TemporaryEvolutionId {
+extension HoloTemporaryEvolutionId {
 
-    public static var allCases: [POGOProtos_Enums_TemporaryEvolutionId] = [
-        .evolutionUnset,
-        .evolutionMega,
-        .evolutionMegaX,
-        .evolutionMegaY
+    public static var allCases: [HoloTemporaryEvolutionId] = [
+        .tempEvolutionUnset,
+        .tempEvolutionMega,
+        .tempEvolutionMegaX,
+        .tempEvolutionMegaY
     ]
 
     static var allTemporaryEvolutionIdsInString: [String] {
         var temporaryevolutionStrings = [String]()
-        for temporaryevolution in POGOProtos_Enums_TemporaryEvolutionId.allCases {
+        for temporaryevolution in HoloTemporaryEvolutionId.allCases {
             for temporaryevolutionString in temporaryevolution.temporaryevolutionStrings {
                 temporaryevolutionStrings.append(temporaryevolutionString)
             }
@@ -31,10 +31,10 @@ extension POGOProtos_Enums_TemporaryEvolutionId {
     var temporaryevolutionStrings: [String] {
 
         switch self {
-        case .evolutionUnset: return ["0"]
-        case .evolutionMega: return ["1"]
-        case .evolutionMegaX: return ["2"]
-        case .evolutionMegaY: return ["3"]
+        case .tempEvolutionUnset: return ["0"]
+        case .tempEvolutionMega: return ["1"]
+        case .tempEvolutionMegaX: return ["2"]
+        case .tempEvolutionMegaY: return ["3"]
         case .UNRECOGNIZED: return []
         default:
             Log.warning(message: "Missing temporaryevolution string for temporaryevolution: \(self.rawValue)")
