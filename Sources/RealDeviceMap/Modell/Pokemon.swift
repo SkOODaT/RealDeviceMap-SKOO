@@ -286,7 +286,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
         let lon: Double
         let pokestop = Pokestop.cache?.get(id: pokestopId)
         if pokestop == nil {
-            let ns2cell = S2Cell(cellId: S2CellId(uid:cellId))
+            let ns2cell = S2Cell(cellId: S2CellId(uid: cellId))
             let nlat = ns2cell.capBound.rectBound.center.lat.degrees
             let nlon = ns2cell.capBound.rectBound.center.lng.degrees
             lat = nlat
