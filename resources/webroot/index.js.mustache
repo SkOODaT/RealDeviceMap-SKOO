@@ -1970,6 +1970,23 @@ function addPokemon(pokemon, ts) {
       pokemon.lon += +lonOffset
     }
 
+    if (pokemon.pokestop_id === null && pokemon.spawn_id === null) {
+      var latOffset = Math.random() * 0.0002 - 0.0001
+      if (latOffset >= 0) {
+        latOffset += 0.00009
+      } else {
+        latOffset -= 0.00009
+      }
+      var lonOffset = Math.random() * 0.0002 - 0.0001
+      if (lonOffset >= 0) {
+        lonOffset += 0.00009
+      } else {
+        lonOffset -= 0.00009
+      }
+      pokemon.lat += latOffset
+      pokemon.lon += +lonOffset
+    }
+
     pokemon.marker = getPokemonMarker(pokemon, ts)
     pokemonMarkers.push(pokemon)
     pokemon.marker.addTo(map)
@@ -2358,8 +2375,10 @@ function getPokemonPopupContent (pokemon) {
       if (pokemon.map_status == 1) {
         content += '<b>Wild Pokemon</b> <img src="/static/img/misc/grass.png" height="15" width="15"/><br> '
       } else if (pokemon.map_status == 2) {
-        content += '<b>Nearby Pokemon</b> <img src="/static/img/misc/nearby.png" height="15" width="15"/><br> '
+        content += '<b>Cell Pokemon</b> <img src="/static/img/misc/cell.png" height="15" width="15"/><br> '
       } else if (pokemon.map_status == 3) {
+        content += '<b>Nearby Pokemon</b> <img src="/static/img/misc/nearby.png" height="15" width="15"/><br> '
+      } else if (pokemon.map_status == 4) {
         content += '<b>Lured Pokemon</b> <img src="/static/img/misc/lured.png" height="15" width="15"/><br> '
       }
       if (pokemon.expire_timestamp_verified) {
@@ -3354,11 +3373,13 @@ function getPokemonMarkerIcon (pokemon, ts) {
     HTML = "<div class='marker-pin-vtimer'><img src='/static/img/verified/estimated.png' height='10' width='10'/></img></div>"
   }
   if (pokemon.map_status == 1) {
-    HTML += "<div class='marker-pin-mstatus'><img src='/static/img/misc/Wild.png' height='10' width='10'/></img></div>"
+    HTML += "<div class='marker-pin-mstatus'><img src='/static/img/misc/wild.png' height='10' width='10'/></img></div>"
   } else if (pokemon.map_status == 2) {
-    HTML += "<div class='marker-pin-mstatus'><img src='/static/img/misc/Nearby.png' height='10' width='10'/></img></div>"
+    HTML += "<div class='marker-pin-mstatus'><img src='/static/img/misc/cell.png' height='10' width='10'/></img></div>"
   } else if (pokemon.map_status == 3) {
-    HTML += "<div class='marker-pin-mstatus'><img src='/static/img/misc/Lured.png' height='10' width='10'/></img></div>"
+    HTML += "<div class='marker-pin-mstatus'><img src='/static/img/misc/nearby.png' height='10' width='10'/></img></div>"
+  } else if (pokemon.map_status == 4) {
+    HTML += "<div class='marker-pin-mstatus'><img src='/static/img/misc/lured.png' height='10' width='10'/></img></div>"
   }
   if (pokemon.weather) {
     HTML += "<div class='marker-pin-wstatus'><img src='/static/img/weather/" + pokemon.weather + ".png' height='10' width='10'/></img></div>"

@@ -12,6 +12,7 @@ import PerfectLib
 import PerfectMySQL
 import POGOProtos
 import Regex
+import S2Geometry
 
 class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConvertible {
 
@@ -257,9 +258,10 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             }
         }
 
+        self.mapStatus = 1
+
         self.spawnId = spawnId
         self.cellId = cellId
-        self.mapStatus = 1
 
     }
 
@@ -283,7 +285,13 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
         let lat: Double
         let lon: Double
         let pokestop = Pokestop.cache?.get(id: pokestopId)
-        if pokestop != nil {
+        if pokestop == nil {
+            let ns2cell = S2Cell(cellId: S2CellId(uid:cellId))
+            let nlat = ns2cell.capBound.rectBound.center.lat.degrees
+            let nlon = ns2cell.capBound.rectBound.center.lng.degrees
+            lat = nlat
+            lon = nlon
+        } else if pokestop != nil {
             lat = pokestop!.lat
             lon = pokestop!.lon
         } else {
@@ -323,14 +331,17 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
         self.lat = lat
         self.lon = lon
         self.pokemonId = pokemonId
-        self.pokestopId = pokestopId
+        if pokestop == nil {
+            self.mapStatus = 2
+        } else {
+            self.pokestopId = pokestopId
+            self.mapStatus = 3
+        }
         self.gender = gender
         self.form = form
 
         self.cellId = cellId
         self.expireTimestampVerified = false
-        self.mapStatus = 2
-
     }
 
     init(mysql: MySQL?=nil, fortData: PokemonFortProto,
@@ -360,8 +371,9 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             expireTimestampVerified = false
         }
 
+        self.mapStatus = 4
+
         self.cellId = cellId
-        self.mapStatus = 3
 
     }
 
