@@ -2488,6 +2488,16 @@ function getPokemonPopupContent (pokemon) {
   return content
 }
 
+function getPokemonContent (pokemon) {
+  let content = ''
+  let pokemonName = getPokemonNameString(pokemon.pokemon_id, pokemon.form, pokemon.costume, null)
+  if (pokemon.display_pokemon_id > 0) {
+    pokemonName += " (" + getPokemonNameNoId(pokemon.display_pokemon_id) + ")"
+  }
+  content += '' + pokemonName + ''
+  return content
+}
+
 // eslint-disable-next-line no-unused-vars
 function setIndividualPokemonHidden (id) {
   if (id > 0 && !hiddenPokemonIds.includes(id)) {
@@ -2881,7 +2891,6 @@ function getGymPopupContent (gym) {
                 content += '<b>'+ wname +':</b> ' + wtypes
               }
               content += '</div>' 
-            //}
         content += '</div>'  //END PIC/IV ROW
   } else {
     content +=
@@ -3408,10 +3417,11 @@ function getPokemonMarker (pokemon, ts) {
   }
   const marker = L.marker([pokemon.lat, pokemon.lon], {
     icon: getPokemonMarkerIcon(pokemon, ts),
-    forceZIndex: zIndex,
+    title: getPokemonContent(pokemon),
+    zIndexOffset: zIndex,
+    riseOnHover: true,
     virtual: true
   })
-  /* Define options of bouncing for all markers */
   marker.setBouncingOptions({
     bounceHeight : 30,   // height of the bouncing
     bounceSpeed  : 54,   // bouncing speed coefficient
@@ -3428,7 +3438,6 @@ function getPokemonMarker (pokemon, ts) {
   if (pokemon.pokemon_id == 201) {
     marker.bounce()
   }
-  console.log(pokemon.pokemon_id)
   return marker
 }
 
