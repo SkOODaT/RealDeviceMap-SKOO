@@ -258,7 +258,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             }
         }
 
-        self.mapStatus = 1
+        self.mapStatus = 1 // Wild pokemon
 
         self.spawnId = spawnId
         self.cellId = cellId
@@ -284,64 +284,66 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
 
         let lat: Double
         let lon: Double
-        let pokestop = Pokestop.cache?.get(id: pokestopId)
-        if pokestop == nil {
+        if pokestopId.isEmpty {
             let ns2cell = S2Cell(cellId: S2CellId(uid: cellId))
             let nlat = ns2cell.capBound.rectBound.center.lat.degrees
             let nlon = ns2cell.capBound.rectBound.center.lng.degrees
             lat = nlat
             lon = nlon
-        } else if pokestop != nil {
-            lat = pokestop!.lat
-            lon = pokestop!.lon
+            self.mapStatus = 2 // Cell pokemon
         } else {
-            let sql = """
-                    SELECT lat, lon
-                    FROM pokestop
-                    WHERE id = ?;
-                """
+            let pokestop = Pokestop.cache?.get(id: pokestopId)
+            if pokestop != nil {
+                lat = pokestop!.lat
+                lon = pokestop!.lon
+            } else {
+                let sql = """
+                        SELECT lat, lon
+                        FROM pokestop
+                        WHERE id = ?;
+                    """
 
-            guard let mysql = mysql ?? DBController.global.mysql else {
-                Log.error(message: "[POKEMON] Failed to connect to database.")
-                throw DBController.DBError()
+                guard let mysql = mysql ?? DBController.global.mysql else {
+                    Log.error(message: "[POKEMON] Failed to connect to database.")
+                    throw DBController.DBError()
+                }
+
+                let mysqlStmt = MySQLStmt(mysql)
+                _ = mysqlStmt.prepare(statement: sql)
+
+                mysqlStmt.bindParam(pokestopId)
+
+                guard mysqlStmt.execute() else {
+                    Log.error(message: "[POKEMON] Failed to execute query. (\(mysqlStmt.errorMessage())")
+                    throw DBController.DBError()
+                }
+
+                let results = mysqlStmt.results()
+
+                if results.numRows == 0 {
+                    throw ParsingError()
+                }
+
+                let result = results.next()
+                lat = result![0] as! Double
+                lon = result![1] as! Double
             }
-
-            let mysqlStmt = MySQLStmt(mysql)
-            _ = mysqlStmt.prepare(statement: sql)
-
-            mysqlStmt.bindParam(pokestopId)
-
-            guard mysqlStmt.execute() else {
-                Log.error(message: "[POKEMON] Failed to execute query. (\(mysqlStmt.errorMessage())")
-                throw DBController.DBError()
+            if !pokestopId.isEmpty {
+                self.mapStatus = 3
             }
-
-            let results = mysqlStmt.results()
-
-            if results.numRows == 0 {
-                throw ParsingError()
-            }
-
-            let result = results.next()
-            lat = result![0] as! Double
-            lon = result![1] as! Double
         }
 
         self.id = id
         self.lat = lat
         self.lon = lon
         self.pokemonId = pokemonId
-        if pokestop == nil {
-            self.mapStatus = 2
-        } else {
-            self.pokestopId = pokestopId
-            self.mapStatus = 3
-        }
+        self.pokestopId = (pokestopId.isEmpty ? nil : pokestopId)
         self.gender = gender
         self.form = form
 
         self.cellId = cellId
         self.expireTimestampVerified = false
+
     }
 
     init(mysql: MySQL?=nil, fortData: PokemonFortProto,
@@ -371,7 +373,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             expireTimestampVerified = false
         }
 
-        self.mapStatus = 4
+        self.mapStatus = 4 // Lure pokemon
 
         self.cellId = cellId
 
@@ -686,7 +688,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                 }
             }
 
-            if oldPokemon!.mapStatus != self.mapStatus && oldPokemon!.mapStatus != 2 {
+            if oldPokemon!.mapStatus != self.mapStatus && self.mapStatus != 1 {
                 self.mapStatus = oldPokemon!.mapStatus
                 //Log.debug(
                 //      message: "[POKEMON] Pokemon \(id) Changed \(self.mapStatus) to \(oldPokemon!.mapStatus)")
