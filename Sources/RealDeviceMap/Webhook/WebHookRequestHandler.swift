@@ -592,7 +592,7 @@ class WebHookRequestHandler {
                                            cellId: nearbyPokemon.cell, username: username, isEvent: isEvent)
                 try? pokemon?.save(mysql: mysql)
             }
-            if nearbyPokemons.count > 0 {
+            if !nearbyPokemons.isEmpty {
                 Log.debug(
                     message: "[WebHookRequestHandler] " +
                              "[\(uuid ?? "?")] " +
