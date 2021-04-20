@@ -203,6 +203,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
     init(mysql: MySQL?=nil, wildPokemon: WildPokemonProto, cellId: UInt64,
          timestampMs: UInt64, username: String?, isEvent: Bool) {
 
+        self.mapStatus = 1 // Wild pokemon
         self.isEvent = isEvent
         id = wildPokemon.encounterID.description
         pokemonId = wildPokemon.pokemon.pokemonID.rawValue.toUInt16()
@@ -258,8 +259,6 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             }
         }
 
-        self.mapStatus = 1 // Wild pokemon
-
         self.spawnId = spawnId
         self.cellId = cellId
 
@@ -285,13 +284,14 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
         let lat: Double
         let lon: Double
         if pokestopId.isEmpty {
-            let ns2cell = S2Cell(cellId: S2CellId(uid: cellId))
-            let nlat = ns2cell.capBound.rectBound.center.lat.degrees
-            let nlon = ns2cell.capBound.rectBound.center.lng.degrees
+            self.mapStatus = 2 // Cell pokemon
+            let s2cell = S2Cell(cellId: S2CellId(uid: cellId))
+            let nlat = s2cell.capBound.rectBound.center.lat.degrees
+            let nlon = s2cell.capBound.rectBound.center.lng.degrees
             lat = nlat
             lon = nlon
-            self.mapStatus = 2 // Cell pokemon
         } else {
+            self.mapStatus = 3 // Nearby pokemon
             let pokestop = Pokestop.cache?.get(id: pokestopId)
             if pokestop != nil {
                 lat = pokestop!.lat
@@ -328,9 +328,6 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                 lat = result![0] as! Double
                 lon = result![1] as! Double
             }
-            if !pokestopId.isEmpty {
-                self.mapStatus = 3
-            }
         }
 
         self.id = id
@@ -350,6 +347,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
          mapPokemon: MapPokemonProto, cellId: UInt64,
          timestampMs: UInt64, username: String?, isEvent: Bool) {
 
+        self.mapStatus = 4 // Lure pokemon
         self.isEvent = isEvent
         id = mapPokemon.encounterID.description
         pokemonId = mapPokemon.pokedexTypeID.toUInt16()
@@ -372,8 +370,6 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
         } else {
             expireTimestampVerified = false
         }
-
-        self.mapStatus = 4 // Lure pokemon
 
         self.cellId = cellId
 
@@ -411,6 +407,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                self.hasIvChanges = true
             }
 
+        self.mapStatus = 1 // Wild pokemon
         self.pokemonId = pokemonId
         self.cp = cp
         self.move1 = move1
@@ -501,7 +498,6 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
 
         self.updated = UInt32(Date().timeIntervalSince1970)
         self.changed = self.updated
-        self.mapStatus = 1
     }
 
     private func setPVP() {
@@ -569,6 +565,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             new.gender != old.gender ||
             new.form != old.form ||
             new.costume != old.costume ||
+            new.mapStatus != old.mapStatus ||
             abs(Int(new.expireTimestamp ?? 0) - Int(old.expireTimestamp ?? 0)) >= 60 ||
             fabs(new.lat - old.lat) >= 0.000001 ||
             fabs(new.lon - old.lon) >= 0.000001
