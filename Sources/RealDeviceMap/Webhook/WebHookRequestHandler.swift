@@ -177,6 +177,7 @@ class WebHookRequestHandler {
         var quests = [QuestProto]()
         var fortSearch = [FortSearchOutProto]()
         var encounters = [EncounterOutProto]()
+        var diskencounters = [DiskEncounterOutProto]()
         var playerdatas = [GetPlayerOutProto]()
         var cells = [UInt64]()
 
@@ -214,6 +215,9 @@ class WebHookRequestHandler {
             } else if let madString = rawData["payload"] as? String {
                 data = Data(base64Encoded: madString) ?? Data()
                 method = rawData["type"] as? Int ?? 106
+            } else if let tenr = rawData["DiskEncounterResponse"] as? String {
+                data = Data(base64Encoded: tenr) ?? Data()
+                method = 145
             } else {
                 continue
             }
@@ -256,7 +260,7 @@ class WebHookRequestHandler {
                 containsGMO = true
                 if let gmo = try? GetMapObjectsOutProto(serializedData: data) {
                     isInvalidGMO = false
-
+                    //Log.info(message: "[WebHookRequestHandler] [\(gmo)]")
                     var newWildPokemons = [(cell: UInt64, data: WildPokemonProto,
                                             timestampMs: UInt64)]()
                     var newNearbyPokemons = [(cell: UInt64, data: NearbyPokemonProto)]()
@@ -326,6 +330,13 @@ class WebHookRequestHandler {
                 } else {
                     Log.info(message: "[WebHookRequestHandler] [\(uuid ?? "?")] Malformed GetMapObjectsResponse")
                 }
+            } else if method == 145 && trainerLevel >= 30 || method == 145 && isMadData == true {
+                if let tenr = try? DiskEncounterOutProto(serializedData: data) {
+                    diskencounters.append(tenr)
+                    //Log.info(message: "[WebHookRequestHandler] LURE: \(tenr)")
+                } else {
+                    Log.info(message: "[WebHookRequestHandler] [\(uuid ?? "?")] Malformed DiskEncounterResponse")
+                }
             }
         }
 
@@ -390,7 +401,7 @@ class WebHookRequestHandler {
         }
 
         var data = ["nearby": nearbyPokemons.count, "wild": wildPokemons.count, "forts": forts.count,
-                    "quests": quests.count, "encounters": encounters.count, "level": trainerLevel as Any,
+                    "quests": quests.count, "encounters": encounters.count, "diskencounters": diskencounters.count, "level": trainerLevel as Any,
                     "only_empty_gmos": containsGMO && isEmtpyGMO, "fort_search": fortSearch.count,
                     "only_invalid_gmos": containsGMO && isInvalidGMO, "contains_gmos": containsGMO
         ]
@@ -766,6 +777,71 @@ class WebHookRequestHandler {
                     )
                 }
             }
+
+            if !diskencounters.isEmpty || !forts.isEmpty {
+
+                for fort in forts {
+                    if fort.data.fortType == .checkpoint {
+                        Log.info(message: "[WebHookRequestHandler fortDetails] \(fort.data.activePokemon)".white)
+                    //    let centerCoord = CLLocationCoordinate2D(latitude: diskencounter.pokemon.latitude,
+                    //                                             longitude: diskencounter.pokemon.longitude)
+                    //    let cellID = S2CellId(latlng: S2LatLng(coord: centerCoord)).parent(level: 15)
+                        //let newPokemon = Pokemon(
+                        //    mapPokemon: diskencounter.pokemon,
+                        //    fortData: mapPokemon.fortData,
+                        //    cellId: mapPokemon.cell,
+                        //    timestampMs: UInt64(Date().timeIntervalSince1970 * 1000),
+                        //    username: username,
+                        //    isEvent: isEvent
+                        //)
+                        //newPokemon.addDiskEncounter(mysql: mysql, diskencounterData: diskencounter, username: username)
+                        //try? newPokemon.save(mysql: mysql, updateIV: true)
+                    }
+                }
+                
+                let start = Date()
+                for diskencounter in diskencounters {
+                    let pokemon: Pokemon?
+                    do {
+                        pokemon = try Pokemon.getWithId(
+                            mysql: mysql,
+                            id: diskencounter.pokemon.pokemonDisplay.displayID.description,
+                            isEvent: isEvent
+                        )
+                    } catch {
+                        pokemon = nil
+                    }
+                    if pokemon != nil {
+                        pokemon!.addDiskEncounter(mysql: mysql, diskencounterData: diskencounter, username: username)
+                        try? pokemon!.save(mysql: mysql, updateIV: true)
+                    } else {
+                        Log.info(message: "[WebHookRequestHandler LURE diskencounter] \(diskencounter)".white)
+
+                    //    let centerCoord = CLLocationCoordinate2D(latitude: diskencounter.pokemon.latitude,
+                    //                                             longitude: diskencounter.pokemon.longitude)
+                    //    let cellID = S2CellId(latlng: S2LatLng(coord: centerCoord)).parent(level: 15)
+                        //let newPokemon = Pokemon(
+                        //    mapPokemon: diskencounter.pokemon,
+                        //    fortData: mapPokemon.fortData,
+                        //    cellId: mapPokemon.cell,
+                        //    timestampMs: UInt64(Date().timeIntervalSince1970 * 1000),
+                        //    username: username,
+                        //    isEvent: isEvent
+                        //)
+                        //newPokemon.addDiskEncounter(mysql: mysql, diskencounterData: diskencounter, username: username)
+                        //try? newPokemon.save(mysql: mysql, updateIV: true)
+                    }
+                }
+                if diskencounters.count > 0 {
+                    Log.info(
+                        message: "[WebHookRequestHandler] " +
+                                 "[\(uuid ?? "?")] " +
+                                 "Disk Encounter Count: \(diskencounters.count) ".red +
+                                 "parsed in \(String(format: "%.3f", Date().timeIntervalSince(start)))s"
+                    )
+                }
+            }
+
 
             if enableClearing {
                 for gymId in gymIdsPerCell {
