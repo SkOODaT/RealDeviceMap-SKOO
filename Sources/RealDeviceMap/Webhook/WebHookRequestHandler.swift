@@ -614,11 +614,26 @@ class WebHookRequestHandler {
 
             let startMapPokemon = Date()
             for mapPokemon in mapPokemons {
+                //Upsert new map pokemon
                 let pokemon = Pokemon(mysql: mysql, fortData: mapPokemon.fortData,
                                            mapPokemon: mapPokemon.pokeData, cellId: mapPokemon.cell,
                                            timestampMs: mapPokemon.timestampMs, username: username, isEvent: isEvent)
                 try? pokemon.save(mysql: mysql)
+
+                // Cache the mapping between the map pokemon DisplayId and the EncounterId
+                let displayIdCacheKey = String(mapPokemon.pokeData.pokemonDisplay.displayId)
+                Pokemon.mapPokemonDisplayIdCache?.set(id: displayIdCacheKey, value: mapPokemon.pokeData.encounterId)
+                
+                // Check if we have a pending disk encounter cache.
+                if let cachedEncounter = Pokemon.diskEncounterCache?.get(id: displayIdCacheKey) {
+                    pokemon.addDiskEncounter(mysql: mysql, diskencounterData: cachedEncounter, username: username)
+                    try? pokemon.save(mysql: mysql, updateIV: true)
+                } else {
+                    Log.info(message: "[WebHookRequestHandler LURE mapPokemon] We've received a map pokemon, just waiting for the disk encounter data.".white)
+                }
+
             }
+
             if !nearbyPokemons.isEmpty {
                 Log.debug(message: "[WebHookRequestHandler] " +
                                    "[\(uuid ?? "?")] " +
@@ -778,58 +793,36 @@ class WebHookRequestHandler {
                 }
             }
 
-            if !diskencounters.isEmpty || !forts.isEmpty {
+            if !diskencounters.isEmpty {
 
-                for fort in forts {
-                    if fort.data.fortType == .checkpoint {
-                        Log.info(message: "[WebHookRequestHandler fortDetails] \(fort.data.activePokemon)".white)
-                    //    let centerCoord = CLLocationCoordinate2D(latitude: diskencounter.pokemon.latitude,
-                    //                                             longitude: diskencounter.pokemon.longitude)
-                    //    let cellID = S2CellId(latlng: S2LatLng(coord: centerCoord)).parent(level: 15)
-                        //let newPokemon = Pokemon(
-                        //    mapPokemon: diskencounter.pokemon,
-                        //    fortData: mapPokemon.fortData,
-                        //    cellId: mapPokemon.cell,
-                        //    timestampMs: UInt64(Date().timeIntervalSince1970 * 1000),
-                        //    username: username,
-                        //    isEvent: isEvent
-                        //)
-                        //newPokemon.addDiskEncounter(mysql: mysql, diskencounterData: diskencounter, username: username)
-                        //try? newPokemon.save(mysql: mysql, updateIV: true)
-                    }
-                }
-                
                 let start = Date()
                 for diskencounter in diskencounters {
-                    let pokemon: Pokemon?
-                    do {
-                        pokemon = try Pokemon.getWithId(
-                            mysql: mysql,
-                            id: diskencounter.pokemon.pokemonDisplay.displayID.description,
-                            isEvent: isEvent
-                        )
-                    } catch {
-                        pokemon = nil
-                    }
-                    if pokemon != nil {
-                        pokemon!.addDiskEncounter(mysql: mysql, diskencounterData: diskencounter, username: username)
-                        try? pokemon!.save(mysql: mysql, updateIV: true)
-                    } else {
-                        Log.info(message: "[WebHookRequestHandler LURE diskencounter] \(diskencounter)".white)
+                    //Cache the encounter
+                    let displayIdCacheKey = String(diskencounter.pokemonData.pokemonDisplay.displayId)
+                    Pokemon.diskEncounterCache?.set(id: displayIdCacheKey, value: diskencounter)
 
-                    //    let centerCoord = CLLocationCoordinate2D(latitude: diskencounter.pokemon.latitude,
-                    //                                             longitude: diskencounter.pokemon.longitude)
-                    //    let cellID = S2CellId(latlng: S2LatLng(coord: centerCoord)).parent(level: 15)
-                        //let newPokemon = Pokemon(
-                        //    mapPokemon: diskencounter.pokemon,
-                        //    fortData: mapPokemon.fortData,
-                        //    cellId: mapPokemon.cell,
-                        //    timestampMs: UInt64(Date().timeIntervalSince1970 * 1000),
-                        //    username: username,
-                        //    isEvent: isEvent
-                        //)
-                        //newPokemon.addDiskEncounter(mysql: mysql, diskencounterData: diskencounter, username: username)
-                        //try? newPokemon.save(mysql: mysql, updateIV: true)
+                    // Check the cache for the encounter id.
+                    if let encounterId = Pokemon.mapPokemonDisplayIdCache?.get(id: displayIdCacheKey) {
+                        
+                        let pokemon: Pokemon?
+                        do {
+                            pokemon = try Pokemon.getWithId(
+                                mysql: mysql,
+                                id: encounterId,
+                                isEvent: isEvent
+                            )
+                        } catch {
+                            pokemon = nil
+                        }
+
+                        if pokemon != nil {
+                            pokemon!.addDiskEncounter(mysql: mysql, diskencounterData: diskencounter, username: username)
+                            try? pokemon!.save(mysql: mysql, updateIV: true)
+                        } else {
+                            Log.info(message: "[WebHookRequestHandler LURE diskencounter] \(diskencounter)".white)
+                        }
+                    } else {
+                        Log.info(message: "[WebHookRequestHandler LURE diskencounter] We've received a diskencounter before a map pokemon was available.".white)
                     }
                 }
                 if diskencounters.count > 0 {
