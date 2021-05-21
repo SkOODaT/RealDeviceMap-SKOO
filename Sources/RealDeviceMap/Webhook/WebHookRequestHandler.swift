@@ -621,8 +621,8 @@ class WebHookRequestHandler {
                 try? pokemon.save(mysql: mysql)
 
                 // Cache the mapping between the map pokemon DisplayId and the EncounterId
-                let displayIdCacheKey = String(mapPokemon.pokemonDisplay.displayId)
-                Pokemon.mapPokemonDisplayIdCache?.set(id: displayIdCacheKey, value: mapPokemon.pokeData.encounterId)
+                let displayIdCacheKey = String(mapPokemon.pokeData.pokemonDisplay.displayID)
+                Pokemon.mapPokemonDisplayIdCache?.set(id: displayIdCacheKey, value: mapPokemon.pokeData.encounterID.description)
                 
                 // Check if we have a pending disk encounter cache.
                 if let cachedEncounter = Pokemon.diskEncounterCache?.get(id: displayIdCacheKey) {
@@ -798,7 +798,7 @@ class WebHookRequestHandler {
                 let start = Date()
                 for diskencounter in diskencounters {
                     //Cache the encounter
-                    let displayIdCacheKey = String(diskencounter.pokemonData.pokemonDisplay.displayId)
+                    let displayIdCacheKey = String(diskencounter.pokemon.pokemonDisplay.displayID.description)
                     Pokemon.diskEncounterCache?.set(id: displayIdCacheKey, value: diskencounter)
 
                     // Check the cache for the encounter id.
