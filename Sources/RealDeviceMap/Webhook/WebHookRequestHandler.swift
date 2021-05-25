@@ -629,7 +629,7 @@ class WebHookRequestHandler {
                     try? pokemon.save(mysql: mysql, updateIV: true)
                 //} else {
                 //    Log.debug(message: "[WebHookRequestHandler] Received map pokemon, " +
-                //                         "Waiting for disk encounter.".white)
+                //                       "Waiting for disk encounter.".white)
                 }
             }
 
@@ -817,7 +817,7 @@ class WebHookRequestHandler {
                         }
                     //} else {
                     //    Log.debug(message: "[WebHookRequestHandler] Received diskencounter" +
-                    //                      " before mappokemon.".white)
+                    //                       " before mappokemon.".white)
                     }
                 }
                 if diskencounters.count > 0 {
