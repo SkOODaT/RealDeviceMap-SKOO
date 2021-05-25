@@ -58,6 +58,7 @@ let showCells
 let showWeathers
 let showDevices
 let showRaidTimers
+let showRocketIcons
 let showRocketTimers
 let showSubmissionCells
 
@@ -654,6 +655,9 @@ function loadStorage () {
   const pokestopFilterValue = retrieve('pokestop_filter')
   if (pokestopFilterValue === null) {
     const defaultPokestopFilter = {}
+    if (defaultPokestopFilter.icons === undefined) {
+      defaultPokestopFilter.icons = {show: true, size: 'normal'}
+    }
     if (defaultPokestopFilter.timers === undefined) {
       defaultPokestopFilter.timers = {show: true, size: 'normal'}
     }
@@ -677,6 +681,18 @@ function loadStorage () {
     pokestopFilter = defaultPokestopFilter
   } else {
     pokestopFilter = JSON.parse(pokestopFilterValue)
+    //if (pokestopFilter.icons === undefined) {
+    //  pokestopFilter.icons = {show: true, size: 'normal'}
+    //  showRocketIcons = true
+    //} else {
+    //  showRocketIcons = pokestopFilter.icons.show
+    //}
+    if (pokestopFilter.icons === undefined) {
+      pokestopFilter.icons = {show: true, size: 'normal'}
+      showRocketIcons = true
+    } else {
+      showRocketIcons = pokestopFilter.icons.show
+    }
     if (pokestopFilter.timers === undefined) {
       pokestopFilter.timers = {show: true, size: 'normal'}
       showRocketTimers = true
@@ -941,6 +957,7 @@ function initMap () {
 
   $('#reset-pokestop-filter').on('click', function () {
     const defaultPokestopFilter = {}
+    defaultPokestopFilter.icons = {show: true, size: 'normal'}
     defaultPokestopFilter.timers = {show: true, size: 'normal'}
     defaultPokestopFilter.normal = { show: true, size: 'normal' }
     for (var i = 1; i < 6; i++) {
@@ -957,7 +974,8 @@ function initMap () {
 
   $('#disable-all-pokestop-filter').on('click', function () {
     const defaultPokestopFilter = {}
-    defaultPokestopFilter.timers = {show: false, size: raidFilterNew.timers.size}
+    defaultPokestopFilter.icons = {show: false, size: pokestopFilterNew.icons.size}
+    defaultPokestopFilter.timers = {show: false, size: pokestopFilterNew.timers.size}
     defaultPokestopFilter.normal = { show: false, size: pokestopFilterNew.normal.size }
     for (var i = 1; i < 6; i++) {
       defaultPokestopFilter['l' + i] = { show: false, size: pokestopFilterNew['l' + i].size }
@@ -1154,6 +1172,11 @@ function initMap () {
     const newShowRaidTimers = raidFilter.timers.show
     if (newShowRaidTimers !== showRaidTimers) {
       showRaidTimers = newShowRaidTimers
+    }
+
+    let newShowRocketIcons = pokestopFilter.icons.show
+    if (newShowRocketIcons !== showRocketIcons) {
+      showRocketIcons = newShowRocketIcons
     }
 
     let newShowRocketTimers = pokestopFilter.timers.show
@@ -1449,6 +1472,9 @@ function loadData () {
   const pokestopFilterExclude = []
   if (showPokestops) {
     //REVIEW: Probably not needed
+    if (pokestopFilter.icons.show === false) {
+      pokestopFilterExclude.push('icons')
+    }
     if (pokestopFilter.timers.show === false) {
       pokestopFilterExclude.push('timers')
     }
@@ -2215,6 +2241,8 @@ function updateMapTimers () {
     if (pokestopFilter.invasion.show === true) {
       setPokestopMarker(marker)
     } else if (showRocketTimers) {
+      setPokestopMarker(marker)
+    } else if (showRocketIcons) {
       setPokestopMarker(marker)
     } else {
       marker.marker.unbindTooltip()
@@ -3507,7 +3535,7 @@ function getPokestopMarkerIcon (pokestop, ts) {
     }
 
     let invasionString
-    if (pokestop.incident_expire_timestamp >= ts) {
+    if ((pokestop.is_start || pokestopFilter.invasion.show === true) && pokestop.incident_expire_timestamp >= ts) {
       invasionString = 'i'
     } else {
       invasionString = ''
@@ -3519,17 +3547,14 @@ function getPokestopMarkerIcon (pokestop, ts) {
       popupAnchor: [0, size * -1.567]
     })
   } else {
-
     let lureId
     if (pokestop.lure_expire_timestamp >= ts) {
       lureId = getLureIconId(pokestop.lure_id)
     } else {
       lureId = 0
     }
-
     let invasionString
-
-    if (pokestop.incident_expire_timestamp >= ts) {
+    if ((pokestop.is_start || pokestopFilter.invasion.show === true) && pokestop.incident_expire_timestamp >= ts) {
       invasionString = 'i'
     } else {
       invasionString = ''
@@ -3823,15 +3848,15 @@ function setPokestopMarker(pokestop) {
     var type = "<img src='/static/img/grunttype/"+pokestop.grunt_type+".png' height='25' width='25'>"
     if (pokestop.marker.timerSet) {
       var text = ""
-      if (pokestopFilter["invasion"]["show"] === true) {
+      if (pokestopFilter["invasion"]["show"] === true && showRocketIcons) {
         text += "<div class='type-tip'><span class='p-1'>" + type + "</span></div>"
       }
-      if (showRocketTimers) {
+      if (pokestopFilter["invasion"]["show"] === true && showRocketTimers) {
         text += "<div class='rounded pokestop-timer'><span class='p-1'>" + timer + "</span></div>"
       }
       pokestop.marker.setTooltipContent(text)
     } else {
-      var options = {permanent: true, className: "leaflet-tooltip", direction: "center", offset: [-15, 25]}
+      var options = {permanent: true, className: "leaflet-tooltip", direction: "center", offset: [-5, 0]}
       /*var tooltip =*/ pokestop.marker.bindTooltip(text, options)
       pokestop.marker.timerSet = true
     }
@@ -3973,18 +3998,6 @@ function manageSelectButton (e, isNew) {
       case 'show':
         shouldShow = raidFilterNew[id].show === true
         break
-      case 'small':
-        shouldShow = raidFilterNew[id].size === 'small'
-        break
-      case 'normal':
-        shouldShow = raidFilterNew[id].size === 'normal'
-        break
-      case 'large':
-        shouldShow = raidFilterNew[id].size === 'large'
-        break
-      case 'huge':
-        shouldShow = raidFilterNew[id].size === 'huge'
-        break
     }
   } else if (type === 'raid-level') {
     switch (info) {
@@ -4091,6 +4104,15 @@ function manageSelectButton (e, isNew) {
         shouldShow = gymFilterNew['s' + id].size === 'huge'
         break
     }
+  } else if (type === 'rocket-icons') {
+    switch (info) {
+      case 'hide':
+        shouldShow = pokestopFilterNew[id].show === false;
+        break
+      case 'show':
+        shouldShow = pokestopFilterNew[id].show === true;
+        break
+    }
   } else if (type === 'rocket-timers') {
     switch (info) {
       case 'hide':
@@ -4099,18 +4121,6 @@ function manageSelectButton (e, isNew) {
       case 'show':
         shouldShow = pokestopFilterNew[id].show === true;
         break
-      case 'small':
-        shouldShow = pokestopFilterNew[id].size === 'small'
-        break
-      case 'normal':
-        shouldShow = pokestopFilterNew[id].size === 'normal'
-        break
-      case 'large':
-        shouldShow = pokestopFilterNew[id].size === 'large'
-        break
-      case 'huge':
-        shouldShow = pokestopFilterNew[id].size === 'huge'
-      break
     }
   } else if (type === 'pokestop-normal') {
     switch (info) {
@@ -4359,18 +4369,6 @@ function manageSelectButton (e, isNew) {
           case 'show':
             raidFilterNew[id].show = true
             break
-          case 'small':
-            raidFilterNew[id].size = 'small'
-            break
-          case 'normal':
-            raidFilterNew[id].size = 'normal'
-            break
-          case 'large':
-            raidFilterNew[id].size = 'large'
-            break
-          case 'huge':
-            raidFilterNew[id].size = 'huge'
-            break
         }
       } else if (type === 'raid-level') {
         switch (info) {
@@ -4477,7 +4475,7 @@ function manageSelectButton (e, isNew) {
             gymFilterNew['s' + id].size = 'huge'
             break
         }
-      } else if (type === 'rocket-timers') {
+      } else if (type === 'rocket-icons') {
         switch (info) {
           case 'hide':
             pokestopFilterNew[id].show = false
@@ -4485,17 +4483,14 @@ function manageSelectButton (e, isNew) {
           case 'show':
             pokestopFilterNew[id].show = true
             break
-          case 'small':
-            pokestopFilterNew[id].size = 'small'
+        }
+      } else if (type === 'rocket-timers') {
+        switch (info) {
+          case 'hide':
+            pokestopFilterNew[id].show = false
             break
-          case 'normal':
-            pokestopFilterNew[id].size = 'normal'
-            break
-          case 'large':
-            pokestopFilterNew[id].size = 'large'
-            break
-          case 'huge':
-            pokestopFilterNew[id].size = 'huge'
+          case 'show':
+            pokestopFilterNew[id].show = true
             break
         }
       } else if (type === 'pokestop-normal') {

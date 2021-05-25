@@ -702,8 +702,8 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
                 excludePokestopSQL += "(\(hasLureSQL) AND \(hasNoInvasionSQL))"
             } else if excludeNormal && !excludeInvasion {
                 excludePokestopSQL += "(\(hasLureSQL) OR \(hasInvasionSQL))"
-            } else if !excludeNormal && excludeInvasion {
-                excludePokestopSQL += "((\(hasNoLureSQL) OR \(hasLureSQL)) AND \(hasNoInvasionSQL))"
+            //} else if !excludeNormal && excludeInvasion {
+            //    excludePokestopSQL += "((\(hasNoLureSQL) OR \(hasLureSQL)) AND \(hasNoInvasionSQL))"
             } else {
                 excludePokestopSQL += "(\(hasNoLureSQL) OR \(hasLureSQL))"
             }
@@ -713,7 +713,8 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
         }
 
         if excludeInvasionButLeaders {
-            excludeInvasionButLeadersSQL = "AND (grunt_type IN (41,42,43,44))"
+            excludeInvasionButLeadersSQL = "AND (grunt_type IN (41,42,43,44) AND incident_expire_timestamp >= " +
+                                                 "UNIX_TIMESTAMP())"
         } else {
             excludeInvasionButLeadersSQL = ""
         }
