@@ -100,6 +100,8 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
                 "latitude": lat,
                 "longitude": lon,
                 "team_id": teamId ?? 0,
+                "slots_available": availbleSlots ?? 6,
+                "in_battle": inBattle ?? 0,
                 "spawn": raidSpawnTimestamp ?? 0,
                 "start": raidBattleTimestamp ?? 0,
                 "end": raidEndTimestamp ?? 0,
