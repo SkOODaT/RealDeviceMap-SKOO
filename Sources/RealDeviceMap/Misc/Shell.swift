@@ -31,7 +31,7 @@ class Shell {
         }
         task.standardOutput = pipe
         do {
-           try task.run()
+            try task.run()
         } catch {
             print("[SHELL] Task.Run() Error")
         }
@@ -56,7 +56,7 @@ class Shell {
         }
         task.standardError = pipe
         do {
-           try task.run()
+            try task.run()
         } catch {
             print("[SHELL] Task.Run() Error")
         }

@@ -793,7 +793,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
 
             if oldPokemon!.spawnId != nil && oldPokemon!.mapStatus == UInt8(3) {
                 //Log.info(message: "[POKEMON] oldPokemon \(id) \(oldPokemon!.mapStatus)")
-               // self.mapStatus = UInt8(1)
+                //self.mapStatus = UInt8(1)
             }
             if self.spawnId != nil && self.mapStatus == UInt8(3) {
                 //Log.info(message: "[POKEMON] \(id) \(self.mapStatus)")
