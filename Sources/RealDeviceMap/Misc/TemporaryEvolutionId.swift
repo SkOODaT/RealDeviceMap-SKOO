@@ -12,10 +12,10 @@ import PerfectLib
 extension HoloTemporaryEvolutionId {
 
     public static var allCases: [HoloTemporaryEvolutionId] = [
-        .tempEvolutionUnset,
         .tempEvolutionMega,
         .tempEvolutionMegaX,
-        .tempEvolutionMegaY
+        .tempEvolutionMegaY,
+        .tempEvolutionUnset
     ]
 
     static var allTemporaryEvolutionIdsInString: [String] {
@@ -31,14 +31,11 @@ extension HoloTemporaryEvolutionId {
     var temporaryevolutionStrings: [String] {
 
         switch self {
-        case .tempEvolutionUnset: return ["0"]
         case .tempEvolutionMega: return ["1"]
         case .tempEvolutionMegaX: return ["2"]
         case .tempEvolutionMegaY: return ["3"]
+        case .tempEvolutionUnset: return ["0"]
         case .UNRECOGNIZED: return []
-        default:
-            Log.warning(message: "Missing temporaryevolution string for temporaryevolution: \(self.rawValue)")
-            return []
         }
     }
 }
