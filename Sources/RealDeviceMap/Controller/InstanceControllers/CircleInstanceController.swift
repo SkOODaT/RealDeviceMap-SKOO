@@ -60,10 +60,10 @@ class CircleInstanceController: InstanceControllerProto {
 
         if type == .pokemon {
             return ["action": "scan_pokemon", "lat": currentCoord.lat, "lon": currentCoord.lon,
-                    "min_level": minLevel, "max_level": maxLevel]
+                    "min_level": minLevel, "max_level": maxLevel, "lure_encounter": true]
         } else {
             return ["action": "scan_raid", "lat": currentCoord.lat, "lon": currentCoord.lon,
-                    "min_level": minLevel, "max_level": maxLevel]
+                    "min_level": minLevel, "max_level": maxLevel, "lure_encounter": true]
         }
 
     }

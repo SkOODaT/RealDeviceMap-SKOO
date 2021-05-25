@@ -355,7 +355,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
         id = mapPokemon.encounterID.description
         pokemonId = mapPokemon.pokedexTypeID.toUInt16()
         pokestopId = fortData.fortID
-        self.spawnId = UInt64(mapPokemon.spawnpointID)
+        //self.spawnId = UInt64(mapPokemon.spawnpointID)
         self.lat = fortData.latitude
         self.lon = fortData.longitude
         self.gender = mapPokemon.pokemonDisplay.gender.rawValue.toUInt8()
@@ -367,7 +367,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
             //shiny = mapPokemon.pokemonDisplay.shiny
         }
         self.username = username
-        Log.info(message: "[POKEMON MAP] \(mapPokemon.spawnpointID)".white)
+
         if mapPokemon.expirationTimeMs > 0 {
             expireTimestamp = UInt32((0 + UInt64(mapPokemon.expirationTimeMs)) / 1000)
             expireTimestampVerified = true
@@ -506,7 +506,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
 
     public func addDiskEncounter(mysql: MySQL, diskencounterData: DiskEncounterOutProto,
                              username: String?) {
-        Log.info(message: "[POKEMON LURE] \(diskencounterData)".white)
+
         let pokemonId = UInt16(diskencounterData.pokemon.pokemonID.rawValue)
         let cp = UInt16(diskencounterData.pokemon.cp)
         let move1 = UInt16(diskencounterData.pokemon.move1.rawValue)

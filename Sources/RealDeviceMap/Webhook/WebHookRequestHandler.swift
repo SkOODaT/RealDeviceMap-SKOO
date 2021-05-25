@@ -200,6 +200,9 @@ class WebHookRequestHandler {
             } else if let enr = rawData["EncounterResponse"] as? String {
                 data = Data(base64Encoded: enr) ?? Data()
                 method = 102
+            } else if let denr = rawData["DiskEncounterResponse"] as? String {
+                data = Data(base64Encoded: denr) ?? Data()
+                method = 145
             } else if let fdr = rawData["FortDetailsResponse"] as? String {
                 data = Data(base64Encoded: fdr) ?? Data()
                 method = 104
@@ -215,9 +218,6 @@ class WebHookRequestHandler {
             } else if let madString = rawData["payload"] as? String {
                 data = Data(base64Encoded: madString) ?? Data()
                 method = rawData["type"] as? Int ?? 106
-            } else if let tenr = rawData["DiskEncounterResponse"] as? String {
-                data = Data(base64Encoded: tenr) ?? Data()
-                method = 145
             } else {
                 continue
             }
@@ -243,6 +243,12 @@ class WebHookRequestHandler {
                     encounters.append(enr)
                 } else {
                     Log.info(message: "[WebHookRequestHandler] [\(uuid ?? "?")] Malformed EncounterResponse")
+                }
+            } else if method == 145 && trainerLevel >= 30 || method == 145 && isMadData == true {
+                if let denr = try? DiskEncounterOutProto(serializedData: data) {
+                    diskencounters.append(denr)
+                } else {
+                    Log.info(message: "[WebHookRequestHandler] [\(uuid ?? "?")] Malformed DiskEncounterResponse")
                 }
             } else if method == 104 {
                 if let fdr = try? FortDetailsOutProto(serializedData: data) {
@@ -329,13 +335,6 @@ class WebHookRequestHandler {
                     }
                 } else {
                     Log.info(message: "[WebHookRequestHandler] [\(uuid ?? "?")] Malformed GetMapObjectsResponse")
-                }
-            } else if method == 145 && trainerLevel >= 30 || method == 145 && isMadData == true {
-                if let tenr = try? DiskEncounterOutProto(serializedData: data) {
-                    diskencounters.append(tenr)
-                    //Log.info(message: "[WebHookRequestHandler] LURE: \(tenr)")
-                } else {
-                    Log.info(message: "[WebHookRequestHandler] [\(uuid ?? "?")] Malformed DiskEncounterResponse")
                 }
             }
         }
@@ -619,19 +618,17 @@ class WebHookRequestHandler {
                                            mapPokemon: mapPokemon.pokeData, cellId: mapPokemon.cell,
                                            timestampMs: mapPokemon.timestampMs, username: username, isEvent: isEvent)
                 try? pokemon.save(mysql: mysql)
-
-                // Cache the mapping between the map pokemon DisplayId and the EncounterId
+                //Cache the mapping between the map pokemon DisplayId and the EncounterId
                 let displayIdCacheKey = String(mapPokemon.pokeData.pokemonDisplay.displayID)
-                Pokemon.mapPokemonDisplayIdCache?.set(id: displayIdCacheKey, value: mapPokemon.pokeData.encounterID.description)
-                
-                // Check if we have a pending disk encounter cache.
+                Pokemon.mapPokemonDisplayIdCache?.set(id: displayIdCacheKey, 
+                                                        value: mapPokemon.pokeData.encounterID.description)
+                //Check if we have a pending disk encounter cache.
                 if let cachedEncounter = Pokemon.diskEncounterCache?.get(id: displayIdCacheKey) {
                     pokemon.addDiskEncounter(mysql: mysql, diskencounterData: cachedEncounter, username: username)
                     try? pokemon.save(mysql: mysql, updateIV: true)
-                } else {
-                    Log.info(message: "[WebHookRequestHandler LURE mapPokemon] We've received a map pokemon, just waiting for the disk encounter data.".white)
+                //} else {
+                //    Log.debug(message: "[WebHookRequestHandler] Received map pokemon, Waiting for disk encounter.".white)
                 }
-
             }
 
             if !nearbyPokemons.isEmpty {
@@ -794,16 +791,13 @@ class WebHookRequestHandler {
             }
 
             if !diskencounters.isEmpty {
-
                 let start = Date()
                 for diskencounter in diskencounters {
                     //Cache the encounter
                     let displayIdCacheKey = String(diskencounter.pokemon.pokemonDisplay.displayID.description)
                     Pokemon.diskEncounterCache?.set(id: displayIdCacheKey, value: diskencounter)
-
-                    // Check the cache for the encounter id.
+                    //Check the cache for the encounter id.
                     if let encounterId = Pokemon.mapPokemonDisplayIdCache?.get(id: displayIdCacheKey) {
-                        
                         let pokemon: Pokemon?
                         do {
                             pokemon = try Pokemon.getWithId(
@@ -814,19 +808,17 @@ class WebHookRequestHandler {
                         } catch {
                             pokemon = nil
                         }
-
                         if pokemon != nil {
                             pokemon!.addDiskEncounter(mysql: mysql, diskencounterData: diskencounter, username: username)
                             try? pokemon!.save(mysql: mysql, updateIV: true)
-                        } else {
-                            Log.info(message: "[WebHookRequestHandler LURE diskencounter] \(diskencounter)".white)
                         }
-                    } else {
-                        Log.info(message: "[WebHookRequestHandler LURE diskencounter] We've received a diskencounter before a map pokemon was available.".white)
+                    //} else {
+                    //    Log.debug(message: "[WebHookRequestHandler] Received diskencounter" +
+                    //                      " before mappokemon.".white)
                     }
                 }
                 if diskencounters.count > 0 {
-                    Log.info(
+                    Log.debug(
                         message: "[WebHookRequestHandler] " +
                                  "[\(uuid ?? "?")] " +
                                  "Disk Encounter Count: \(diskencounters.count) ".red +
@@ -834,7 +826,6 @@ class WebHookRequestHandler {
                     )
                 }
             }
-
 
             if enableClearing {
                 for gymId in gymIdsPerCell {
