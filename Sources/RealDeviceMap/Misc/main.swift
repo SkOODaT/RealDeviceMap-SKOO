@@ -13,6 +13,7 @@ import PerfectHTTPServer
 import TurnstileCrypto
 import POGOProtos
 import Backtrace
+import Rainbow
 
 Backtrace.install()
 
@@ -32,16 +33,13 @@ let projectroot = ProcessInfo.processInfo.environment["PROJECT_DIR"] ?? Dir.work
 let projectroot = Dir.workingDir.path
 #endif
 
-Log.info(message: "[MAIN] Getting Version")
+Log.info(message: "[MAIN] Getting Version".green)
 _ = VersionManager.global
 
 // Starting Startup Webserver
-Log.info(message: "[MAIN] Starting Startup Webserver")
+Log.info(message: "[MAIN] Starting Startup Webserver".green)
 var startupServer: HTTPServer.Server? = WebServer.startupServer
 var startupServerContext: HTTPServer.LaunchContext? = try! HTTPServer.launch(wait: false, startupServer!)[0]
-
-Log.info(message: "[MAIN] Getting Version")
-_ = VersionManager.global
 
 // Check if /backups exists
 let backups = Dir("\(projectroot)/backups")
@@ -50,12 +48,12 @@ try? backups.create()
 #endif
 if !backups.exists {
     let message = "[MAIN] Backups directory doesn't exist! Make sure to persist the backups folder before continuing."
-    Log.critical(message: message)
+    Log.critical(message: message.red)
     fatalError(message)
 }
 
 // Init DBController
-Log.info(message: "[MAIN] Starting Database Controller")
+Log.info(message: "[MAIN] Starting Database Controller".green)
 _ = DBController.global
 
 // Init MemoryCache
@@ -63,7 +61,7 @@ if ProcessInfo.processInfo.environment["NO_MEMORY_CACHE"] == nil {
     let memoryCacheClearInterval = ProcessInfo.processInfo.environment["MEMORY_CACHE_CLEAR_INTERVAL"]?.toDouble() ?? 900
     let memoryCacheKeepTime = ProcessInfo.processInfo.environment["MEMORY_CACHE_KEEP_TIME"]?.toDouble() ?? 3600
     Log.info(message:
-        "[MAIN] Starting Memory Cache with interval \(memoryCacheClearInterval) and keep time \(memoryCacheKeepTime)"
+        "[MAIN] Starting Memory Cache with interval \(memoryCacheClearInterval) and keep time \(memoryCacheKeepTime)".green
     )
     Pokestop.cache = MemoryCache(interval: memoryCacheClearInterval, keepTime: memoryCacheKeepTime)
     Pokemon.cache = MemoryCache(interval: memoryCacheClearInterval, keepTime: memoryCacheKeepTime)
@@ -74,21 +72,21 @@ if ProcessInfo.processInfo.environment["NO_MEMORY_CACHE"] == nil {
     Pokemon.diskEncounterCache = MemoryCache(interval: memoryCacheClearInterval, keepTime: 300)
     Pokemon.mapPokemonDisplayIdCache = MemoryCache(interval: memoryCacheClearInterval, keepTime: 300)
 } else {
-    Log.info(message: "[MAIN] Memory Cache deactivated")
+    Log.info(message: "[MAIN] Memory Cache deactivated".red)
 }
 
 // Load Groups
-Log.info(message: "[MAIN] Loading groups")
+Log.info(message: "[MAIN] Loading groups".green)
 do {
     try Group.setup()
 } catch {
     let message = "[MAIN] Failed to load groups (\(error.localizedDescription))"
-    Log.critical(message: message)
+    Log.critical(message: message.red)
     fatalError(message)
 }
 
 // Load timezone
-Log.info(message: "[MAIN] Loading Timezone")
+Log.info(message: "[MAIN] Loading Timezone".green)
 if let result = Shell("date", "+%z").run()?.replacingOccurrences(of: "\n", with: "") {
     let sign = result.substring(toIndex: 1)
     if let hours = Int(result.substring(toIndex: 3).substring(fromIndex: 1)),
@@ -106,7 +104,7 @@ if let result = Shell("date", "+%z").run()?.replacingOccurrences(of: "\n", with:
 }
 
 // Load Settings
-Log.info(message: "[MAIN] Loading Settings")
+Log.info(message: "[MAIN] Loading Settings".green)
 WebReqeustHandler.startLat = try! DBController.global.getValueForKey(key: "MAP_START_LAT")!.toDouble()!
 WebReqeustHandler.startLon = try! DBController.global.getValueForKey(key: "MAP_START_LON")!.toDouble()!
 WebReqeustHandler.startZoom = try! DBController.global.getValueForKey(key: "MAP_START_ZOOM")!.toInt()!
@@ -197,16 +195,16 @@ if let webhookDelay = Double(webhookDelayString) {
 
 // Init Instance Contoller
 do {
-    Log.info(message: "[MAIN] Starting Instance Controller")
+    Log.info(message: "[MAIN] Starting Instance Controller".green)
     try InstanceController.setup()
 } catch {
     let message = "[MAIN] Failed to setup InstanceController"
-    Log.critical(message: message)
+    Log.critical(message: message.red)
     fatalError(message)
 }
 
 // Start WebHookController
-Log.info(message: "[MAIN] Starting Webhook Controller")
+Log.info(message: "[MAIN] Starting Webhook Controller".green)
 WebHookController.global.start()
 
 // Load Forms
@@ -231,7 +229,7 @@ WebHookController.global.start()
 //}
 
 // Load Forms
-Log.info(message: "[MAIN] Loading Avilable Forms")
+Log.info(message: "[MAIN] Loading Avilable Forms".green)
 var avilableForms = [String]()
 do {
     for formString in PokemonDisplayProto.Form.allFormsInString {
@@ -248,7 +246,7 @@ do {
 }
 
 // Load Costumes
-Log.debug(message: "[MAIN] Loading Avilable Costumes")
+Log.debug(message: "[MAIN] Loading Avilable Costumes".green)
 var avilableCostumes = [String]()
 do {
     for costumeString in PokemonDisplayProto.Costume.allCostumesInString {
@@ -259,11 +257,11 @@ do {
     }
     WebReqeustHandler.avilableCostumesJson = try avilableCostumes.jsonEncodedString()
 } catch {
-    Log.error(message: "Failed to load costumes. Error: \(error.localizedDescription)")
+    Log.error(message: "Failed to load costumes. Error: \(error.localizedDescription)".red)
 }
 
 // Load Pokemon Evolutions
-Log.debug(message: "[MAIN] Loading Avilable Pokemon Evolutions")
+Log.debug(message: "[MAIN] Loading Avilable Pokemon Evolutions".green)
 var avilablePokemonEvolutions = [String]()
 do {
     for temporaryevolutionString in HoloTemporaryEvolutionId.allTemporaryEvolutionIdsInString {
@@ -274,10 +272,10 @@ do {
     }
     WebReqeustHandler.avilablePokemonEvolutionsJson = try avilablePokemonEvolutions.jsonEncodedString()
 } catch {
-    Log.error(message: "Failed to load pokemon evolutions. Error: \(error.localizedDescription)")
+    Log.error(message: "Failed to load pokemon evolutions. Error: \(error.localizedDescription)".red)
 }
 
-Log.info(message: "[MAIN] Loading Avilable Items")
+Log.info(message: "[MAIN] Loading Avilable Items".green)
 var aviableItems = [-6, -5, -4, -3, -2, -1]
 for itemId in Item.allAvilable {
     aviableItems.append(itemId.rawValue)
@@ -289,35 +287,35 @@ Pokemon.noWeatherIVClearing = ProcessInfo.processInfo.environment["NO_IV_WEATHER
 InstanceController.noRequireAccount = ProcessInfo.processInfo.environment["NO_REQUIRE_ACCOUNT"] != nil
 
 if !Pokemon.noPVP {
-    Log.info(message: "[MAIN] Getting PVP Stats")
+    Log.info(message: "[MAIN] Getting PVP Stats".green)
     _ = PVPStatsManager.global
 } else {
-    Log.info(message: "[MAIN] PVP Stats deactivated")
+    Log.info(message: "[MAIN] PVP Stats deactivated".red)
 }
 
-Log.info(message: "[MAIN] Starting Webhook")
+Log.info(message: "[MAIN] Starting Webhook".green)
 WebHookController.global.webhookURLStrings = webhookUrlStrings.components(separatedBy: ";")
 
-Log.info(message: "[MAIN] Starting Account Controller")
+Log.info(message: "[MAIN] Starting Account Controller".green)
 AccountController.global.setup()
 
-Log.info(message: "[MAIN] Starting Assignement Controller")
+Log.info(message: "[MAIN] Starting Assignement Controller".green)
 do {
     try AssignmentController.global.setup()
 } catch {
     let message = "[MAIN] Failed to start Assignement Controller"
-    Log.critical(message: message)
+    Log.critical(message: message.red)
     fatalError(message)
 }
 
 // Check if is setup
-Log.info(message: "[MAIN] Checking if setup is completed")
+Log.info(message: "[MAIN] Checking if setup is completed".cyan)
 let isSetup: String?
 do {
     isSetup = try DBController.global.getValueForKey(key: "IS_SETUP")
 } catch {
     let message = "Failed to get setup status."
-    Log.critical(message: "[Main] " + message)
+    Log.critical(message: "[Main] " + message.red)
     fatalError(message)
 }
 
@@ -330,26 +328,26 @@ if isSetup != nil && isSetup == "true" {
 }
 
 // Start MailController
-Log.info(message: "[MAIL] Starting Mail Controller")
+Log.info(message: "[MAIL] Starting Mail Controller".green)
 try! MailController.global.setup()
 
 // Start DiscordController
-Log.info(message: "[MAIL] Starting Discord Controller")
+Log.info(message: "[MAIL] Starting Discord Controller".green)
 try! DiscordController.global.setup()
 
 // Create Raid images
-Log.info(message: "[MAIN] Starting Images Generator")
+Log.info(message: "[MAIN] Starting Images Generator".green)
 ImageGenerator.generate()
 
 // Stopping Startup Webserver
-Log.info(message: "[MAIN] Stopping Startup Webserver")
+Log.info(message: "[MAIN] Stopping Startup Webserver".red)
 startupServerContext!.terminate()
 startupServer = nil
 startupServerContext = nil
 
 ApiRequestHandler.start = Date()
 
-Log.info(message: "[MAIN] Starting Webserves")
+Log.info(message: "[MAIN] Starting Webservers".green)
 do {
     try HTTPServer.launch(
         [
@@ -359,6 +357,6 @@ do {
     )
 } catch {
     let message = "Failed to launch Servers: \(error.localizedDescription)"
-    Log.critical(message: message)
+    Log.critical(message: message.red)
     fatalError(message)
 }

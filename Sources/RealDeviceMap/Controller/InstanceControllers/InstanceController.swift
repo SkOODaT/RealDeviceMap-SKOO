@@ -13,6 +13,7 @@ import PerfectThread
 import PerfectMySQL
 import Turf
 import POGOProtos
+import Rainbow
 
 protocol InstanceControllerDelegate: class {
     func instanceControllerDone(mysql: MySQL?, name: String)
@@ -71,7 +72,7 @@ class InstanceController {
 
         let thread = Threading.getQueue(name: "InstanceController-global-setup", type: .serial)
         thread.dispatch {
-            Log.info(message: "[InstanceController] Starting instances...")
+            Log.info(message: "[InstanceController] Starting instances...".green)
             let dispatchGroup = DispatchGroup()
             for instance in instances {
                 dispatchGroup.enter()
@@ -80,9 +81,9 @@ class InstanceController {
                     type: .serial
                 )
                 instanceThread.dispatch {
-                    Log.debug(message: "[InstanceController] Starting \(instance.name)...")
+                    Log.debug(message: "[InstanceController] Starting \(instance.name)...".green)
                     global.addInstance(instance: instance)
-                    Log.debug(message: "[InstanceController] Started \(instance.name)")
+                    Log.debug(message: "[InstanceController] Started \(instance.name)".green)
                     for device in devices where device.instanceName == instance.name {
                         global.addDevice(device: device)
                     }
@@ -90,7 +91,7 @@ class InstanceController {
                 }
             }
             dispatchGroup.wait()
-            Log.info(message: "[InstanceController] Done starting instances")
+            Log.info(message: "[InstanceController] Done starting instances".green)
         }
 
     }

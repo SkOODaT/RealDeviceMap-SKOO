@@ -13,6 +13,7 @@ import PerfectThread
 import PerfectMySQL
 import Turf
 import S2Geometry
+import Rainbow
 
 class AutoInstanceController: InstanceControllerProto {
 
@@ -128,7 +129,7 @@ class AutoInstanceController: InstanceControllerProto {
     }
 
     private func bootstrap() throws {
-        Log.info(message: "[AutoInstanceController] [\(name)] Checking Bootstrap Status...")
+        Log.info(message: "[AutoInstanceController] [\(name)] Checking Bootstrap Status...".cyan)
         let start = Date()
         var totalCount = 0
         var missingCellIDs = [S2CellId]()
@@ -148,8 +149,8 @@ class AutoInstanceController: InstanceControllerProto {
             }
         }
         Log.info(message:
-            "[AutoInstanceController] [\(name)] Bootstrap Status: \(totalCount - missingCellIDs.count)/\(totalCount) " +
-            "after \(Date().timeIntervalSince(start).rounded(toStringWithDecimals: 2))s"
+            "[AutoInstanceController] [\(name)] Bootstrap Status: \(totalCount - missingCellIDs.count)/\(totalCount) ".cyan +
+            "after \(Date().timeIntervalSince(start).rounded(toStringWithDecimals: 2))s".cyan
         )
         bootstrappLock.lock()
         bootstrappCellIDs = missingCellIDs

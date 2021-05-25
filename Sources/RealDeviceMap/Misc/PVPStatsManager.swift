@@ -11,6 +11,7 @@ import PerfectLib
 import PerfectCURL
 import PerfectThread
 import POGOProtos
+import Rainbow
 
 internal class PVPStatsManager {
 
@@ -42,26 +43,26 @@ internal class PVPStatsManager {
             .httpMethod(.head)
         )
         guard let result = try? request.perform() else {
-           Log.error(message: "[PVPStatsManager] Failed to load game master file")
+           Log.error(message: "[PVPStatsManager] Failed to load game master file".red)
            return
         }
         let newETag = result.get(.eTag)
         if newETag != eTag {
-            Log.info(message: "[PVPStatsManager] Game master file changed")
+            Log.info(message: "[PVPStatsManager] Game master file changed".green)
             loadMasterFile()
         }
     }
 
     private func loadMasterFile() {
-        Log.debug(message: "[PVPStatsManager] Loading game master file")
+        Log.debug(message: "[PVPStatsManager] Loading game master file".green)
         let request = CURLRequest("https://raw.githubusercontent.com/pokemongo-dev-contrib/" +
                                   "pokemongo-game-master/master/versions/latest/V2_GAME_MASTER.json")
         guard let result = try? request.perform() else {
-            Log.error(message: "[PVPStatsManager] Failed to load game master file")
+            Log.error(message: "[PVPStatsManager] Failed to load game master file".red)
             return
         }
         eTag = result.get(.eTag)
-        Log.debug(message: "[PVPStatsManager] Parsing game master V2 file")
+        Log.debug(message: "[PVPStatsManager] Parsing game master V2 file".green)
         guard let templates = result.bodyJSON["template"] as? [[String: Any]] else {
             Log.error(message: "[PVPStatsManager] Failed to parse game master file")
             return
@@ -78,14 +79,14 @@ internal class PVPStatsManager {
                 let baseAttack = statsInfo["baseAttack"] as? Int,
                 let baseDefense = statsInfo["baseDefense"] as? Int {
                 guard let pokemon = pokemonFrom(name: pokemonName) else {
-                    Log.warning(message: "[PVPStatsManager] Failed to get pokemon for: \(pokemonName)")
+                    Log.warning(message: "[PVPStatsManager] Failed to get pokemon for: \(pokemonName)".red)
                     return
                 }
                 let formName = pokemonInfo["form"] as? String
                 let form: PokemonDisplayProto.Form?
                 if let formName = formName {
                     guard let formT = formFrom(name: formName) else {
-                        Log.warning(message: "[PVPStatsManager] Failed to get form for: \(formName)")
+                        Log.warning(message: "[PVPStatsManager] Failed to get form for: \(formName)".red)
                         return
                     }
                     form = formT
@@ -113,7 +114,7 @@ internal class PVPStatsManager {
         self.rankingUltra = [:]
         rankingGreatLock.unlock()
         rankingUltraLock.unlock()
-        Log.debug(message: "[PVPStatsManager] Done parsing game master file")
+        Log.debug(message: "[PVPStatsManager] Done parsing game master file".green)
     }
 
     internal func getPVPStats(pokemon: HoloPokemonId, form: PokemonDisplayProto.Form?, iv: IV, level: Double,

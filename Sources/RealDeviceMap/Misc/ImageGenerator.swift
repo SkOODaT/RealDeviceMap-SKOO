@@ -10,6 +10,7 @@
 import Foundation
 import PerfectLib
 import PerfectThread
+import Rainbow
 
 class ImageGenerator {
 
@@ -66,55 +67,55 @@ class ImageGenerator {
         thread.dispatch {
 
             if pokemonDir.exists && firstFile.exists && secondFile.exists && thirdFile.exists {
-                Log.info(message: "[ImageGenerator] Creating Pokemon League Images...")
+                Log.info(message: "[ImageGenerator] Creating Pokemon League Images...".green)
                 try! FileManager.default.contentsOfDirectory(atPath: pokemonDir.path).forEach { (pokemonFilename) in
                     if !pokemonFilename.contains(".png") {
-                        Log.debug(message: "[ImageGenerator] \(pokemonFilename) is not png! Skipping...")
+                        Log.debug(message: "[ImageGenerator] \(pokemonFilename) is not png! Skipping...".red)
                         return
                     }
                     let pokemonFile = File(pokemonDir.path + pokemonFilename)
                     let pokemonId = pokemonFilename.replacingOccurrences(of: ".png", with: "")
                     let newFileFirst = File(pokemonLeagueDir.path + pokemonId + "_1.png")
                     if !newFileFirst.exists {
-                        Log.debug(message: "[ImageGenerator] Creating #1 Pokemon League Images \(pokemonId)")
+                        Log.debug(message: "[ImageGenerator] Creating #1 Pokemon League Images \(pokemonId)".green)
                         combineImagesLeague(image1: pokemonFile.path, image2: firstFile.path, output: newFileFirst.path)
                     }
                     let newFileSecond = File(pokemonLeagueDir.path + pokemonId + "_2.png")
                     if !newFileSecond.exists {
-                        Log.debug(message: "[ImageGenerator] Creating #2 Pokemon League Images \(pokemonId)")
+                        Log.debug(message: "[ImageGenerator] Creating #2 Pokemon League Images \(pokemonId)".green)
                         combineImagesLeague(image1: pokemonFile.path, image2: secondFile.path,
                                             output: newFileSecond.path)
                     }
                     let newFileThird = File(pokemonLeagueDir.path + pokemonId + "_3.png")
                     if !newFileThird.exists {
-                        Log.debug(message: "[ImageGenerator] Creating #3 Pokemon League Images \(pokemonId)")
+                        Log.debug(message: "[ImageGenerator] Creating #3 Pokemon League Images \(pokemonId)".green)
                         combineImagesLeague(image1: pokemonFile.path, image2: thirdFile.path, output: newFileThird.path)
                     }
                 }
-                Log.info(message: "[ImageGenerator] Pokemon League Images created.")
+                Log.info(message: "[ImageGenerator] Pokemon League Images created.".green)
             } else {
-                Log.warning(message: "[ImageGenerator] Creating Pokemon League Images (missing Dirs)")
+                Log.warning(message: "[ImageGenerator] Not generating Pokemon League Images (missing Dirs)".red)
                 if !pokemonDir.exists {
-                    Log.info(message: "[ImageGenerator] Missing dir \(pokemonDir.path)")
+                    Log.info(message: "[ImageGenerator] Missing dir \(pokemonDir.path)".red)
                 }
                 if !firstFile.exists {
-                    Log.info(message: "[ImageGenerator] Missing file \(firstFile.path)")
+                    Log.info(message: "[ImageGenerator] Missing file \(firstFile.path)".red)
                 }
                 if !secondFile.exists {
-                    Log.info(message: "[ImageGenerator] Missing file \(secondFile.path)")
+                    Log.info(message: "[ImageGenerator] Missing file \(secondFile.path)".red)
                 }
                 if !thirdFile.exists {
-                    Log.info(message: "[ImageGenerator] Missing file \(thirdFile.path)")
+                    Log.info(message: "[ImageGenerator] Missing file \(thirdFile.path)".red)
                 }
             }
 
             if raidDir.exists && gymDir.exists && eggDir.exists && unkownEggDir.exists && pokemonDir.exists {
 
-                Log.info(message: "[ImageGenerator] Creating Raid Images...")
+                Log.info(message: "[ImageGenerator] Creating Raid Images...".green)
 
                 try! FileManager.default.contentsOfDirectory(atPath: gymDir.path).forEach { (gymFilename) in
                     if !gymFilename.contains(".png") {
-                        Log.debug(message: "[ImageGenerator] \(gymFilename) is not png! Skipping...")
+                        Log.debug(message: "[ImageGenerator] \(gymFilename) is not png! Skipping...".red)
                         return
                     }
                     let gymFile = File(gymDir.path + gymFilename)
@@ -122,14 +123,15 @@ class ImageGenerator {
 
                     try! FileManager.default.contentsOfDirectory(atPath: eggDir.path).forEach { (eggFilename) in
                         if !eggFilename.contains(".png") {
-                            Log.debug(message: "[ImageGenerator] \(eggFilename) is not png! Skipping...")
+                            Log.debug(message: "[ImageGenerator] \(eggFilename) is not png! Skipping...".red)
                             return
                         }
                         let eggFile = File(eggDir.path + eggFilename)
                         let eggLevel = eggFilename.replacingOccurrences(of: ".png", with: "")
                         let newFile = File(raidDir.path + gymId + "_e" + eggLevel + ".png")
                         if !newFile.exists {
-                            Log.debug(message: "[ImageGenerator] Creating image for gym \(gymId) and egg \(eggLevel)")
+                            Log.debug(message: "[ImageGenerator] Creating image for gym \(gymId) ".green +
+                                               "and egg \(eggLevel)".green)
                             combineImages(image1: eggFile.path, image2: gymFile.path,
                                           method: composeMethod, output: newFile.path)
                         }
@@ -137,7 +139,7 @@ class ImageGenerator {
                     try! FileManager.default.contentsOfDirectory(atPath: unkownEggDir.path)
                                             .forEach { (unkownEggFilename) in
                         if !unkownEggFilename.contains(".png") {
-                            Log.debug(message: "[ImageGenerator] \(unkownEggFilename) is not png! Skipping...")
+                            Log.debug(message: "[ImageGenerator] \(unkownEggFilename) is not png! Skipping...".red)
                             return
                         }
                         let unkownEggFile = File(unkownEggDir.path + unkownEggFilename)
@@ -145,7 +147,8 @@ class ImageGenerator {
                         let newFile = File(raidDir.path + gymId + "_ue" + eggLevel + ".png")
                         if !newFile.exists {
                             Log.debug(
-                                message: "[ImageGenerator] Creating image for gym \(gymId) and unkown egg \(eggLevel)"
+                                message: "[ImageGenerator] Creating image for gym \(gymId) ".green +
+                                         "and unkown egg \(eggLevel)".green
                             )
                             combineImages(image1: unkownEggFile.path, image2: gymFile.path,
                                           method: composeMethod, output: newFile.path)
@@ -153,7 +156,7 @@ class ImageGenerator {
                     }
                     try! FileManager.default.contentsOfDirectory(atPath: pokemonDir.path).forEach { (pokemonFilename) in
                         if !pokemonFilename.contains(".png") {
-                            Log.debug(message: "[ImageGenerator] \(pokemonFilename) is not png! Skipping...")
+                            Log.debug(message: "[ImageGenerator] \(pokemonFilename) is not png! Skipping...".red)
                             return
                         }
                         let pokemonFile = File(pokemonDir.path + pokemonFilename)
@@ -169,32 +172,33 @@ class ImageGenerator {
                     }
                 }
 
-                Log.info(message: "[ImageGenerator] Raid images created.")
+                Log.info(message: "[ImageGenerator] Raid images created.".green)
             } else {
-                Log.warning(message: "[ImageGenerator] Not generating Quest Images (missing Dirs)")
+                Log.warning(message: "[ImageGenerator] Not generating Raid Images (missing Dirs)".red)
                 if !raidDir.exists {
-                    Log.info(message: "[ImageGenerator] Missing dir \(raidDir.path)")
+                    Log.info(message: "[ImageGenerator] Missing dir \(raidDir.path)".red)
                 }
                 if !gymDir.exists {
-                    Log.info(message: "[ImageGenerator] Missing dir \(gymDir.path)")
+                    Log.info(message: "[ImageGenerator] Missing dir \(gymDir.path)".red)
                 }
                 if !eggDir.exists {
-                    Log.info(message: "[ImageGenerator] Missing dir \(eggDir.path)")
+                    Log.info(message: "[ImageGenerator] Missing dir \(eggDir.path)".red)
                 }
                 if !unkownEggDir.exists {
-                    Log.info(message: "[ImageGenerator] Missing dir \(unkownEggDir.path)")
+                    Log.info(message: "[ImageGenerator] Missing dir \(unkownEggDir.path)".red)
                 }
                 if !pokemonDir.exists {
-                    Log.info(message: "[ImageGenerator] Missing dir \(pokemonDir.path)")
+                    Log.info(message: "[ImageGenerator] Missing dir \(pokemonDir.path)".red)
                 }
             }
+
             if questDir.exists && itemDir.exists && pokestopDir.exists && pokemonDir.exists {
 
-                Log.info(message: "[ImageGenerator] Creating Quest Images...")
+                Log.info(message: "[ImageGenerator] Creating Quest Images...".green)
 
                 try! FileManager.default.contentsOfDirectory(atPath: pokestopDir.path).forEach { (pokestopFilename) in
                     if !pokestopFilename.contains(".png") {
-                        Log.debug(message: "[ImageGenerator] \(pokestopFilename) is not png! Skipping...")
+                        Log.debug(message: "[ImageGenerator] \(pokestopFilename) is not png! Skipping...".red)
                         return
                     }
                     let pokestopFile = File(pokestopDir.path + pokestopFilename)
@@ -202,7 +206,7 @@ class ImageGenerator {
 
                     try! FileManager.default.contentsOfDirectory(atPath: itemDir.path).forEach { (itemFilename) in
                         if !itemFilename.contains(".png") {
-                            Log.debug(message: "[ImageGenerator] \(itemFilename) is not png! Skipping...")
+                            Log.debug(message: "[ImageGenerator] \(itemFilename) is not png! Skipping...".red)
                             return
                         }
                         let itemFile = File(itemDir.path + itemFilename)
@@ -210,7 +214,8 @@ class ImageGenerator {
                         let newFile = File(questDir.path + pokestopId + "_i" + itemId + ".png")
                         if !newFile.exists {
                             Log.debug(
-                                message: "[ImageGenerator] Creating quest for stop \(pokestopId) and item \(itemId)"
+                                message: "[ImageGenerator] Creating quest for stop \(pokestopId)".green +
+                                         " and item \(itemId)".green
                             )
                             combineImages(image1: itemFile.path, image2: pokestopFile.path,
                                           method: composeMethod, output: newFile.path)
@@ -219,7 +224,7 @@ class ImageGenerator {
 
                     try! FileManager.default.contentsOfDirectory(atPath: pokemonDir.path).forEach { (pokemonFilename) in
                         if !pokemonFilename.contains(".png") {
-                            Log.debug(message: "[ImageGenerator] \(pokemonFilename) is not png! Skipping...")
+                            Log.debug(message: "[ImageGenerator] \(pokemonFilename) is not png! Skipping...".red)
                             return
                         }
                         let pokemonFile = File(pokemonDir.path + pokemonFilename)
@@ -227,8 +232,8 @@ class ImageGenerator {
                         let newFile = File(questDir.path + pokestopId + "_p" + pokemonId + ".png")
                         if !newFile.exists {
                             Log.debug(
-                                message: "[ImageGenerator] Creating quest for stop \(pokestopId) " +
-                                         "and pokemon \(pokemonId)"
+                                message: "[ImageGenerator] Creating quest for stop \(pokestopId) ".green +
+                                         "and pokemon \(pokemonId)".green
                             )
                             combineImages(image1: pokemonFile.path, image2: pokestopFile.path,
                                           method: composeMethod, output: newFile.path)
@@ -236,28 +241,28 @@ class ImageGenerator {
                     }
                 }
 
-                Log.info(message: "[ImageGenerator] Quest images created.")
+                Log.info(message: "[ImageGenerator] Quest images created.".green)
             } else {
-                Log.warning(message: "[ImageGenerator] Not generating Quest Images (missing Dirs)")
+                Log.warning(message: "[ImageGenerator] Not generating Quest Images (missing Dirs)".red)
                 if !questDir.exists {
-                    Log.info(message: "[ImageGenerator] Missing dir \(questDir.path)")
+                    Log.info(message: "[ImageGenerator] Missing dir \(questDir.path)".red)
                 }
                 if !itemDir.exists {
-                    Log.info(message: "[ImageGenerator] Missing dir \(itemDir.path)")
+                    Log.info(message: "[ImageGenerator] Missing dir \(itemDir.path)".red)
                 }
                 if !pokestopDir.exists {
-                    Log.info(message: "[ImageGenerator] Missing dir \(pokestopDir.path)")
+                    Log.info(message: "[ImageGenerator] Missing dir \(pokestopDir.path)".red)
                 }
                 if !pokemonDir.exists {
-                    Log.info(message: "[ImageGenerator] Missing dir \(pokemonDir.path)")
+                    Log.info(message: "[ImageGenerator] Missing dir \(pokemonDir.path)".red)
                 }
             }
 
             if gruntDir.exists, pokestopDir.exists {
-                Log.info(message: "[ImageGenerator] Creating Invasion Images...")
+                Log.info(message: "[ImageGenerator] Creating Invasion Images...".green)
                 try! FileManager.default.contentsOfDirectory(atPath: pokestopDir.path).forEach { (pokestopFilename) in
                     if !pokestopFilename.contains(".png") {
-                        Log.debug(message: "[ImageGenerator] \(pokestopFilename) is not png! Skipping...")
+                        Log.debug(message: "[ImageGenerator] \(pokestopFilename) is not png! Skipping...".red)
                         return
                     } else if !pokestopFilename.hasPrefix("i") {
                         return
@@ -267,7 +272,7 @@ class ImageGenerator {
 
                     try! FileManager.default.contentsOfDirectory(atPath: gruntDir.path).forEach { (gruntFilename) in
                         if !gruntFilename.contains(".png") {
-                            Log.debug(message: "[ImageGenerator] \(gruntFilename) is not png! Skipping...")
+                            Log.debug(message: "[ImageGenerator] \(gruntFilename) is not png! Skipping...".red)
                             return
                         }
                         let gruntFile = File(gruntDir.path + gruntFilename)
@@ -282,14 +287,14 @@ class ImageGenerator {
                         }
                     }
                 }
-                Log.info(message: "[ImageGenerator] Invasion images created.")
+                Log.info(message: "[ImageGenerator] Invasion images created.".green)
             } else {
-                Log.warning(message: "[ImageGenerator] Not generating Invasion Images (missing Dirs)")
+                Log.warning(message: "[ImageGenerator] Not generating Invasion Images (missing Dirs)".red)
                 if !gruntDir.exists {
-                    Log.info(message: "[ImageGenerator] Missing dir \(gruntDir.path)")
+                    Log.info(message: "[ImageGenerator] Missing dir \(gruntDir.path)".red)
                 }
                 if !pokestopDir.exists {
-                    Log.info(message: "[ImageGenerator] Missing dir \(pokestopDir.path)")
+                    Log.info(message: "[ImageGenerator] Missing dir \(pokestopDir.path)".red)
                 }
             }
 
@@ -297,7 +302,7 @@ class ImageGenerator {
                 Log.info(message: "[ImageGenerator] Creating Quest Invasion Images...")
                 try! FileManager.default.contentsOfDirectory(atPath: questDir.path).forEach { (questFilename) in
                     if !questFilename.contains(".png") {
-                        Log.debug(message: "[ImageGenerator] \(questFilename) is not png! Skipping...")
+                        Log.debug(message: "[ImageGenerator] \(questFilename) is not png! Skipping...".red)
                         return
                     } else if !questFilename.hasPrefix("i") {
                         return
@@ -307,7 +312,7 @@ class ImageGenerator {
 
                     try! FileManager.default.contentsOfDirectory(atPath: gruntDir.path).forEach { (gruntFilename) in
                         if !gruntFilename.contains(".png") {
-                            Log.debug(message: "[ImageGenerator] \(gruntFilename) is not png! Skipping...")
+                            Log.debug(message: "[ImageGenerator] \(gruntFilename) is not png! Skipping...".red)
                             return
                         }
                         let gruntFile = File(gruntDir.path + gruntFilename)
@@ -315,25 +320,25 @@ class ImageGenerator {
                         let newFile = File(questInvasionDir.path + questId + "_" + gruntId + ".png")
                         if !newFile.exists {
                             Log.debug(
-                                message: "[ImageGenerator] Creating invasion for quest \(questId) and grunt \(gruntId)"
-                            )
+                                message: "[ImageGenerator] Creating invasion for quest \(questId) and grunt " +
+                                         "\(gruntId)".green)
                             combineImagesGruntQuest(image1: questFile.path, image2: gruntFile.path,
                                                     output: newFile.path)
                         }
                     }
                 }
-                Log.info(message: "[ImageGenerator] Quest Invasion images created.")
+                Log.info(message: "[ImageGenerator] Quest Invasion images created.".green)
             } else {
-                Log.warning(message: "[ImageGenerator] Not generating Quest Invasion Images (missing Dirs)")
+                Log.warning(message: "[ImageGenerator] Not generating Quest Invasion Images (missing Dirs)".red)
                 if !gruntDir.exists {
-                    Log.info(message: "[ImageGenerator] Missing dir \(gruntDir.path)")
+                    Log.info(message: "[ImageGenerator] Missing dir \(gruntDir.path)".red)
                 }
                 if !questDir.exists {
-                    Log.info(message: "[ImageGenerator] Missing dir \(questDir.path)")
+                    Log.info(message: "[ImageGenerator] Missing dir \(questDir.path)".red)
                 }
             }
 
-            Log.info(message: "[ImageGenerator] Done")
+            Log.info(message: "[ImageGenerator] Done".green)
             Threading.destroyQueue(thread)
 
         }
