@@ -714,7 +714,7 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
 
         if excludeInvasionButLeaders {
             excludeInvasionButLeadersSQL = "AND (grunt_type IN (41,42,43,44) AND incident_expire_timestamp >= " +
-                                                 "UNIX_TIMESTAMP())"
+                                           "UNIX_TIMESTAMP())"
         } else {
             excludeInvasionButLeadersSQL = ""
         }

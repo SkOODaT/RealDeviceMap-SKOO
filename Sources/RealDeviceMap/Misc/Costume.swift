@@ -46,7 +46,7 @@ extension PokemonDisplayProto.Costume {
         .costume7,
         .costume8,
         .costume9,
-        .costume10,
+        .costume10
         //.costume1NoEvolve,
         //.costume2NoEvolve,
         //.costume3NoEvolve,
