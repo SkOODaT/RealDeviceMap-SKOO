@@ -616,13 +616,13 @@ class WebHookRequestHandler {
             for mapPokemon in mapPokemons {
                 //Upsert new map pokemon
                 let pokemon = Pokemon(mysql: mysql, fortData: mapPokemon.fortData,
-                                           mapPokemon: mapPokemon.pokeData, cellId: mapPokemon.cell,
-                                           timestampMs: mapPokemon.timestampMs, username: username, isEvent: isEvent)
+                                      mapPokemon: mapPokemon.pokeData, cellId: mapPokemon.cell,
+                                      timestampMs: mapPokemon.timestampMs, username: username, isEvent: isEvent)
                 try? pokemon.save(mysql: mysql)
                 //Cache the mapping between the map pokemon DisplayId and the EncounterId
                 let displayIdCacheKey = String(mapPokemon.pokeData.pokemonDisplay.displayID)
                 Pokemon.mapPokemonDisplayIdCache?.set(id: displayIdCacheKey,
-                                                        value: mapPokemon.pokeData.encounterID.description)
+                                                      value: mapPokemon.pokeData.encounterID.description)
                 //Check if we have a pending disk encounter cache.
                 if let cachedEncounter = Pokemon.diskEncounterCache?.get(id: displayIdCacheKey) {
                     pokemon.addDiskEncounter(mysql: mysql, diskencounterData: cachedEncounter, username: username)
