@@ -17,7 +17,7 @@ class Shell {
 
     func run(errorPipe: Any?=nil, inputPipe: Any?=nil, environment: [String: String]?=nil) -> String? {
         let task = Process()
-        task.launchPath = "/usr/bin/env"
+        task.executableURL = URL(fileURLWithPath: "/usr/bin/env")
         if environment != nil {
             task.environment = environment
         }
@@ -30,28 +30,36 @@ class Shell {
             task.standardInput = inputPipe
         }
         task.standardOutput = pipe
-        task.launch()
+        do {
+           try task.run()
+        } catch {
+            print("[SHELL] Task.Run() Error")
+        }
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
         task.waitUntilExit()
         return String(data: data, encoding: String.Encoding.utf8)
     }
 
-    func runError(standartPipe: Any?=nil, inputPipe: Any?=nil, environment: [String: String]?=nil) -> String? {
+    func runError(standardPipe: Any?=nil, inputPipe: Any?=nil, environment: [String: String]?=nil) -> String? {
         let task = Process()
-        task.launchPath = "/usr/bin/env"
+        task.executableURL = URL(fileURLWithPath: "/usr/bin/env")
         if environment != nil {
             task.environment = environment
         }
         task.arguments = args
         let pipe = Pipe()
-        if standartPipe != nil {
-            task.standardOutput = standartPipe
+        if standardPipe != nil {
+            task.standardOutput = standardPipe
         }
         if inputPipe != nil {
             task.standardInput = inputPipe
         }
         task.standardError = pipe
-        task.launch()
+        do {
+           try task.run()
+        } catch {
+            print("[SHELL] Task.Run() Error")
+        }
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
         task.waitUntilExit()
         return String(data: data, encoding: String.Encoding.utf8)
