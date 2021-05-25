@@ -505,7 +505,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
     }
 
     public func addDiskEncounter(mysql: MySQL, diskencounterData: DiskEncounterOutProto,
-                             username: String?) {
+                                 username: String?) {
 
         let pokemonId = UInt16(diskencounterData.pokemon.pokemonID.rawValue)
         let cp = UInt16(diskencounterData.pokemon.cp)
