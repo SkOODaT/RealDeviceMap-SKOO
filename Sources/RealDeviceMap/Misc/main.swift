@@ -61,7 +61,8 @@ if ProcessInfo.processInfo.environment["NO_MEMORY_CACHE"] == nil {
     let memoryCacheClearInterval = ProcessInfo.processInfo.environment["MEMORY_CACHE_CLEAR_INTERVAL"]?.toDouble() ?? 900
     let memoryCacheKeepTime = ProcessInfo.processInfo.environment["MEMORY_CACHE_KEEP_TIME"]?.toDouble() ?? 3600
     Log.info(message:
-        "[MAIN] Starting Memory Cache with interval \(memoryCacheClearInterval) and keep time \(memoryCacheKeepTime)".green
+        "[MAIN] Starting Memory Cache with interval \(memoryCacheClearInterval) " +
+        "and keep time \(memoryCacheKeepTime)".green
     )
     Pokestop.cache = MemoryCache(interval: memoryCacheClearInterval, keepTime: memoryCacheKeepTime)
     Pokemon.cache = MemoryCache(interval: memoryCacheClearInterval, keepTime: memoryCacheKeepTime)

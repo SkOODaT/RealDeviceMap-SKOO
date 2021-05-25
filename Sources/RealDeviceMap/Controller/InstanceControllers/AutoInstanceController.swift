@@ -149,8 +149,8 @@ class AutoInstanceController: InstanceControllerProto {
             }
         }
         Log.info(message:
-            "[AutoInstanceController] [\(name)] Bootstrap Status: \(totalCount - missingCellIDs.count)/\(totalCount) ".cyan +
-            "after \(Date().timeIntervalSince(start).rounded(toStringWithDecimals: 2))s".cyan
+            "[AutoInstanceController] [\(name)] Bootstrap Status: \(totalCount - missingCellIDs.count)".cyan +
+            "/\(totalCount) after \(Date().timeIntervalSince(start).rounded(toStringWithDecimals: 2))s".cyan
         )
         bootstrappLock.lock()
         bootstrappCellIDs = missingCellIDs

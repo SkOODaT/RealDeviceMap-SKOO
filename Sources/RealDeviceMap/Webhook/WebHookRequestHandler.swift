@@ -400,9 +400,10 @@ class WebHookRequestHandler {
         }
 
         var data = ["nearby": nearbyPokemons.count, "wild": wildPokemons.count, "forts": forts.count,
-                    "quests": quests.count, "encounters": encounters.count, "diskencounters": diskencounters.count, "level": trainerLevel as Any,
-                    "only_empty_gmos": containsGMO && isEmtpyGMO, "fort_search": fortSearch.count,
-                    "only_invalid_gmos": containsGMO && isInvalidGMO, "contains_gmos": containsGMO
+                    "quests": quests.count, "encounters": encounters.count, "diskencounters": diskencounters.count,
+                    "level": trainerLevel as Any, "only_empty_gmos": containsGMO && isEmtpyGMO,
+                    "fort_search": fortSearch.count, "only_invalid_gmos": containsGMO && isInvalidGMO,
+                    "contains_gmos": containsGMO
         ]
 
         if pokemonEncounterIdForEncounter != nil {
@@ -627,7 +628,8 @@ class WebHookRequestHandler {
                     pokemon.addDiskEncounter(mysql: mysql, diskencounterData: cachedEncounter, username: username)
                     try? pokemon.save(mysql: mysql, updateIV: true)
                 //} else {
-                //    Log.debug(message: "[WebHookRequestHandler] Received map pokemon, Waiting for disk encounter.".white)
+                //    Log.debug(message: "[WebHookRequestHandler] Received map pokemon, " +
+                //                         "Waiting for disk encounter.".white)
                 }
             }
 
@@ -809,7 +811,8 @@ class WebHookRequestHandler {
                             pokemon = nil
                         }
                         if pokemon != nil {
-                            pokemon!.addDiskEncounter(mysql: mysql, diskencounterData: diskencounter, username: username)
+                            pokemon!.addDiskEncounter(mysql: mysql, diskencounterData: diskencounter,
+                                                      username: username)
                             try? pokemon!.save(mysql: mysql, updateIV: true)
                         }
                     //} else {

@@ -206,7 +206,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
     init(mysql: MySQL?=nil, wildPokemon: WildPokemonProto, cellId: UInt64,
          timestampMs: UInt64, username: String?, isEvent: Bool) {
 
-        self.mapStatus = UInt8(1) // Wild pokemon
+        self.mapStatus = UInt8(1)
         self.isEvent = isEvent
         id = wildPokemon.encounterID.description
         pokemonId = wildPokemon.pokemon.pokemonID.rawValue.toUInt16()
@@ -350,7 +350,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
          mapPokemon: MapPokemonProto, cellId: UInt64,
          timestampMs: UInt64, username: String?, isEvent: Bool) {
 
-        self.mapStatus = UInt8(4) // Lure pokemon
+        self.mapStatus = UInt8(4)
         self.isEvent = isEvent
         id = mapPokemon.encounterID.description
         pokemonId = mapPokemon.pokedexTypeID.toUInt16()
@@ -411,7 +411,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                self.hasIvChanges = true
             }
 
-        self.mapStatus = 1 // Wild pokemon
+        self.mapStatus = 1
         self.pokemonId = pokemonId
         self.cp = cp
         self.move1 = move1
@@ -536,7 +536,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                self.hasIvChanges = true
             }
 
-        self.mapStatus = UInt8(4) // Map pokemon
+        self.mapStatus = UInt8(4)
         self.pokemonId = pokemonId
         self.cp = cp
         self.move1 = move1
@@ -799,9 +799,6 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                 //Log.info(message: "[POKEMON] \(id) \(self.mapStatus)")
                 //self.mapStatus = UInt8(1)
             }
-
-  
-
 
             if oldPokemon!.pvpRankingsGreatLeague != nil && self.pvpRankingsGreatLeague == nil {
                 self.pvpRankingsGreatLeague = oldPokemon!.pvpRankingsGreatLeague
