@@ -120,8 +120,8 @@ internal class PVPStatsManager {
         Log.debug(message: "[PVPStatsManager] Done parsing game master file".green)
     }
 
-    internal func getPVPStats(pokemon: HoloPokemonId, form: PokemonDisplayProto.Form?, iv: IV, level: Double,
-                              league: League) -> Response? {
+    internal func getPVPStats(pokemon: HoloPokemonId, form: PokemonDisplayProto.Form?,
+                              iv: IV, level: Double, league: League) -> Response? {
         guard let stats = getTopPVP(pokemon: pokemon, form: form, league: league) else {
             return nil
         }
