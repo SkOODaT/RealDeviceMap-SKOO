@@ -630,6 +630,9 @@ function loadStorage () {
     if (defaultGymFilter.ex === undefined) {
       defaultGymFilter.ex = { show: false, size: 'normal' }
     }
+    if (defaultGymFilter.ar === undefined) {
+      defaultGymFilter.ar = { show: false, size: 'normal' }
+    }
     for (i = 0; i <= 6; i++) {
       if (defaultGymFilter['s' + i] === undefined) {
         defaultGymFilter['s' + i] = { show: true, size: 'normal' }
@@ -648,6 +651,9 @@ function loadStorage () {
     }
     if (gymFilter.ex === undefined) {
       gymFilter.ex = { show: false, size: 'normal' }
+    }
+    if (gymFilter.ar === undefined) {
+      gymFilter.ar = { show: false, size: 'normal' }
     }
     for (i = 0; i <= 6; i++) {
       if (gymFilter['s' + i] === undefined) {
@@ -679,6 +685,9 @@ function loadStorage () {
     }
     if (defaultPokestopFilter.leaders === undefined) {
       defaultPokestopFilter.leaders = {show: false, size: 'normal'}
+    }
+    if (defaultPokestopFilter.ar === undefined) {
+      defaultPokestopFilter.ar = { show: false, size: 'normal' }
     }
 
     store('pokestop_filter', JSON.stringify(defaultPokestopFilter))
@@ -717,6 +726,9 @@ function loadStorage () {
     }
     if (pokestopFilter.leaders === undefined) {
       pokestopFilter.leaders = {show: false, size: 'normal'}
+    }
+    if (pokestopFilter.ar === undefined) {
+      pokestopFilter.ar = { show: false, size: 'normal' }
     }
   }
 
@@ -934,6 +946,7 @@ function initMap () {
       defaultGymFilter['t' + i] = { show: true, size: 'normal' }
     }
     defaultGymFilter.ex = { show: false, size: 'normal' }
+    defaultGymFilter.ar = { show: false, size: 'normal' }
     for (i = 0; i <= 6; i++) {
       defaultGymFilter['s' + i] = { show: true, size: 'normal' }
     }
@@ -951,6 +964,7 @@ function initMap () {
       defaultGymFilter['t' + i] = { show: false, size: gymFilterNew['t' + i].size }
     }
     defaultGymFilter.ex = { show: false, size: gymFilterNew.ex.size }
+    defaultGymFilter.ar = { show: false, size: gymFilterNew.ex.size }
     for (i = 0; i <= 6; i++) {
       defaultGymFilter['s' + i] = { show: false, size: gymFilterNew['s' + i].size }
     }
@@ -971,6 +985,7 @@ function initMap () {
     }
     defaultPokestopFilter.invasion = { show: true, size: 'normal' }
     defaultPokestopFilter.leaders = {show: false, size: 'normal'}
+    defaultPokestopFilter.ar = { show: false, size: 'normal' }
 
     store('pokestop_filter', JSON.stringify(defaultPokestopFilter))
     pokestopFilterNew = defaultPokestopFilter
@@ -988,6 +1003,8 @@ function initMap () {
     }
     defaultPokestopFilter.invasion = { show: false, size: pokestopFilterNew.invasion.size }
     defaultPokestopFilter.leaders = {show: false, size: pokestopFilterNew.leaders.size}
+    defaultPokestopFilter.ar = { show: false, size: pokestopFilterNew.ar.size }
+
     store('pokestop_filter', JSON.stringify(defaultPokestopFilter))
     pokestopFilterNew = defaultPokestopFilter
 
@@ -1489,7 +1506,7 @@ function loadData () {
       pokestopFilterExclude.push('normal')
     }
     let i
-    for (i = 1; i < 5; i++) {
+    for (i = 1; i < 6; i++) {
       if (pokestopFilter['l' + i].show === false) {
         pokestopFilterExclude.push('l' + i)
       }
@@ -1532,6 +1549,8 @@ function loadData () {
     raid_filter_exclude: JSON.stringify(raidFilterExclude),
     gym_filter_exclude: JSON.stringify(gymFilterExclude),
     pokestop_filter_exclude: JSON.stringify(pokestopFilterExclude),
+    pokestop_show_only_ar: pokestopFilter.ar.show === true,
+    gym_show_only_ar: gymFilter.ar.show === true,
     spawnpoint_filter_exclude: JSON.stringify(spawnpointFilterExclude),
     show_spawnpoints: showSpawnpoints,
     show_cells: showCells && map.getZoom() >= 13,
@@ -1853,6 +1872,7 @@ function getGymSize (teamId) {
 }
 
 function getRaidSize (id) {
+  console.log(id, raidFilter);
   const size = raidFilter[id].size
   if (size === 'small') {
     return 30
@@ -2729,11 +2749,17 @@ function getPokestopPopupContent (pokestop) {
       })
         content += '<br>'
     }
+	
+    if (pokestop.ar_scan_eligible) {
+      content += '<img src="/static/img/misc/ar.png" height="26" width="26"><br><br>'
+    }
+  
     const updatedDate = new Date(pokestop.updated*1000)
     if (updatedDate) {
       content += "<small><b>Last Updated:</b> " + updatedDate.toLocaleDateString() + ' ' + updatedDate.toLocaleTimeString() + ' (' + getTimeSince(updatedDate) + ')<br></small>'
     }
   content += '</div>'
+
   content +=
         '<form><button class="button" type="submit" formaction="/@pokestop/'+pokestop.id+'">Link</button>' +
         '<div class="row">' +
@@ -2969,6 +2995,9 @@ function getGymPopupContent (gym) {
           if (gym.ex_raid_eligible) {
             //content += '<b>Gym is EX-Raid eligible</b>'
             content += '<img src="/static/img/misc/ex.png" height="24" width="32"><br>'
+          }
+		  if (gym.ar_scan_eligible) {
+            content += '<img src="/static/img/misc/ar.png" height="26" width="26"><br>'
           }
           if (gym.gym_weather !== null && gym.gym_weather > 0) {
             content += '<b>'+ wname +':</b> ' + wtypes
@@ -4096,7 +4125,7 @@ function manageSelectButton (e, isNew) {
         shouldShow = gymFilterNew['t' + id].size === 'huge'
         break
     }
-  } else if (type === 'gym-ex') {
+  } else if (type === 'gym-ex' || type === 'gym-ar') {
     switch (info) {
       case 'hide':
         shouldShow = gymFilterNew[id].show === false
@@ -4198,7 +4227,7 @@ function manageSelectButton (e, isNew) {
         shouldShow = pokestopFilterNew['l' + id].size === 'huge'
         break
     }
-  } else if (type === 'pokestop-invasion') {
+  } else if (type === 'pokestop-invasion' || type === 'pokestop-ar') {
     switch (info) {
       case 'hide':
         shouldShow = pokestopFilterNew[id].show === false
@@ -4473,7 +4502,7 @@ function manageSelectButton (e, isNew) {
             gymFilterNew['t' + id].size = 'huge'
             break
         }
-      } else if (type === 'gym-ex') {
+      } else if (type === 'gym-ex' || type === 'gym-ar') {
         switch (info) {
           case 'hide':
             gymFilterNew[id].show = false
@@ -4575,7 +4604,7 @@ function manageSelectButton (e, isNew) {
             pokestopFilterNew['l' + id].size = 'huge'
             break
         }
-      } else if (type === 'pokestop-invasion') {
+      } else if (type === 'pokestop-invasion' || type === 'pokestop-ar') {
         switch (info) {
           case 'hide':
             pokestopFilterNew[id].show = false
