@@ -2460,6 +2460,17 @@ function getPokemonPopupContent (pokemon) {
     const updatedDate = new Date(pokemon.updated * 1000)
     content += '<small><b>Latest Seen:</b> ' + updatedDate.toLocaleTimeString() + ' (' + getTimeSince(updatedDate) + ')</small><br>'
   }
+
+  content += '<small><b>Scan-Type:</b> '
+  if (pokemon.pokestop_id === null && pokemon.spawn_id === null) {
+    content += getScanTypeName('cell')
+  } else if (pokemon.pokestop_id !== null && pokemon.spawn_id === null) {
+    content += getScanTypeName('pokestop')
+  } else {
+    content += getScanTypeName('spawnpoint')
+  }
+  content += '</small><br>'
+
   if (pokemon.pvp_rankings_great_league !== undefined && pokemon.pvp_rankings_great_league !== null) {
     content +=
       '<a href="#" onclick="toggleGreatLeague()">' +
@@ -3201,6 +3212,10 @@ function getAlignmentName (alignmentId) {
 
 function getCharacterCategoryName (characterCategoryId) {
   return i18n('character_category_' + characterCategoryId)
+}
+
+function getScanTypeName (spawnTypeId) {
+  return i18n('scan_type_' + spawnTypeId)
 }
 
 function getQuestReward (reward) {
@@ -4815,7 +4830,6 @@ function getPokemonIconString (pokemonId, pokemonForm, pokemonCostume, pokemonEv
         pokemonIdString = '' + pokemonId + '-0-' + pokemonIdStringTmp
       } else {
         pokemonIdString = '' + pokemonId
-
       }
 
     } else if (pokemonForm !== 0 && pokemonForm !== null) {

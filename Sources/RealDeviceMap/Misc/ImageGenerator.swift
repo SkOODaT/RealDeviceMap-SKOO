@@ -423,4 +423,5 @@ class ImageGenerator {
         _ = Shell("rm", "-f", "tmp1.png").run()
         _ = Shell("rm", "-f", "tmp2.png").run()
     }
+
 }

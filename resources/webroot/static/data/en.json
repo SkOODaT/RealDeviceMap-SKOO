@@ -50,8 +50,8 @@
         "filter_pokestop_table_empty": "No matching Pokestops found",
         "filter_spawnpoint_table_empty": "No matching Spawnpoints found",
         "filter_global_iv": "Global IV Limit",
-        "filter_event": "Event Filter",
         "filter_event_only": "Only Event Spawns",
+        "filter_include_cell": "Scan-Cell Spawns",
         "filter_and": "And",
         "filter_or": "Or",
         "filter_on": "On",
@@ -3965,6 +3965,7 @@
         "filter_include_map": "Lure Pokemon",
         "filter_include_cell": "Cell Pokemon",
         "filter_big_karp": "Big Karp",
-        "filter_tiny_rat": "Tiny Rat"
+        "filter_tiny_rat": "Tiny Rat",
+        "scan_type_pokestop": "Pokestop"
     }
 }

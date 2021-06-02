@@ -302,7 +302,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                 lat = pokestop!.lat
                 lon = pokestop!.lon
             } else {
-                let sql = """
+                let sql = """D
                         SELECT lat, lon
                         FROM pokestop
                         WHERE id = ?;
