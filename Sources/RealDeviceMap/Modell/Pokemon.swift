@@ -28,6 +28,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
     static var weatherBoostMinIvStat: UInt8 = 4
     static var noPVP = false
     static var noWeatherIVClearing = false
+    static var noCellPokemon = false
 
     static var cache: MemoryCache<Pokemon>?
     static var diskEncounterCache: MemoryCache<DiskEncounterOutProto>?
@@ -287,6 +288,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
         let lat: Double
         let lon: Double
         if pokestopId.isEmpty {
+            if Pokemon.noCellPokemon { throw ParsingError() }
             self.mapStatus = UInt8(2) // Cell pokemon
             let s2cell = S2Cell(cellId: S2CellId(uid: cellId))
             let nlat = s2cell.capBound.rectBound.center.lat.degrees
@@ -411,7 +413,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                self.hasIvChanges = true
             }
 
-        self.mapStatus = 1
+        self.mapStatus = UInt8(1)
         self.pokemonId = pokemonId
         self.cp = cp
         self.move1 = move1
@@ -976,7 +978,8 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
     //  swiftlint:disable:next function_parameter_count
     public static func getAll(mysql: MySQL?=nil, minLat: Double, maxLat: Double, minLon: Double, maxLon: Double,
                               showIV: Bool, updated: UInt32, pokemonFilterExclude: [String]?=nil,
-                              pokemonFilterIV: [String: String]?=nil, isEvent: Bool) throws -> [Pokemon] {
+                              pokemonFilterIV: [String: String]?=nil, isEvent: Bool,
+                              excludeCellPokemon: Bool=false) throws -> [Pokemon] {
 
         guard let mysql = mysql ?? DBController.global.mysql else {
             Log.error(message: "[POKEMON] Failed to connect to database.")
@@ -1092,6 +1095,13 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
 
         }
 
+        let excludeCellPokemonSql: String
+        if excludeCellPokemon {
+            excludeCellPokemonSql = "AND (spawn_id IS NOT NULL OR pokestop_id IS NOT NULL)"
+        } else {
+            excludeCellPokemonSql = ""
+        }
+
         let sql = """
             SELECT id, pokemon_id, lat, lon, spawn_id, expire_timestamp, atk_iv, def_iv, sta_iv, move_1, move_2,
                    gender, form, cp, level, weather, costume, weight, size, display_pokemon_id,
@@ -1100,7 +1110,7 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                    pvp_rankings_great_league, pvp_rankings_ultra_league
             FROM pokemon
             WHERE expire_timestamp >= UNIX_TIMESTAMP() AND lat >= ? AND lat <= ? AND lon >= ? AND
-                  lon <= ? AND updated > ? AND is_event = ? \(sqlAdd)
+                  lon <= ? AND updated > ? AND is_event = ? \(sqlAdd) \(excludeCellPokemonSql)
         """
 
         let mysqlStmt = MySQLStmt(mysql)

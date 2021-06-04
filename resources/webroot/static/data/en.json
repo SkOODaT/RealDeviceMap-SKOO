@@ -3771,6 +3771,11 @@
         "filter_spawnpoint_options": "Options",
         "filter_spawnpoint_with_timer": "With Timer",
         "filter_spawnpoint_without_timer": "Without Timer",
+        "scan_type_cell": "Cell",
+        "scan_type_spawnpoint": "Spawnpoint",
+        "scan_type_pokestop": "Pokestop",
+        "filter_include_map": "Lure Pokemon",
+        "filter_include_cell": "Cell Pokemon",
         "filter_big_karp": "Big Karp",
         "filter_tiny_rat": "Tiny Rat"
     }

@@ -70,8 +70,8 @@ if ProcessInfo.processInfo.environment["NO_MEMORY_CACHE"] == nil {
     SpawnPoint.cache = MemoryCache(interval: memoryCacheClearInterval, keepTime: memoryCacheKeepTime)
     Weather.cache = MemoryCache(interval: memoryCacheClearInterval, keepTime: memoryCacheKeepTime)
     // 900 3600
-    Pokemon.diskEncounterCache = MemoryCache(interval: memoryCacheClearInterval, keepTime: 300)
     Pokemon.mapPokemonDisplayIdCache = MemoryCache(interval: memoryCacheClearInterval, keepTime: 300)
+    Pokemon.diskEncounterCache = MemoryCache(interval: memoryCacheClearInterval, keepTime: 300)
 } else {
     Log.info(message: "[MAIN] Memory Cache deactivated".red)
 }
@@ -285,6 +285,7 @@ WebReqeustHandler.avilableItemJson = try! aviableItems.jsonEncodedString()
 
 Pokemon.noPVP = ProcessInfo.processInfo.environment["NO_PVP"] != nil
 Pokemon.noWeatherIVClearing = ProcessInfo.processInfo.environment["NO_IV_WEATHER_CLEARING"] != nil
+Pokemon.noCellPokemon = ProcessInfo.processInfo.environment["NO_CELL_POKEMON"] != nil
 InstanceController.noRequireAccount = ProcessInfo.processInfo.environment["NO_REQUIRE_ACCOUNT"] != nil
 
 if !Pokemon.noPVP {
