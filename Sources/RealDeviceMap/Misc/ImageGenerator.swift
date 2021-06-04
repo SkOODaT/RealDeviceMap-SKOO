@@ -128,7 +128,7 @@ class ImageGenerator {
             //        let newFileWild = File(wildPokemonDir.path + pokemonId + ".png")
             //        if !newFileWild.exists {
             //            Log.debug(message: "[ImageGenerator] Creating Wild Pokemon Image \(pokemonId)")
-            //            combineImagesLeague(image1: pokemonFile.path, image2: grassFile.path, output: newFileWild.path)
+          //            combineImagesLeague(image1: pokemonFile.path, image2: grassFile.path, output: newFileWild.path)
             //        }
             //    }
             //    Log.info(message: "[ImageGenerator] Wild Pokemon Images created.")
