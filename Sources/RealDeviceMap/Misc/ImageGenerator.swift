@@ -62,7 +62,6 @@ class ImageGenerator {
         //    try! wildPokemonDir.create()
         //}
 
-
         let thread = Threading.getQueue(type: .serial)
 
         let composeMethod: String
