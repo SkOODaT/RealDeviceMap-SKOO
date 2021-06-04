@@ -778,6 +778,12 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                 }
             }
 
+            if oldPokemon!.mapStatus != self.mapStatus && self.mapStatus != 1 {
+                self.mapStatus = oldPokemon!.mapStatus
+                //Log.debug(
+                //      message: "[POKEMON] Pokemon \(id) Changed \(self.mapStatus) to \(oldPokemon!.mapStatus)")
+            }
+
             if oldPokemon!.cellId != nil && self.cellId == nil {
                 self.cellId = oldPokemon!.cellId
             }
@@ -786,25 +792,10 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                 self.spawnId = oldPokemon!.spawnId
                 self.lat = oldPokemon!.lat
                 self.lon = oldPokemon!.lon
-                //self.mapStatus = UInt8(1)
             }
 
             if oldPokemon!.pokestopId != nil && self.pokestopId == nil {
                 self.pokestopId = oldPokemon!.pokestopId
-                //self.mapStatus = UInt8(3)
-            }
-
-            //if oldPokemon!.mapStatus != nil && self.mapStatus == nil {
-            //    self.mapStatus = oldPokemon!.mapStatus
-            //}
-
-            if oldPokemon!.spawnId != nil && oldPokemon!.mapStatus == UInt8(3) {
-                //Log.info(message: "[POKEMON] oldPokemon \(id) \(oldPokemon!.mapStatus)")
-                //self.mapStatus = UInt8(1)
-            }
-            if self.spawnId != nil && self.mapStatus == UInt8(3) {
-                //Log.info(message: "[POKEMON] \(id) \(self.mapStatus)")
-                //self.mapStatus = UInt8(1)
             }
 
             if oldPokemon!.pvpRankingsGreatLeague != nil && self.pvpRankingsGreatLeague == nil {
@@ -1004,7 +995,6 @@ class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStringConve
                     pokemonFilterExclude.append(id.description)
                 }
             }
-
         }
 
         if pokemonFilterExclude.contains("big_karp") {
