@@ -3911,8 +3911,8 @@ function manageSelectButton (e, isNew) {
         shouldShow = !pokemonFilterNew['event_only'] || !pokemonFilterNew['event_only'].on
         break
       case 'event_only_show':
-        break
         shouldShow = pokemonFilterNew['event_only'] && pokemonFilterNew['event_only'].on
+        break
       case 'show_cell_hide':
         shouldShow = !pokemonFilterNew['show_cell'] || !pokemonFilterNew['show_cell'].on
         break
