@@ -2177,7 +2177,11 @@ extension PokemonDisplayProto.Form {
         .delibirdWinter2020,
         .cubchooWinter2020,
         .slowpoke2020,
-        .slowbro2021
+        .slowbro2021,
+        .pikachuKariyushi,
+        .pikachuPopStar,
+        .pikachuRockStar,
+        .pikachuFlying5thAnniv
     ]
 
     static var allFormsInString: [String] {
@@ -4357,6 +4361,10 @@ extension PokemonDisplayProto.Form {
         case .cubchooWinter2020: return ["613-2672"]
         case .slowpoke2020: return ["79-2673"]
         case .slowbro2021: return ["80-2674"]
+        case .pikachuKariyushi: return ["25-2675"]
+        case .pikachuPopStar: return ["25-2676"]
+        case .pikachuRockStar: return ["25-2677"]
+        case .pikachuFlying5thAnniv: return ["25-2678"]
         case .unset: return []
         case .UNRECOGNIZED: return []
         default:
