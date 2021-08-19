@@ -21,9 +21,9 @@ let package = Package(
         .package(name: "Turf", url: "https://github.com/123FLO321/turf-swift.git", from: "0.5.0"),
         .package(name: "S2Geometry", url: "https://github.com/123FLO321/S2Geometry.git", from: "0.5.0"),
         .package(name: "Regex", url: "https://github.com/crossroadlabs/Regex.git", from: "1.2.0"),
-        .package(name: "swift-backtrace", url: "https://github.com/swift-server/swift-backtrace.git", from: "1.2.0"),
+        .package(name: "swift-backtrace", url: "https://github.com/swift-server/swift-backtrace.git", from: "1.2.1"),
         .package(name: "Rainbow", url: "https://github.com/onevcat/Rainbow", from: "3.0.0"),
-        .package(name: "POGOProtos", url: "https://github.com/SkOODaT/POGOProtos-Swift.git", .upToNextMinor(from: "1.28.8"))
+        .package(name: "POGOProtos", url: "https://github.com/123FLO321/POGOProtos-Swift.git", .upToNextMinor(from: "2.4.1"))
     ],
     targets: [
         .target(

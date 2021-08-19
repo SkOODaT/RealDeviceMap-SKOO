@@ -46,7 +46,7 @@ extension PokemonDisplayProto.Costume {
         .costume7,
         .costume8,
         .costume9,
-        .costume10
+        .costume10,
         //.costume1NoEvolve,
         //.costume2NoEvolve,
         //.costume3NoEvolve,
@@ -56,7 +56,8 @@ extension PokemonDisplayProto.Costume {
         //.costume7NoEvolve,
         //.costume8NoEvolve,
         //.costume9NoEvolve,
-        //.costume10NoEvolve
+        //.costume10NoEvolve,
+        .gofest2021Noevolve
     ]
 
     static var allCostumesInString: [String] {
@@ -117,6 +118,7 @@ extension PokemonDisplayProto.Costume {
         //case .costume8NoEvolve: return ["44"]
         //case .costume9NoEvolve: return ["45"]
         //case .costume10NoEvolve: return ["46"]
+        //case .gofest2021Noevolve: return ["47"]
         case .unset: return []
         case .UNRECOGNIZED: return []
         default:

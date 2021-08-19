@@ -2181,7 +2181,55 @@ extension PokemonDisplayProto.Form {
         .pikachuKariyushi,
         .pikachuPopStar,
         .pikachuRockStar,
-        .pikachuFlying5thAnniv
+        .pikachuFlying5ThAnniv,
+        .oricorioBaile,
+        .oricorioPompom,
+        .oricorioPau,
+        .oricorioSensu,
+        .lycanrocMidday,
+        .lycanrocMidnight,
+        .lycanrocDusk,
+        .wishiwashiSolo,
+        .wishiwashiSchool,
+        .silvallyNormal,
+        .silvallyBug,
+        .silvallyDark,
+        .silvallyDragon,
+        .silvallyElectric,
+        .silvallyFairy,
+        .silvallyFighting,
+        .silvallyFire,
+        .silvallyFlying,
+        .silvallyGhost,
+        .silvallyGrass,
+        .silvallyGround,
+        .silvallyIce,
+        .silvallyPoison,
+        .silvallyPsychic,
+        .silvallyRock,
+        .silvallySteel,
+        .silvallyWater,
+        .miniorMeteor,
+        .miniorBlue,
+        .miniorGreen,
+        .miniorIndigo,
+        .miniorOrange,
+        .miniorRed,
+        .miniorViolet,
+        .miniorYellow,
+        .mimikyuBusted,
+        .mimikyuDisguised,
+        .necrozmaNormal,
+        .necrozmaDuskMane,
+        .necrozmaDawnWings,
+        .necrozmaUltra,
+        .magearnaNormal,
+        .magearnaOriginalColor,
+        .urshifuSingleStrike,
+        .urshifuRapidStrike,
+        .calyrexNormal,
+        .calyrexIceRider,
+        .calyrexShadowRider
     ]
 
     static var allFormsInString: [String] {
@@ -4364,7 +4412,55 @@ extension PokemonDisplayProto.Form {
         case .pikachuKariyushi: return ["25-2675"]
         case .pikachuPopStar: return ["25-2676"]
         case .pikachuRockStar: return ["25-2677"]
-        case .pikachuFlying5thAnniv: return ["25-2678"]
+        case .pikachuFlying5ThAnniv: return ["25-2678"]
+        case .oricorioBaile: return ["741-2679"]
+        case .oricorioPompom: return ["741-2680"]
+        case .oricorioPau: return ["741-2681"]
+        case .oricorioSensu: return ["741-2683"]
+        case .lycanrocMidday: return ["745-2684"]
+        case .lycanrocMidnight: return ["745-2685"]
+        case .lycanrocDusk: return ["745-2686"]
+        case .wishiwashiSolo: return ["746-2687"]
+        case .wishiwashiSchool: return ["746-2688"]
+        case .silvallyNormal: return ["773-2689"]
+        case .silvallyBug: return ["773-2690"]
+        case .silvallyDark: return ["773-2691"]
+        case .silvallyDragon: return ["773-2692"]
+        case .silvallyElectric: return ["773-2693"]
+        case .silvallyFairy: return ["773-2694"]
+        case .silvallyFighting: return ["773-2695"]
+        case .silvallyFire: return ["773-2696"]
+        case .silvallyFlying: return ["773-2697"]
+        case .silvallyGhost: return ["773-2698"]
+        case .silvallyGrass: return ["773-2699"]
+        case .silvallyGround: return ["773-2700"]
+        case .silvallyIce: return ["773-2701"]
+        case .silvallyPoison: return ["773-2702"]
+        case .silvallyPsychic: return ["773-2703"]
+        case .silvallyRock: return ["773-2704"]
+        case .silvallySteel: return ["773-2705"]
+        case .silvallyWater: return ["773-2706"]
+        case .miniorMeteor: return ["774-2707"]
+        case .miniorBlue: return ["774-2708"]
+        case .miniorGreen: return ["774-2709"]
+        case .miniorIndigo: return ["774-2710"]
+        case .miniorOrange: return ["774-2711"]
+        case .miniorRed: return ["774-2712"]
+        case .miniorViolet: return ["774-2713"]
+        case .miniorYellow: return ["774-2714"]
+        case .mimikyuBusted: return ["778-2715"]
+        case .mimikyuDisguised: return ["778-2716"]
+        case .necrozmaNormal: return ["800-2717"]
+        case .necrozmaDuskMane: return ["800-2718"]
+        case .necrozmaDawnWings: return ["800-2719"]
+        case .necrozmaUltra: return ["800-2720"]
+        case .magearnaNormal: return ["801-2721"]
+        case .magearnaOriginalColor: return ["801-2722"]
+        case .urshifuSingleStrike: return ["892-2723"]
+        case .urshifuRapidStrike: return ["892-2724"]
+        case .calyrexNormal: return ["898-2725"]
+        case .calyrexIceRider: return ["898-2726"]
+        case .calyrexShadowRider: return ["898-2727"]
         case .unset: return []
         case .UNRECOGNIZED: return []
         default:
