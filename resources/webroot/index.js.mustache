@@ -65,11 +65,11 @@ let showSubmissionCells
 let showGreatLeague
 let showUltraLeague
 
-let avilableForms = []
-let avilableCostumes = []
-let avilablePokemonEvolutions = []
-let avilableItems = []
-let avilableTileservers = {}
+let availableForms = []
+let availableCostumes = []
+let availablePokemonEvolutions = []
+let availableItems = []
+let availableTileservers = {}
 //let availableForms = []
 //let availableItems = []
 //let availableTileservers = {}
@@ -170,11 +170,11 @@ $(function () {
     weatherTypes = data
   })
 
-  avilableForms = JSON.parse('{{{avilable_forms_json}}}')
-  avilableCostumes = JSON.parse('{{{avilable_costumes_json}}}')
-  avilablePokemonEvolutions = JSON.parse('{{{avilable_pokemonevolutions_json}}}')
-  avilableItems = JSON.parse('{{{avilable_items_json}}}')
-  avilableTileservers = JSON.parse('{{{avilable_tileservers_json}}}')
+  availableForms = JSON.parse('{{{available_forms_json}}}')
+  availableCostumes = JSON.parse('{{{available_costumes_json}}}')
+  availablePokemonEvolutions = JSON.parse('{{{available_pokemonevolutions_json}}}')
+  availableItems = JSON.parse('{{{available_items_json}}}')
+  availableTileservers = JSON.parse('{{{available_tileservers_json}}}')
   //availableForms = JSON.parse('{{{available_forms_json}}}')
   //availableItems = JSON.parse('{{{available_items_json}}}')
   //availableTileservers = JSON.parse('{{{available_tileservers_json}}}')
@@ -4816,21 +4816,21 @@ function getPokemonIconString (pokemonId, pokemonForm, pokemonCostume, pokemonEv
   if (pokemonCostume !== 0 && pokemonCostume !== null || pokemonForm !== 0 && pokemonForm !== null || pokemonEvolution !== 0 && pokemonEvolution !== null) {
     if (pokemonCostume !== 0 && pokemonCostume !== null) {
       const pokemonIdStringTmp = '' + pokemonCostume
-      if ($.inArray(pokemonIdStringTmp, avilableCostumes) !== -1) {
+      if ($.inArray(pokemonIdStringTmp, availableCostumes) !== -1) {
         pokemonIdString = '' + pokemonId + '-' + pokemonIdStringTmp
       } else {
         pokemonIdString = '' + pokemonId
       }
     } else if (pokemonEvolution !== 0 && pokemonEvolution !== null) {
       const pokemonIdStringTmp = '' +  pokemonEvolution
-      if ($.inArray(pokemonIdStringTmp, avilablePokemonEvolutions) !== -1) {
+      if ($.inArray(pokemonIdStringTmp, availablePokemonEvolutions) !== -1) {
         pokemonIdString = '' + pokemonId + '-0-' + pokemonIdStringTmp
       } else {
         pokemonIdString = '' + pokemonId
       }
     } else if (pokemonForm !== 0 && pokemonForm !== null) {
       const pokemonIdStringTmp = '' + pokemonId + '-' + pokemonForm
-      if ($.inArray(pokemonIdStringTmp, avilableForms) !== -1) {
+      if ($.inArray(pokemonIdStringTmp, availableForms) !== -1) {
         pokemonIdString = pokemonIdStringTmp
       } else {
         pokemonIdString = '' + pokemonId

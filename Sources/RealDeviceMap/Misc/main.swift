@@ -210,18 +210,18 @@ WebHookController.global.start()
 
 // Load Forms
 //Log.info(message: "[MAIN] Loading Avilable Forms")
-//var avilableForms = [String]()
+//var availableForms = [String]()
 //do {
 //    try Dir("\(projectroot)/resources/webroot/static/img/pokemon").forEachEntry { (file) in
 //        let split = file.replacingOccurrences(of: ".png", with: "").components(separatedBy: "-")
 //        if split.count == 2, let pokemonID = Int(split[0]), let formID = Int(split[1]) {
-//            avilableForms.append("\(pokemonID)-\(formID)")
+//            availableForms.append("\(pokemonID)-\(formID)")
 //        } else if split.count == 3, let pokemonID = Int(split[0]),
 //                 let formID = Int(split[1]), let evoId = Int(split[2]) {
-//            avilableForms.append("\(pokemonID)-\(formID)-\(evoId)")
+//            availableForms.append("\(pokemonID)-\(formID)-\(evoId)")
 //        }
 //    }
-//    WebRequestHandler.avilableFormsJson = try avilableForms.jsonEncodedString()
+//    WebRequestHandler.availableFormsJson = try availableForms.jsonEncodedString()
 //} catch {
 //    Log.error(
 //        message:
@@ -230,13 +230,13 @@ WebHookController.global.start()
 //}
 
 // Load Forms
-Log.info(message: "[MAIN] Loading Avilable Forms".green)
-var avilableForms = [String]()
+Log.info(message: "[MAIN] Loading Available Forms".green)
+var availableForms = [String]()
 do {
     for formString in PokemonDisplayProto.Form.allFormsInString {
         let file = File("\(projectroot)/resources/webroot/static/img/pokemon/\(formString).png")
         if file.exists {
-            avilableForms.append(formString)
+            availableForms.append(formString)
         }
     }
     WebRequestHandler.availableFormsJson = try availableForms.jsonEncodedString()
@@ -248,30 +248,30 @@ do {
 
 // Load Costumes
 Log.debug(message: "[MAIN] Loading Avilable Costumes".green)
-var avilableCostumes = [String]()
+var availableCostumes = [String]()
 do {
     for costumeString in PokemonDisplayProto.Costume.allCostumesInString {
         let file = File("\(projectroot)/resources/webroot/static/img/pokemon/\(costumeString).png")
         if file.exists {
-            avilableCostumes.append(costumeString)
+            availableCostumes.append(costumeString)
         }
     }
-    WebRequestHandler.avilableCostumesJson = try avilableCostumes.jsonEncodedString()
+    WebRequestHandler.availableCostumesJson = try availableCostumes.jsonEncodedString()
 } catch {
     Log.error(message: "Failed to load costumes. Error: \(error.localizedDescription)".red)
 }
 
 // Load Pokemon Evolutions
 Log.debug(message: "[MAIN] Loading Avilable Pokemon Evolutions".green)
-var avilablePokemonEvolutions = [String]()
+var availablePokemonEvolutions = [String]()
 do {
     for temporaryevolutionString in HoloTemporaryEvolutionId.allTemporaryEvolutionIdsInString {
         let file = File("\(projectroot)/resources/webroot/static/img/pokemon/\(temporaryevolutionString).png")
         if file.exists {
-            avilablePokemonEvolutions.append(temporaryevolutionString)
+            availablePokemonEvolutions.append(temporaryevolutionString)
         }
     }
-    WebRequestHandler.avilablePokemonEvolutionsJson = try avilablePokemonEvolutions.jsonEncodedString()
+    WebRequestHandler.availablePokemonEvolutionsJson = try availablePokemonEvolutions.jsonEncodedString()
 } catch {
     Log.error(message: "Failed to load pokemon evolutions. Error: \(error.localizedDescription)".red)
 }

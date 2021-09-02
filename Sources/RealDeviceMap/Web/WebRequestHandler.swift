@@ -31,13 +31,13 @@ class WebRequestHandler {
     static var maxZoom: Int = 18
     static var maxPokemonId: Int = 649
     static var title: String = "RealDeviceMap"
-    static var avilableFormsJson: String = ""
-    static var avilableCostumesJson: String = ""
-    static var avilablePokemonEvolutionsJson: String = ""
-    static var avilableItemJson: String = ""
-    //static var avilableFormsJson: String = "[]"
-    //static var avilableCostumesJson: String = "[]"
-    //static var avilableItemJson: String = "[]"
+    static var availableFormsJson: String = ""
+    static var availableCostumesJson: String = ""
+    static var availablePokemonEvolutionsJson: String = ""
+    static var availableItemJson: String = ""
+    //static var availableFormsJson: String = "[]"
+    //static var availableCostumesJson: String = "[]"
+    //static var availableItemJson: String = "[]"
     static var enableRegister: Bool = true
     static var tileservers = [String: [String: String]]()
     static var cities = [String: [String: Any]]()
@@ -1725,10 +1725,10 @@ class WebRequestHandler {
             data["available_forms_json"] = availableFormsJson.replacingOccurrences(of: "\\\"", with: "\\\\\"")
                                           .replacingOccurrences(of: "'", with: "\\'")
                                           .replacingOccurrences(of: "\"", with: "\\\"")
-            data["avilable_costumes_json"] = avilableCostumesJson.replacingOccurrences(of: "\\\"", with: "\\\\\"")
+            data["available_costumes_json"] = availableCostumesJson.replacingOccurrences(of: "\\\"", with: "\\\\\"")
                                           .replacingOccurrences(of: "'", with: "\\'")
                                           .replacingOccurrences(of: "\"", with: "\\\"")
-            data["avilable_pokemonevolutions_json"] = avilablePokemonEvolutionsJson
+            data["available_pokemonevolutions_json"] = availablePokemonEvolutionsJson
                                           .replacingOccurrences(of: "\\\"", with: "\\\\\"")
                                           .replacingOccurrences(of: "'", with: "\\'")
                                           .replacingOccurrences(of: "\"", with: "\\\"")

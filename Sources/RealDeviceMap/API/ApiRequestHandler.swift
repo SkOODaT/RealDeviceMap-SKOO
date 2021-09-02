@@ -597,7 +597,7 @@ class ApiRequestHandler {
 
             // Items
             var itemI = 1
-            for item in Item.allAvilable {
+            for item in Item.allAvailable {
 
                 let filter = """
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
