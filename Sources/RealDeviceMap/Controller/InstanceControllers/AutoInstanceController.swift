@@ -46,6 +46,8 @@ class AutoInstanceController: InstanceControllerProto {
     private let accountsLock = Threading.Lock()
     private var accounts = [String: String]()
     public var delayLogout: Int
+    public let useRwForQuest =
+      ProcessInfo.processInfo.environment["USE_RW_FOR_QUEST"] != nil
 
     init(name: String, multiPolygon: MultiPolygon, type: AutoType, timezoneOffset: Int,
          minLevel: UInt8, maxLevel: UInt8, spinLimit: Int, delayLogout: Int,
@@ -598,7 +600,7 @@ class AutoInstanceController: InstanceControllerProto {
                 mysql: mysql,
                 minLevel: minLevel,
                 maxLevel: maxLevel,
-                ignoringWarning: true,
+                ignoringWarning: useRwForQuest,
                 spins: spinLimit,
                 noCooldown: true,
                 encounterTarget: encounterTarget,
@@ -612,7 +614,7 @@ class AutoInstanceController: InstanceControllerProto {
         return
             account.level >= minLevel &&
             account.level <= maxLevel &&
-            account.isValid(ignoringWarning: true, group: accountGroup) &&
+            account.isValid(ignoringWarning: useRwForQuest, group: accountGroup) &&
             account.hasSpinsLeft(spins: spinLimit)
     }
 }

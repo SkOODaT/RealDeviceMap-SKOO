@@ -30,6 +30,7 @@ class ImageGenerator {
         let pokestopDir = Dir("\(projectroot)/resources/webroot/static/img/pokestop/")
         let pokemonDir = Dir("\(projectroot)/resources/webroot/static/img/pokemon/")
         //let wildPokemonDir = Dir("\(projectroot)/resources/webroot/static/img/wild_pokemon/")
+
         let pokemonLeagueDir = Dir("\(projectroot)/resources/webroot/static/img/pokemon_league/")
         let itemDir = Dir("\(projectroot)/resources/webroot/static/img/item/")
         let questDir = Dir("\(projectroot)/resources/webroot/static/img/quest/")
@@ -40,6 +41,7 @@ class ImageGenerator {
         let firstFile = File("\(projectroot)/resources/webroot/static/img/misc/first.png")
         let secondFile = File("\(projectroot)/resources/webroot/static/img/misc/second.png")
         let thirdFile = File("\(projectroot)/resources/webroot/static/img/misc/third.png")
+
 
         //let grassFile = File("\(projectroot)/resources/webroot/static/img/misc/grass.png")
 
@@ -423,4 +425,5 @@ class ImageGenerator {
         _ = Shell("rm", "-f", "tmp1.png").run()
         _ = Shell("rm", "-f", "tmp2.png").run()
     }
+
 }

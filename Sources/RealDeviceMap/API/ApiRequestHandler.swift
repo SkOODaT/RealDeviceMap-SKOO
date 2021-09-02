@@ -4,7 +4,7 @@
 //
 //  Created by Florian Kostenzer on 18.09.18.
 //
-//  swiftlint:disable file_length type_body_length
+//  swiftlint:disable superfluous_disable_command file_length type_body_length
 
 import Foundation
 import PerfectLib
@@ -31,8 +31,9 @@ class ApiRequestHandler {
 
     public internal(set) static var start: Date = Date(timeIntervalSince1970: 0)
 
+    // swiftlint:disable:next cyclomatic_complexity
     private static func getPerms(request: HTTPRequest, response: HTTPResponse) -> [Group.Perm]? {
-        let tmp = WebReqeustHandler.getPerms(request: request, fromCache: true)
+        let tmp = WebRequestHandler.getPerms(request: request, fromCache: true)
         let perms = tmp.perms
         let username = tmp.username
 
@@ -122,6 +123,8 @@ class ApiRequestHandler {
         let pokestopFilterExclude = request.param(name: "pokestop_filter_exclude")?.jsonDecodeForceTry() as? [String]
         let spawnpointFilterExclude = request.param(name: "spawnpoint_filter_exclude")?
             .jsonDecodeForceTry() as? [String]
+        let pokestopShowOnlyAr = request.param(name: "pokestop_show_only_ar")?.toBool() ?? false
+        let gymShowOnlyAr = request.param(name: "gym_show_only_ar")?.toBool() ?? false
         let showSpawnpoints =  request.param(name: "show_spawnpoints")?.toBool() ?? false
         let showCells = request.param(name: "show_cells")?.toBool() ?? false
         let showSubmissionPlacementCells = request.param(name: "show_submission_placement_cells")?.toBool() ?? false
@@ -142,6 +145,7 @@ class ApiRequestHandler {
         let formatted =  request.param(name: "formatted")?.toBool() ?? false
         let lastUpdate = request.param(name: "last_update")?.toUInt32() ?? 0
         let showAssignments = request.param(name: "show_assignments")?.toBool() ?? false
+        let showAssignmentGroups = request.param(name: "show_assignmentgroups")?.toBool() ?? false
         let showIVQueue = request.param(name: "show_ivqueue")?.toBool() ?? false
         let showDiscordRules = request.param(name: "show_discordrules")?.toBool() ?? false
         let showStatus = request.param(name: "show_status")?.toBool() ?? false
@@ -168,7 +172,7 @@ class ApiRequestHandler {
             data["gyms"] = try? Gym.getAll(
                 mysql: mysql, minLat: minLat!, maxLat: maxLat!, minLon: minLon!, maxLon: maxLon!, updated: lastUpdate,
                 raidsOnly: !showGyms, showRaids: permShowRaid, raidFilterExclude: raidFilterExclude,
-                gymFilterExclude: gymFilterExclude
+                gymFilterExclude: gymFilterExclude, gymShowOnlyAr: gymShowOnlyAr
             )
         }
         let permShowStops = perms.contains(.viewMapPokestop)
@@ -180,7 +184,7 @@ class ApiRequestHandler {
                 mysql: mysql, minLat: minLat!, maxLat: maxLat!, minLon: minLon!, maxLon: maxLon!, updated: lastUpdate,
                 questsOnly: !showPokestops, showQuests: permShowQuests, showLures: permShowLures,
                 showInvasions: permShowInvasions, questFilterExclude: questFilterExclude,
-                pokestopFilterExclude: pokestopFilterExclude
+                pokestopFilterExclude: pokestopFilterExclude, pokestopShowOnlyAr: pokestopShowOnlyAr
             )
         }
         let permShowIV = perms.contains(.viewMapIV)
@@ -276,6 +280,32 @@ class ApiRequestHandler {
                     ],
                     "name": eventOnlyString,
                     "image": "Event",
+                    "filter": filter,
+                    "size": "",
+                    "type": miscString
+                ])
+            }
+            if !Pokemon.noCellPokemon {
+                let filter = """
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <label class="btn btn-sm btn-off select-button-new" data-id="show_cell"
+                         data-type="pokemon-iv" data-info="show_cell_hide">
+                            <input type="radio" name="options" id="hide" autocomplete="off">\(offString)
+                        </label>
+                        <label class="btn btn-sm btn-on select-button-new" data-id="show_cell"
+                         data-type="pokemon-iv" data-info="show_cell_show">
+                            <input type="radio" name="options" id="show" autocomplete="off">\(onString)
+                        </label>
+                    </div>
+                """
+                pokemonData.append([
+                    "id": [
+                        "formatted": "",
+                        "sort": -1
+                    ],
+                    "name": includeCellString,
+                    "image": "<img class=\"lazy_load\" data-src=\"/static/img/misc/grass.png\"" +
+                            "style=\"height:50px; width:50px;\">",
                     "filter": filter,
                     "size": "",
                     "type": miscString
@@ -619,7 +649,7 @@ class ApiRequestHandler {
             }
 
             // Pokemon
-            for i in 1...WebReqeustHandler.maxPokemonId {
+            for i in 1...WebRequestHandler.maxPokemonId {
 
                 let filter = """
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -716,7 +746,7 @@ class ApiRequestHandler {
                 "type": generalString
                 ])
 
-            //Level
+            // Level
             for i in 1...6 {
 
                 let raidLevel = Localizer.global.get(value: "filter_raid_level_\(i)")
@@ -769,8 +799,8 @@ class ApiRequestHandler {
                 ])
             }
 
-            //Pokemon
-            for i in 1...WebReqeustHandler.maxPokemonId {
+            // Pokemon
+            for i in 1...WebRequestHandler.maxPokemonId {
 
                 let filter = """
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -836,7 +866,7 @@ class ApiRequestHandler {
             let availableSlotsString = Localizer.global.get(value: "filter_gym_available_slots")
 
             var gymData = [[String: Any]]()
-            //Team
+            // Team
             for i in 0...3 {
 
                 let gymTeam = Localizer.global.get(value: "filter_gym_team_\(i)")
@@ -920,7 +950,7 @@ class ApiRequestHandler {
 
             gymData.append([
                 "id": [
-                    "formatted": String(format: "%03d", 5), //Need a better way to display, new section?
+                    "formatted": String(format: "%03d", 5), // Need a better way to display, new section?
                     "sort": 5
                 ],
                 "name": Localizer.global.get(value: "filter_raid_ex") ,
@@ -931,7 +961,49 @@ class ApiRequestHandler {
                 "type": gymOptionsString
             ])
 
-            //Available slots
+            // AR gyms
+            let arFilter = """
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <label class="btn btn-sm btn-off select-button-new" data-id="ar" data-type="gym-ar" data-info="hide">
+            <input type="radio" name="options" id="hide" autocomplete="off">\(hideString)
+            </label>
+            <label class="btn btn-sm btn-on select-button-new" data-id="ar" data-type="gym-ar" data-info="show">
+            <input type="radio" name="options" id="show" autocomplete="off">\(showString)
+            </label>
+            </div>
+            """
+
+            let arSize = """
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <label class="btn btn-sm btn-size select-button-new" data-id="ar" data-type="gym-ar" data-info="small">
+            <input type="radio" name="options" id="hide" autocomplete="off">\(smallString)
+            </label>
+            <label class="btn btn-sm btn-size select-button-new" data-id="ar" data-type="gym-ar" data-info="normal">
+            <input type="radio" name="options" id="show" autocomplete="off">\(normalString)
+            </label>
+            <label class="btn btn-sm btn-size select-button-new" data-id="ar" data-type="gym-ar" data-info="large">
+            <input type="radio" name="options" id="show" autocomplete="off">\(largeString)
+            </label>
+            <label class="btn btn-sm btn-size select-button-new" data-id="ar" data-type="gym-ar" data-info="huge">
+            <input type="radio" name="options" id="show" autocomplete="off">\(hugeString)
+            </label>
+            </div>
+            """
+
+            gymData.append([
+                "id": [
+                    "formatted": String(format: "%03d", 6), // Need a better way to display, new section?
+                    "sort": 6
+                ],
+                "name": Localizer.global.get(value: "filter_gym_ar_only") ,
+                "image": "<img class=\"lazy_load\" data-src=\"/static/img/misc/ar.png\" " +
+                        "style=\"height:50px; width:50px;\">",
+                "filter": arFilter,
+                "size": arSize,
+                "type": gymOptionsString
+            ])
+
+            // Available slots
             for i in 0...6 {
                 let availableSlots = Localizer.global.get(value: "filter_gym_available_slots_\(i)")
 
@@ -1006,6 +1078,7 @@ class ApiRequestHandler {
             let pokestopNormal = Localizer.global.get(value: "filter_pokestop_normal")
             let pokestopInvasion = Localizer.global.get(value: "filter_pokestop_invasion")
             let pokestopLeaders = Localizer.global.get(value: "filter_pokestop_leaders")
+            let arOnly = Localizer.global.get(value: "filter_pokestop_ar_only")
 
             let filter = """
             <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -1150,7 +1223,54 @@ class ApiRequestHandler {
                 "filter": trFilter,
                 "size": trSize,
                 "type": pokestopOptionsString
-                ])
+            ])
+
+            let arFilter = """
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <label class="btn btn-sm btn-off select-button-new" data-id="ar"
+             data-type="pokestop-ar" data-info="hide">
+            <input type="radio" name="options" id="hide" autocomplete="off">\(hideString)
+            </label>
+            <label class="btn btn-sm btn-on select-button-new" data-id="ar"
+             data-type="pokestop-ar" data-info="show">
+            <input type="radio" name="options" id="show" autocomplete="off">\(showString)
+            </label>
+            </div>
+            """
+
+            let arSize = """
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <label class="btn btn-sm btn-size select-button-new" data-id="ar"
+             data-type="pokestop-ar" data-info="small">
+            <input type="radio" name="options" id="hide" autocomplete="off">\(smallString)
+            </label>
+            <label class="btn btn-sm btn-size select-button-new" data-id="ar"
+             data-type="pokestop-ar" data-info="normal">
+            <input type="radio" name="options" id="show" autocomplete="off">\(normalString)
+            </label>
+            <label class="btn btn-sm btn-size select-button-new" data-id="ar"
+             data-type="pokestop-ar" data-info="large">
+            <input type="radio" name="options" id="show" autocomplete="off">\(largeString)
+            </label>
+            <label class="btn btn-sm btn-size select-button-new" data-id="ar"
+             data-type="pokestop-ar" data-info="huge">
+            <input type="radio" name="options" id="show" autocomplete="off">\(hugeString)
+            </label>
+            </div>
+            """
+
+            pokestopData.append([
+                "id": [
+                    "formatted": String(format: "%03d", 7),
+                    "sort": 7
+                ],
+                "name": arOnly,
+                "image": "<img class=\"lazy_load\" data-src=\"/static/img/misc/ar.png\" " +
+                        "style=\"height:50px; width:50px;\">",
+                "filter": arFilter,
+                "size": arSize,
+                "type": pokestopOptionsString
+            ])
 
             let leadersFilter = """
             <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -1382,7 +1502,7 @@ class ApiRequestHandler {
             if devices != nil {
                 for device in devices! {
                     var deviceData = [String: Any]()
-                    //deviceData["chk"] = ""
+                    // deviceData["chk"] = ""
                     deviceData["uuid"] = device.uuid
                     deviceData["host"] = device.lastHost ?? ""
                     deviceData["instance"] = device.instanceName ?? ""
@@ -1429,6 +1549,8 @@ class ApiRequestHandler {
                         instanceData["type"] = "Circle Smart Raid"
                     case .circlePokemon:
                         instanceData["type"] = "Circle Pokemon"
+                    case .circleSmartPokemon:
+                        instanceData["type"] = "Circle Smart Pokemon"
                     case .autoQuest:
                         instanceData["type"] = "Auto Quest"
                     case .pokemonIV:
@@ -1475,7 +1597,7 @@ class ApiRequestHandler {
                     let devicesInGroup = devices?.filter({ deviceGroup.deviceUUIDs.contains($0.uuid) }) ?? []
                     let instances = Array(
                         Set(devicesInGroup.filter({ $0.instanceName != nil }).map({ $0.instanceName! }))
-                    )
+                    ).sorted()
 
                     var deviceGroupData = [String: Any]()
                     deviceGroupData["name"] = deviceGroup.name
@@ -1486,7 +1608,7 @@ class ApiRequestHandler {
                         let id = deviceGroup.name.encodeUrl()!
                         deviceGroupData["buttons"] = "<div class=\"btn-group\" role=\"group\"><a " +
                             "href=\"/dashboard/devicegroup/assign/\(id)\" " +
-                            "role=\"button\" class=\"btn btn-success\">Asign</a>" +
+                            "role=\"button\" class=\"btn btn-success\">Assign</a>" +
                             "<a href=\"/dashboard/devicegroup/edit/\(id)\" " +
                             "role=\"button\" class=\"btn btn-primary\">Edit</a>" +
                             "<a href=\"/dashboard/devicegroup/delete/\(id)\" " +
@@ -1560,7 +1682,55 @@ class ApiRequestHandler {
 
         }
 
-        if showIVQueue && perms.contains(.viewMapIV), let instance = instance {
+        if showAssignmentGroups && perms.contains(.admin) {
+
+            let assignmentGroups = try? AssignmentGroup.getAll(mysql: mysql)
+            let assignments = try? Assignment.getAll(mysql: mysql)
+
+            var jsonArray = [[String: Any]]()
+
+            if assignmentGroups != nil {
+                for assignmentGroup in assignmentGroups! {
+                    let assignmentsInGroup =
+                        assignments?.filter({ assignmentGroup.assignmentIDs.contains($0.id!) }) ?? []
+                    let assignmentsInGroupDevices = Array(
+                        Set(assignmentsInGroup.filter({ $0.deviceUUID != nil || $0.deviceGroupName != nil })
+                            .map({ ($0.deviceUUID != nil ? $0.deviceUUID! : "") +
+                            ($0.deviceGroupName != nil ? $0.deviceGroupName! : "") + " -> " + $0.instanceName}))
+                        ).sorted()
+
+                    var assignmentGroupData = [String: Any]()
+                    assignmentGroupData["name"] = assignmentGroup.name
+
+                    if formatted {
+                        assignmentGroupData["assignments"] = assignmentsInGroupDevices.joined(separator: ", ")
+                        let id = assignmentGroup.name.encodeUrl()!
+                        assignmentGroupData["buttons"] = "<div class=\"btn-group\" role=\"group\"><a " +
+                            "href=\"/dashboard/assignmentgroup/start/\(id)\" " +
+                            "role=\"button\" class=\"btn btn-success\">Start</a>" +
+                            "<a href=\"/dashboard/assignmentgroup/request/\(id)\" " +
+                            "role=\"button\" class=\"btn btn-warning\" onclick=\"return " +
+                            "confirm('Are you sure that you want to clear all quests " +
+                            "for this assignment group?')\">ReQuest</a>" +
+                            "<a href=\"/dashboard/assignmentgroup/edit/\(id)\" " +
+                            "role=\"button\" class=\"btn btn-primary\">Edit</a>" +
+                            "<a href=\"/dashboard/assignmentgroup/delete/\(id)\" " +
+                            "role=\"button\" class=\"btn btn-danger\" onclick=\"return " +
+                            "confirm('Are you sure you want to delete this assignment " +
+                            "group? This action is irreversible and cannot be " +
+                            "undone without backups.')\">Delete</a></div>"
+                    } else {
+                        assignmentGroupData["assignments"] = assignments
+                    }
+
+                    jsonArray.append(assignmentGroupData)
+                }
+            }
+
+            data["assignmentgroups"] = jsonArray
+        }
+
+        if showIVQueue && perms.contains(.admin), let instance = instance {
 
             let queue = InstanceController.global.getIVQueue(name: instance.decodeUrl() ?? "")
 

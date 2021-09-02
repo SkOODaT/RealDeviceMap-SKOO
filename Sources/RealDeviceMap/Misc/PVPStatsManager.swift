@@ -62,7 +62,7 @@ internal class PVPStatsManager {
             return
         }
         eTag = result.get(.eTag)
-        Log.debug(message: "[PVPStatsManager] Parsing game master V2 file".green)
+        Log.debug(message: "[PVPStatsManager] Parsing game master file".green)
         let bodyJSON = try? JSONSerialization.jsonObject(with: Data(result.bodyBytes))
         guard let templates = bodyJSON as? [[String: Any]] else {
             Log.error(message: "[PVPStatsManager] Failed to parse game master file")
