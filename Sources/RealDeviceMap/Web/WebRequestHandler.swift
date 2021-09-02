@@ -166,7 +166,7 @@ class WebRequestHandler {
 
         if  perms.contains(.viewMapPokemon) {
             //data["show_logo"] = true
-            data["logo_url"] = WebReqeustHandler.logoUrl
+            data["logo_url"] = WebRequestHandler.logoUrl
         }
 
         if perms.contains(.admin) {
@@ -615,11 +615,11 @@ class WebRequestHandler {
                     return i.description
                 }).joined(separator: ";")
             data["discord_token"] = DiscordController.global.token
-            data["discord_redirect_url"] = WebReqeustHandler.oauthDiscordRedirectURL
-            data["discord_client_id"] = WebReqeustHandler.oauthDiscordClientID
-            data["discord_client_secret"] = WebReqeustHandler.oauthDiscordClientSecret
-            data["logo_url"] = WebReqeustHandler.logoUrl
-            data["stats_url"] = WebReqeustHandler.statsUrl
+            data["discord_redirect_url"] = WebRequestHandler.oauthDiscordRedirectURL
+            data["discord_client_id"] = WebRequestHandler.oauthDiscordClientID
+            data["discord_client_secret"] = WebRequestHandler.oauthDiscordClientSecret
+            data["logo_url"] = WebRequestHandler.logoUrl
+            data["stats_url"] = WebRequestHandler.statsUrl
             data["deviceapi_host_whitelist"] = WebHookRequestHandler.hostWhitelist?.joined(separator: ";")
             data["deviceapi_host_whitelist_uses_proxy"] = WebHookRequestHandler.hostWhitelistUsesProxy
             data["deviceapi_secret"] = WebHookRequestHandler.loginSecret
@@ -2176,11 +2176,11 @@ class WebRequestHandler {
         DiscordController.global.guilds = discordGuilds
         DiscordController.global.token = discordToken
         Localizer.locale = locale
-        WebReqeustHandler.oauthDiscordClientSecret = oauthDiscordClientSecret
-        WebReqeustHandler.oauthDiscordRedirectURL = oauthDiscordRedirectURL
-        WebReqeustHandler.oauthDiscordClientID = oauthDiscordClientID
-        WebReqeustHandler.logoUrl = logoUrl
-        WebReqeustHandler.statsUrl = statsUrl
+        WebRequestHandler.oauthDiscordClientSecret = oauthDiscordClientSecret
+        WebRequestHandler.oauthDiscordRedirectURL = oauthDiscordRedirectURL
+        WebRequestHandler.oauthDiscordClientID = oauthDiscordClientID
+        WebRequestHandler.logoUrl = logoUrl
+        WebRequestHandler.statsUrl = statsUrl
         WebHookRequestHandler.hostWhitelist = deviceAPIhostWhitelist
         WebHookRequestHandler.hostWhitelistUsesProxy = deviceAPIhostWhitelistUsesProxy
         WebHookRequestHandler.loginSecret = deviceAPIloginSecret

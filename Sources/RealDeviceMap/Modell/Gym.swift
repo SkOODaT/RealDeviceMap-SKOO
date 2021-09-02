@@ -103,7 +103,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
                 "latitude": lat,
                 "longitude": lon,
                 "team_id": teamId ?? 0,
-                "slots_available": availbleSlots ?? 6,
+                "slots_available": availableSlots ?? 6,
                 "in_battle": inBattle ?? 0,
                 "spawn": raidSpawnTimestamp ?? 0,
                 "start": raidBattleTimestamp ?? 0,
@@ -158,7 +158,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
     var raidPokemonCostume: UInt16?
     var raidPokemonCp: UInt32?
     var raidPokemonGender: UInt8?
-    var availbleSlots: UInt16?
+    var availableSlots: UInt16?
     var updated: UInt32?
     var exRaidEligible: Bool?
     var inBattle: Bool?

@@ -106,15 +106,15 @@ if let result = Shell("date", "+%z").run()?.replacingOccurrences(of: "\n", with:
 
 // Load Settings
 Log.info(message: "[MAIN] Loading Settings".green)
-WebReqeustHandler.startLat = try! DBController.global.getValueForKey(key: "MAP_START_LAT")!.toDouble()!
-WebReqeustHandler.startLon = try! DBController.global.getValueForKey(key: "MAP_START_LON")!.toDouble()!
-WebReqeustHandler.startZoom = try! DBController.global.getValueForKey(key: "MAP_START_ZOOM")!.toInt()!
-WebReqeustHandler.minZoom = try! DBController.global.getValueForKey(key: "MAP_MIN_ZOOM")?.toInt() ?? 10
-WebReqeustHandler.maxZoom = try! DBController.global.getValueForKey(key: "MAP_MAX_ZOOM")?.toInt() ?? 18
-WebReqeustHandler.maxPokemonId = try! DBController.global.getValueForKey(key: "MAP_MAX_POKEMON_ID")!.toInt()!
-WebReqeustHandler.title = try! DBController.global.getValueForKey(key: "TITLE") ?? "RealDeviceMap"
-WebReqeustHandler.enableRegister = try! DBController.global.getValueForKey(key: "ENABLE_REGISTER")?.toBool() ?? true
-WebReqeustHandler.cities = try! DBController.global.getValueForKey(key: "CITIES")?
+WebRequestHandler.startLat = try! DBController.global.getValueForKey(key: "MAP_START_LAT")!.toDouble()!
+WebRequestHandler.startLon = try! DBController.global.getValueForKey(key: "MAP_START_LON")!.toDouble()!
+WebRequestHandler.startZoom = try! DBController.global.getValueForKey(key: "MAP_START_ZOOM")!.toInt()!
+WebRequestHandler.minZoom = try! DBController.global.getValueForKey(key: "MAP_MIN_ZOOM")?.toInt() ?? 10
+WebRequestHandler.maxZoom = try! DBController.global.getValueForKey(key: "MAP_MAX_ZOOM")?.toInt() ?? 18
+WebRequestHandler.maxPokemonId = try! DBController.global.getValueForKey(key: "MAP_MAX_POKEMON_ID")!.toInt()!
+WebRequestHandler.title = try! DBController.global.getValueForKey(key: "TITLE") ?? "RealDeviceMap"
+WebRequestHandler.enableRegister = try! DBController.global.getValueForKey(key: "ENABLE_REGISTER")?.toBool() ?? true
+WebRequestHandler.cities = try! DBController.global.getValueForKey(key: "CITIES")?
     .jsonDecodeForceTry() as? [String: [String: Any]] ?? [String: [String: Any]]()
 WebRequestHandler.googleAnalyticsId = try! DBController.global.getValueForKey(key: "GOOGLE_ANALYTICS_ID") ?? ""
 WebRequestHandler.googleAdSenseId = try! DBController.global.getValueForKey(key: "GOOGLE_ADSENSE_ID") ?? ""
@@ -123,8 +123,8 @@ WebRequestHandler.oauthDiscordRedirectURL = try! DBController.global.getValueFor
 WebRequestHandler.oauthDiscordClientID = try! DBController.global.getValueForKey(key: "DISCORD_CLIENT_ID")?.emptyToNil()
 WebRequestHandler.oauthDiscordClientSecret = try! DBController.global.getValueForKey(key: "DISCORD_CLIENT_SECRET")?
     .emptyToNil()
-WebReqeustHandler.logoUrl = try! DBController.global.getValueForKey(key: "LOGO_URL") ?? ""
-WebReqeustHandler.statsUrl = try! DBController.global.getValueForKey(key: "STATS_URL") ?? ""
+WebRequestHandler.logoUrl = try! DBController.global.getValueForKey(key: "LOGO_URL") ?? ""
+WebRequestHandler.statsUrl = try! DBController.global.getValueForKey(key: "STATS_URL") ?? ""
 WebHookRequestHandler.hostWhitelist = try! DBController.global.getValueForKey(key: "DEVICEAPI_HOST_WHITELIST")?
     .emptyToNil()?.components(separatedBy: ";")
 WebHookRequestHandler.hostWhitelistUsesProxy = try! DBController.global.getValueForKey(
@@ -221,7 +221,7 @@ WebHookController.global.start()
 //            avilableForms.append("\(pokemonID)-\(formID)-\(evoId)")
 //        }
 //    }
-//    WebReqeustHandler.avilableFormsJson = try avilableForms.jsonEncodedString()
+//    WebRequestHandler.avilableFormsJson = try avilableForms.jsonEncodedString()
 //} catch {
 //    Log.error(
 //        message:
@@ -256,7 +256,7 @@ do {
             avilableCostumes.append(costumeString)
         }
     }
-    WebReqeustHandler.avilableCostumesJson = try avilableCostumes.jsonEncodedString()
+    WebRequestHandler.avilableCostumesJson = try avilableCostumes.jsonEncodedString()
 } catch {
     Log.error(message: "Failed to load costumes. Error: \(error.localizedDescription)".red)
 }
@@ -271,15 +271,15 @@ do {
             avilablePokemonEvolutions.append(temporaryevolutionString)
         }
     }
-    WebReqeustHandler.avilablePokemonEvolutionsJson = try avilablePokemonEvolutions.jsonEncodedString()
+    WebRequestHandler.avilablePokemonEvolutionsJson = try avilablePokemonEvolutions.jsonEncodedString()
 } catch {
     Log.error(message: "Failed to load pokemon evolutions. Error: \(error.localizedDescription)".red)
 }
 
 Log.info(message: "[MAIN] Loading Avilable Items".green)
-var aviableItems = [-6, -5, -4, -3, -2, -1]
+var availableItems = [-6, -5, -4, -3, -2, -1]
 for itemId in Item.allAvilable {
-    aviableItems.append(itemId.rawValue)
+    availableItems.append(itemId.rawValue)
 }
 WebRequestHandler.availableItemJson = try! availableItems.jsonEncodedString()
 

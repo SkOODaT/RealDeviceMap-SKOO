@@ -448,7 +448,7 @@ class ApiRequestHandler {
                 ])
             }
 
-            for i in 1...WebReqeustHandler.maxPokemonId {
+            for i in 1...WebRequestHandler.maxPokemonId {
 
                 let ivLabel: String
                 if permShowIV {
