@@ -278,7 +278,7 @@ do {
 
 Log.info(message: "[MAIN] Loading Avilable Items".green)
 var availableItems = [-6, -5, -4, -3, -2, -1]
-for itemId in Item.allAvilable {
+for itemId in Item.allAvailable {
     availableItems.append(itemId.rawValue)
 }
 WebRequestHandler.availableItemJson = try! availableItems.jsonEncodedString()

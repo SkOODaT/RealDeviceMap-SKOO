@@ -1308,8 +1308,8 @@ class ApiRequestHandler {
 
             pokestopData.append([
                 "id": [
-                    "formatted": String(format: "%03d", 7),
-                    "sort": 7
+                    "formatted": String(format: "%03d", 8),
+                    "sort": 8
                 ],
                 "name": pokestopLeaders,
                 "image": "<img class=\"lazy_load\" data-src=\"/static/img/pokestop/i0.png\"" +
@@ -1338,8 +1338,8 @@ class ApiRequestHandler {
 
             pokestopData.append([
                 "id": [
-                    "formatted": String(format: "%03d", 8),
-                    "sort": 8
+                    "formatted": String(format: "%03d", 9),
+                    "sort": 9
                 ],
                 "name": rocketIcons,
                 "image": "<img class=\"lazy_load\" data-src=\"/static/img/grunttype/40.png\" " +
@@ -1368,8 +1368,8 @@ class ApiRequestHandler {
 
             pokestopData.append([
                 "id": [
-                    "formatted": String(format: "%03d", 9),
-                    "sort": 9
+                    "formatted": String(format: "%03d", 10),
+                    "sort": 10
                 ],
                 "name": rocketTimers,
                 "image": "<img class=\"lazy_load\" data-src=\"/static/img/misc/timer.png\" " +

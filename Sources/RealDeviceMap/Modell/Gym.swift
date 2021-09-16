@@ -214,7 +214,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
         self.arScanEligible = arScanEligible
     }
 
-    init(fortData: PokemonFortProto, cellId: UInt64) {
+    init(fortData: PokemonFortProto, cellId: UInt64, weatherData: UInt8) {
         self.id = fortData.fortID
         self.lat = fortData.latitude
         self.lon = fortData.longitude
