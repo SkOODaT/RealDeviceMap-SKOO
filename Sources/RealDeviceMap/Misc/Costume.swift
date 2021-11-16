@@ -60,7 +60,8 @@ extension PokemonDisplayProto.Costume {
         .gofest2021Noevolve,
         .fashion2021Noevolve,
         .halloween2021Noevolve,
-        .gems2021Noevolve,
+        .gems12021Noevolve,
+        .gems22021Noevolve,
         .holiday2021Noevolve
     ]
 
@@ -125,8 +126,9 @@ extension PokemonDisplayProto.Costume {
         //case .gofest2021Noevolve: return ["47"]
         case .fashion2021Noevolve: return ["48"]
         case .halloween2021Noevolve: return ["49"]
-        case .gems2021Noevolve: return ["50"]
-        case .holiday2021Noevolve: return ["51"]
+        case .gems12021Noevolve: return ["50"]
+        case .gems22021Noevolve: return ["51"]
+        case .holiday2021Noevolve: return ["52"]
         case .unset: return []
         case .UNRECOGNIZED: return []
         default:
