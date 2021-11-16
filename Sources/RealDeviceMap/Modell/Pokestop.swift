@@ -213,6 +213,7 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
             }
             self.url = url
         }
+
         let name = fortData.name
         if self.name != name {
             hasChanges = true
@@ -1243,7 +1244,7 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
         let sql = """
         SELECT id
         FROM `pokestop`
-        WHERE id IN (SELECT id FROM `gym`)
+        WHERE id IN (SELECT id FROM `gym` WHERE deleted = 0)
         """
 
         let mysqlStmt = MySQLStmt(mysql)
@@ -1290,7 +1291,7 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
 
         let sql = """
         DELETE FROM `pokestop`
-        WHERE id IN (SELECT id FROM `gym`)
+        WHERE id IN (SELECT id FROM `gym` WHERE deleted = 0)
         """
 
         let mysqlStmt = MySQLStmt(mysql)
