@@ -2229,7 +2229,13 @@ extension PokemonDisplayProto.Form {
         .urshifuRapidStrike,
         .calyrexNormal,
         .calyrexIceRider,
-        .calyrexShadowRider
+        .calyrexShadowRider,
+        .lugiaS,
+        .hoOhS,
+        .raikouS,
+        .enteiS,
+        .suicuneS,
+        .slowking2022
     ]
 
     static var allFormsInString: [String] {
@@ -4461,6 +4467,12 @@ extension PokemonDisplayProto.Form {
         case .calyrexNormal: return ["898-2725"]
         case .calyrexIceRider: return ["898-2726"]
         case .calyrexShadowRider: return ["898-2727"]
+        case .lugiaS: return ["249-2729"]
+        case .hoOhS: return ["251-2730"]
+        case .raikouS: return ["243-2731"]
+        case .enteiS: return ["244-2732"]
+        case .suicuneS: return ["245-2733"]
+        case .slowking2022: return ["199-2734"]
         case .unset: return []
         case .UNRECOGNIZED: return []
         default:
