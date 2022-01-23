@@ -2230,6 +2230,7 @@ extension PokemonDisplayProto.Form {
         .calyrexNormal,
         .calyrexIceRider,
         .calyrexShadowRider,
+        .voltorbHisuian,
         .lugiaS,
         .hoOhS,
         .raikouS,
@@ -4467,6 +4468,7 @@ extension PokemonDisplayProto.Form {
         case .calyrexNormal: return ["898-2725"]
         case .calyrexIceRider: return ["898-2726"]
         case .calyrexShadowRider: return ["898-2727"]
+        case .voltorbHisuian: return ["100-2728"]
         case .lugiaS: return ["249-2729"]
         case .hoOhS: return ["251-2730"]
         case .raikouS: return ["243-2731"]
