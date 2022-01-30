@@ -2236,7 +2236,8 @@ extension PokemonDisplayProto.Form {
         .raikouS,
         .enteiS,
         .suicuneS,
-        .slowking2022
+        .slowking2022,
+        .electrodeHisuian
     ]
 
     static var allFormsInString: [String] {
@@ -4475,6 +4476,7 @@ extension PokemonDisplayProto.Form {
         case .enteiS: return ["244-2732"]
         case .suicuneS: return ["245-2733"]
         case .slowking2022: return ["199-2734"]
+		case .electrodeHisuian: return ["101-2735"]
         case .unset: return []
         case .UNRECOGNIZED: return []
         default:
