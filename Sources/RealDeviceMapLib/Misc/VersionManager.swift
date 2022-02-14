@@ -59,7 +59,11 @@ public class VersionManager {
                let first = tags.first(where: { $0.commit.sha == sha }) {
                 version = "Version \(first.name)"
             } else {
-                version = "?"
+                if branch != nil {
+                    version = branch!
+                } else {
+                    version = "?"
+                }
             }
         } else {
             version = "Git Branch #\(gitBranch!)"

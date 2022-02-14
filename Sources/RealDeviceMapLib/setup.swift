@@ -18,10 +18,9 @@ import Rainbow
 public func setupRealDeviceMap() {
     Backtrace.install()
 
-    let logDebug = (ProcessInfo.processInfo.environment["LOG_LEVEL"]?.lowercased() ?? "debug") == "debug"
-    Log.logDebug = logDebug
+    let logLevel = ProcessInfo.processInfo.environment["LOG_LEVEL"]?.lowercased() ?? "info"
     Log.even = true
-
+    Log.setThreshold(value: logLevel)
     Log.info(message: "[MAIN] Getting Version".green)
     _ = VersionManager.global
 
@@ -76,6 +75,10 @@ public func setupRealDeviceMap() {
         Log.critical(message: message.red)
         fatalError(message)
     }
+
+    // Load locales
+    Log.info(message: "[MAIN] Loading Locales")
+    Localizer.locale = try! DBController.global.getValueForKey(key: "LOCALE")?.lowercased() ?? "en"
 
     // Load timezone
     Log.info(message: "[MAIN] Loading Timezone".green)
@@ -154,8 +157,6 @@ public func setupRealDeviceMap() {
             ]
     }
 
-    Localizer.locale = try! DBController.global.getValueForKey(key: "LOCALE")?.lowercased() ?? "en"
-
     Pokemon.defaultTimeUnseen = try! DBController.global.getValueForKey(key: "POKEMON_TIME_UNSEEN")?.toUInt32() ?? 1200
     Pokemon.defaultTimeReseen = try! DBController.global.getValueForKey(key: "POKEMON_TIME_RESEEN")?.toUInt32() ?? 600
 
@@ -181,15 +182,7 @@ public func setupRealDeviceMap() {
     MailController.footerHtml = try! DBController.global.getValueForKey(key: "MAILER_FOOTER_HTML") ?? ""
     MailController.baseURI = try! DBController.global.getValueForKey(key: "MAILER_BASE_URI") ?? ""
 
-    let webhookDelayString = try! DBController.global.getValueForKey(key: "WEBHOOK_DELAY") ?? "5.0"
-    let webhookUrlStrings = try! DBController.global.getValueForKey(key: "WEBHOOK_URLS") ?? ""
-    if let webhookDelay = Double(webhookDelayString) {
-        WebHookController.global.webhookSendDelay = webhookDelay
-    }
-    Log.info(message: "[MAIN] Starting Webhook".green)
-    WebHookController.global.webhookURLStrings = webhookUrlStrings.components(separatedBy: ";")
-
-    // Init Instance Contoller
+    // Init Instance Controller
     do {
         Log.info(message: "[MAIN] Starting Instance Controller".green)
         try InstanceController.setup()
@@ -203,25 +196,32 @@ public func setupRealDeviceMap() {
     Log.info(message: "[MAIN] Starting Webhook Controller".green)
     WebHookController.global.start()
 
+    // disable image generation, no Frontend is used
+    let noGenerateImages =
+        ProcessInfo.processInfo.environment["NO_GENERATE_IMAGES"] != nil
     // Load Forms
-    //Log.info(message: "[MAIN] Loading available Forms")
-    //var availableForms = [String]()
-    //do {
-    //    try Dir("\(Dir.projectroot)/resources/webroot/static/img/pokemon").forEachEntry { (file) in
-    //        let split = file.replacingOccurrences(of: ".png", with: "").components(separatedBy: "-")
-    //        if split.count == 2, let pokemonID = Int(split[0]), let formID = Int(split[1]) {
-    //            availableForms.append("\(pokemonID)-\(formID)")
-    //        } else if split.count == 3, let pokemonID = Int(split[0]),
-    //                 let formID = Int(split[1]), let evoId = Int(split[2]) {
-    //            availableForms.append("\(pokemonID)-\(formID)-\(evoId)")
+    //if !noGenerateImages {
+    //    Log.info(message: "[MAIN] Loading Available Forms")
+    //    var availableForms = [String]()
+    //    do {
+    //        try Dir("\(Dir.projectroot)/resources/webroot/static/img/pokemon").forEachEntry { (file) in
+    //            let split = file.replacingOccurrences(of: ".png", with: "").components(separatedBy: "-")
+    //            if split.count == 2, let pokemonID = Int(split[0]), let formID = Int(split[1]) {
+    //                availableForms.append("\(pokemonID)-\(formID)")
+    //            } else if split.count == 3, let pokemonID = Int(split[0]),
+    //                      let formID = Int(split[1]), let evoId = Int(split[2]) {
+    //                availableForms.append("\(pokemonID)-\(formID)-\(evoId)")
+    //            }
     //        }
+    //        WebRequestHandler.availableFormsJson = try availableForms.jsonEncodedString()
+    //    } catch {
+    //        Log.error(
+    //            message: "Failed to load forms. Frontend will only display default forms. " +
+    //                "Error: \(error.localizedDescription)"
+    //        )
     //    }
-    //    WebReqeustHandler.availableFormsJson = try availableForms.jsonEncodedString()
-    //} catch {
-    //    Log.error(
-    //        message: "Failed to load forms. Frontend will only display default forms. " +
-    //                 "Error: \(error.localizedDescription)"
-    //    )
+    //} else {
+    //    Log.info(message: "[MAIN] Loading Available Forms skipped - Image generation disabled")
     //}
 
     // Load Forms
@@ -233,13 +233,15 @@ public func setupRealDeviceMap() {
             if file.exists {
                 availableForms.append(formString)
             }
+            WebRequestHandler.availableFormsJson = try availableForms.jsonEncodedString()
+        } catch {
+            Log.error(
+                message: "Failed to load forms. Frontend will only display default forms. " +
+                    "Error: \(error.localizedDescription)"
+            )
         }
-        WebRequestHandler.availableFormsJson = try availableForms.jsonEncodedString()
-    } catch {
-        Log.error(
-            message: "Failed to load forms. Frontend will only display default forms. " +
-                     "Error: \(error.localizedDescription)"
-        )
+    } else {
+        Log.info(message: "[MAIN] Loading Available Forms skipped - Image generation disabled")
     }
 
     // Load Costumes
@@ -294,12 +296,12 @@ public func setupRealDeviceMap() {
     Log.info(message: "[MAIN] Starting Account Controller".green)
     AccountController.global.setup()
 
-    Log.info(message: "[MAIN] Starting Assignement Controller".green)
+    Log.info(message: "[MAIN] Starting Assignment Controller".green)
     do {
         try AssignmentController.global.setup()
     } catch {
-        let message = "[MAIN] Failed to start Assignement Controller"
-        Log.critical(message: message.red)
+        let message = "[MAIN] Failed to start Assignment Controller".red
+        Log.critical(message: message)
         fatalError(message)
     }
 
@@ -330,9 +332,7 @@ public func setupRealDeviceMap() {
     Log.info(message: "[MAIL] Starting Discord Controller".green)
     try! DiscordController.global.setup()
 
-    // Create Raid images
-    let noGenerateImages =
-      ProcessInfo.processInfo.environment["NO_GENERATE_IMAGES"] != nil
+    // Create images
     if !noGenerateImages {
       Log.info(message: "[MAIN] Starting Images Generator")
       ImageGenerator.generate()

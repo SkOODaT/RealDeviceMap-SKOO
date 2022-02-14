@@ -6,16 +6,17 @@
 //
 
 import Foundation
+import PerfectLib
 
 public class Shell {
 
     private var args: [String]
 
-    public init (_ args: String...) {
+    public init(_ args: String...) {
         self.args = args
     }
 
-    public func run(errorPipe: Any?=nil, inputPipe: Any?=nil, environment: [String: String]?=nil) -> String? {
+    public func run(errorPipe: Any? = nil, inputPipe: Any? = nil, environment: [String: String]? = nil) -> String? {
         let task = Process()
         task.executableURL = URL(fileURLWithPath: "/usr/bin/env")
         if environment != nil {
@@ -33,14 +34,16 @@ public class Shell {
         do {
             try task.run()
         } catch {
-            print("[SHELL] Task.Run() Error")
+            Log.error(message: "Failed to run command: \(error.localizedDescription)")
         }
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
         task.waitUntilExit()
         return String(data: data, encoding: String.Encoding.utf8)
     }
 
-    public func runError(standardPipe: Any?=nil, inputPipe: Any?=nil, environment: [String: String]?=nil) -> String? {
+    public func runError(standardPipe: Any? = nil,
+                         inputPipe: Any? = nil,
+                         environment: [String: String]? = nil) -> String? {
         let task = Process()
         task.executableURL = URL(fileURLWithPath: "/usr/bin/env")
         if environment != nil {
@@ -58,7 +61,7 @@ public class Shell {
         do {
             try task.run()
         } catch {
-            print("[SHELL] Task.Run() Error")
+            Log.error(message: "Failed to run command: \(error.localizedDescription)")
         }
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
         task.waitUntilExit()
