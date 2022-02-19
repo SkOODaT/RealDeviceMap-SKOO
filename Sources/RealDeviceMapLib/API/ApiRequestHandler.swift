@@ -1826,7 +1826,10 @@ public class ApiRequestHandler {
                             "<a href=\"/dashboard/devicegroup/edit/\(id)\" " +
                             "role=\"button\" class=\"btn btn-primary\">Edit</a>" +
                             "<a href=\"/dashboard/devicegroup/delete/\(id)\" " +
-                            "role=\"button\" class=\"btn btn-danger\">Delete</a></div>"
+                            "role=\"button\" class=\"btn btn-danger\" onclick=\"return " +
+                            "confirm('Are you sure you want to delete this device " +
+                            "group? This action is irreversible and cannot be " +
+                            "undone without backups.')\">Delete</a>>Delete</a></div>"
                     } else {
                         deviceGroupData["instances"] = instances
                         deviceGroupData["devices"] = deviceGroup.deviceUUIDs
@@ -1883,7 +1886,10 @@ public class ApiRequestHandler {
                             "<a href=\"/dashboard/assignment/edit/\(assignment.id!)\" " +
                             "role=\"button\" class=\"btn btn-primary\">Edit</a>" +
                             "<a href=\"/dashboard/assignment/delete/\(assignment.id!)\" " +
-                            "role=\"button\" class=\"btn btn-danger\">Delete</a></div>"
+                            "role=\"button\" class=\"btn btn-danger\" onclick=\"return " +
+                            "confirm('Are you sure you want to delete this assignment? " +
+                            "This action is irreversible and cannot be " +
+                            "undone without backups.')\">Delete</a>>Delete</a></div>"
                     } else {
                         assignmentData["time"] = assignment.time as Any
                     }
@@ -1966,7 +1972,10 @@ public class ApiRequestHandler {
                         "<a href=\"/dashboard/webhook/edit/\(webhook.name.encodeUrl()!)\" role=\"button\" " +
                         "class=\"btn btn-primary\">Edit</a>" +
                         "<a href=\"/dashboard/webhook/delete/\(webhook.name.encodeUrl()!)\" role=\"button\" " +
-                        "class=\"btn btn-danger\">Delete</a></div>"
+                        "class=\"btn btn-danger\" onclick=\"return " +
+                        "confirm('Are you sure you want to delete this webhook? " +
+                        "This action is irreversible and cannot be " +
+                        "undone without backups.')\">Delete</a></div>"
                     }
                     jsonArray.append(webhookData)
                 }
