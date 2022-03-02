@@ -166,11 +166,11 @@ $(function () {
     weatherTypes = data
   })
 
-  availableForms = JSON.parse('{{{avilable_forms_json}}}')
-  availableCostumes = JSON.parse('{{{avilable_costumes_json}}}')
-  availablePokemonEvolutions = JSON.parse('{{{avilable_pokemonevolutions_json}}}')
-  availableItems = JSON.parse('{{{avilable_items_json}}}')
-  availableTileservers = JSON.parse('{{{avilable_tileservers_json}}}')
+  availableForms = JSON.parse('{{{available_forms_json}}}')
+  availableCostumes = JSON.parse('{{{available_costumes_json}}}')
+  availablePokemonEvolutions = JSON.parse('{{{available_pokemonevolutions_json}}}')
+  availableItems = JSON.parse('{{{available_items_json}}}')
+  availableTileservers = JSON.parse('{{{available_tileservers_json}}}')
 
   loadStorage()
 
@@ -4774,7 +4774,7 @@ function getPokemonIconString (pokemonId, pokemonForm, pokemonCostume, pokemonEv
   if (pokemonCostume !== 0 && pokemonCostume !== null || pokemonForm !== 0 && pokemonForm !== null || pokemonEvolution !== 0 && pokemonEvolution !== null) {
     if (pokemonCostume !== 0 && pokemonCostume !== null) {
       const pokemonIdStringTmp = '' + pokemonCostume
-      if ($.inArray(pokemonIdStringTmp, avilableCostumes) !== -1) {
+      if ($.inArray(pokemonIdStringTmp, availableCostumes) !== -1) {
         pokemonIdString = '' + pokemonId + '-' + pokemonIdStringTmp
       } else {
         pokemonIdString = '' + pokemonId
@@ -4782,7 +4782,7 @@ function getPokemonIconString (pokemonId, pokemonForm, pokemonCostume, pokemonEv
     } else if (pokemonEvolution !== 0 && pokemonEvolution !== null) {
 
       const pokemonIdStringTmp = '' +  pokemonEvolution
-      if ($.inArray(pokemonIdStringTmp, avilablePokemonEvolutions) !== -1) {
+      if ($.inArray(pokemonIdStringTmp, availablePokemonEvolutions) !== -1) {
         pokemonIdString = '' + pokemonId + '-0-' + pokemonIdStringTmp
       } else {
         pokemonIdString = '' + pokemonId
@@ -4791,7 +4791,7 @@ function getPokemonIconString (pokemonId, pokemonForm, pokemonCostume, pokemonEv
 
     } else if (pokemonForm !== 0 && pokemonForm !== null) {
       const pokemonIdStringTmp = '' + pokemonId + '-' + pokemonForm
-      if ($.inArray(pokemonIdStringTmp, avilableForms) !== -1) {
+      if ($.inArray(pokemonIdStringTmp, availableForms) !== -1) {
         pokemonIdString = pokemonIdStringTmp
       } else {
         pokemonIdString = '' + pokemonId

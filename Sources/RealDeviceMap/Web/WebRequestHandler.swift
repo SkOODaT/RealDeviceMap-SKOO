@@ -166,7 +166,7 @@ class WebRequestHandler {
 
         if  perms.contains(.viewMapPokemon) {
             //data["show_logo"] = true
-            data["logo_url"] = WebReqeustHandler.logoUrl
+            data["logo_url"] = WebRequestHandler.logoUrl
         }
 
         if perms.contains(.admin) {
