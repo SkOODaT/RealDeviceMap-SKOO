@@ -1199,53 +1199,6 @@ class ApiRequestHandler {
                 "type": pokestopOptionsString
             ])
 
-            let arFilter = """
-            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-            <label class="btn btn-sm btn-off select-button-new" data-id="ar"
-             data-type="pokestop-ar" data-info="hide">
-            <input type="radio" name="options" id="hide" autocomplete="off">\(hideString)
-            </label>
-            <label class="btn btn-sm btn-on select-button-new" data-id="ar"
-             data-type="pokestop-ar" data-info="show">
-            <input type="radio" name="options" id="show" autocomplete="off">\(showString)
-            </label>
-            </div>
-            """
-
-            let arSize = """
-            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-            <label class="btn btn-sm btn-size select-button-new" data-id="ar"
-             data-type="pokestop-ar" data-info="small">
-            <input type="radio" name="options" id="hide" autocomplete="off">\(smallString)
-            </label>
-            <label class="btn btn-sm btn-size select-button-new" data-id="ar"
-             data-type="pokestop-ar" data-info="normal">
-            <input type="radio" name="options" id="show" autocomplete="off">\(normalString)
-            </label>
-            <label class="btn btn-sm btn-size select-button-new" data-id="ar"
-             data-type="pokestop-ar" data-info="large">
-            <input type="radio" name="options" id="show" autocomplete="off">\(largeString)
-            </label>
-            <label class="btn btn-sm btn-size select-button-new" data-id="ar"
-             data-type="pokestop-ar" data-info="huge">
-            <input type="radio" name="options" id="show" autocomplete="off">\(hugeString)
-            </label>
-            </div>
-            """
-
-            pokestopData.append([
-                "id": [
-                    "formatted": String(format: "%03d", 7),
-                    "sort": 7
-                ],
-                "name": arOnly,
-                "image": "<img class=\"lazy_load\" data-src=\"/static/img/misc/ar.png\" " +
-                        "style=\"height:50px; width:50px;\">",
-                "filter": arFilter,
-                "size": arSize,
-                "type": pokestopOptionsString
-            ])
-
             let leadersFilter = """
             <div class="btn-group btn-group-toggle" data-toggle="buttons">
             <label class="btn btn-sm btn-off select-button-new" data-id="leaders"
@@ -1293,6 +1246,53 @@ class ApiRequestHandler {
                 "type": pokestopOptionsString
                 ])
 
+            let arFilter = """
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <label class="btn btn-sm btn-off select-button-new" data-id="ar"
+             data-type="pokestop-ar" data-info="hide">
+            <input type="radio" name="options" id="hide" autocomplete="off">\(hideString)
+            </label>
+            <label class="btn btn-sm btn-on select-button-new" data-id="ar"
+             data-type="pokestop-ar" data-info="show">
+            <input type="radio" name="options" id="show" autocomplete="off">\(showString)
+            </label>
+            </div>
+            """
+
+            let arSize = """
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <label class="btn btn-sm btn-size select-button-new" data-id="ar"
+             data-type="pokestop-ar" data-info="small">
+            <input type="radio" name="options" id="hide" autocomplete="off">\(smallString)
+            </label>
+            <label class="btn btn-sm btn-size select-button-new" data-id="ar"
+             data-type="pokestop-ar" data-info="normal">
+            <input type="radio" name="options" id="show" autocomplete="off">\(normalString)
+            </label>
+            <label class="btn btn-sm btn-size select-button-new" data-id="ar"
+             data-type="pokestop-ar" data-info="large">
+            <input type="radio" name="options" id="show" autocomplete="off">\(largeString)
+            </label>
+            <label class="btn btn-sm btn-size select-button-new" data-id="ar"
+             data-type="pokestop-ar" data-info="huge">
+            <input type="radio" name="options" id="show" autocomplete="off">\(hugeString)
+            </label>
+            </div>
+            """
+
+            pokestopData.append([
+                "id": [
+                    "formatted": String(format: "%03d", 8),
+                    "sort": 8
+                ],
+                "name": arOnly,
+                "image": "<img class=\"lazy_load\" data-src=\"/static/img/misc/ar.png\" " +
+                        "style=\"height:50px; width:50px;\">",
+                "filter": arFilter,
+                "size": arSize,
+                "type": pokestopOptionsString
+            ])
+
             let rocketIcons = Localizer.global.get(value: "filter_rocket_icons")
 
             let rifilter = """
@@ -1312,8 +1312,8 @@ class ApiRequestHandler {
 
             pokestopData.append([
                 "id": [
-                    "formatted": String(format: "%03d", 8),
-                    "sort": 8
+                    "formatted": String(format: "%03d", 9),
+                    "sort": 9
                 ],
                 "name": rocketIcons,
                 "image": "<img class=\"lazy_load\" data-src=\"/static/img/grunttype/40.png\" " +
@@ -1342,8 +1342,8 @@ class ApiRequestHandler {
 
             pokestopData.append([
                 "id": [
-                    "formatted": String(format: "%03d", 9),
-                    "sort": 9
+                    "formatted": String(format: "%03d", 10),
+                    "sort": 10
                 ],
                 "name": rocketTimers,
                 "image": "<img class=\"lazy_load\" data-src=\"/static/img/misc/timer.png\" " +

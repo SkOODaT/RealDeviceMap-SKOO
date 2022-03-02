@@ -49,7 +49,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
             "total_cp": totalCp as Any,
             "sponsor_od": sponsorId as Any,
             "raid_pokemon_evolution": raidPokemonEvolution as Any,
-            "gym_weather": gymWeather as Any
+            "gym_weather": gymWeather as Any,
             "ar_scan_eligible": arScanEligible as Any
         ]
     }
@@ -75,7 +75,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
                 "ex_raid_eligible": exRaidEligible ?? 0,
                 "in_battle": inBattle ?? 0,
                 "total_cp": totalCp ?? 0,
-                "sponsor_od": sponsorId ?? 0
+                "sponsor_od": sponsorId ?? 0,
                 "ar_scan_eligible": arScanEligible ?? 0
             ]
         } else if type == "gym-info" {
@@ -91,7 +91,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
                 "ex_raid_eligible": exRaidEligible ?? 0,
                 "in_battle": inBattle ?? 0,
                 "total_cp": totalCp ?? 0,
-                "sponsor_od": sponsorId ?? 0
+                "sponsor_od": sponsorId ?? 0,
                 "ar_scan_eligible": arScanEligible ?? 0
             ]
         } else if type == "egg" || type == "raid" {
@@ -120,7 +120,7 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
                 "ex_raid_eligible": exRaidEligible ?? 0,
                 "is_exclusive": raidIsExclusive ?? false,
                 "total_cp": totalCp ?? 0,
-                "sponsor_od": sponsorId ?? 0
+                "sponsor_od": sponsorId ?? 0,
                 "ar_scan_eligible": arScanEligible ?? 0
             ]
         } else {

@@ -759,7 +759,7 @@ class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
             FROM pokestop
             WHERE lat >= ? AND lat <= ? AND lon >= ? AND lon <= ? AND updated > ? AND
                   deleted = false \(excludeTypeSQL) \(excludePokemonSQL) \(excludeItemSQL)
-                  \(excludeInvasionButLeadersSQL) \(excludePokestopSQL) \(onlyArSQL
+                  \(excludeInvasionButLeadersSQL) \(excludePokestopSQL) \(onlyArSQL)
         """
         if questsOnly {
             sql += " AND quest_reward_type IS NOT NULL"
