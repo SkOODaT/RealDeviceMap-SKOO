@@ -1061,7 +1061,7 @@ public class ApiRequestHandler {
             let normalString = Localizer.global.get(value: "filter_normal")
             let largeString = Localizer.global.get(value: "filter_large")
             let hugeString = Localizer.global.get(value: "filter_huge")
-			
+
             let generalString = Localizer.global.get(value: "filter_general")
             let invasionTypeString = Localizer.global.get(value: "filter_invasion_grunt_type")
 
@@ -1117,7 +1117,6 @@ public class ApiRequestHandler {
                     "type": invasionTypeString
                 ])
             }
-
 
             let rocketIcons = Localizer.global.get(value: "filter_rocket_icons")
 

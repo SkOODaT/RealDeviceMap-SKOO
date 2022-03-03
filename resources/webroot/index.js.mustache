@@ -2851,7 +2851,7 @@ function getPokestopPopupContent (pokestop) {
         content += '<b>Quest Reward:</b> ' + getQuestReward(reward) + '<br>'
       })
     }
-	
+    
     if (pokestop.ar_scan_eligible) {
       content += '<img src="/static/img/misc/ar.png" height="24" width="32"><br>'
     }
@@ -3098,8 +3098,8 @@ function getGymPopupContent (gym) {
             content += '<b>'+ wname +':</b> ' + wtypes +'<br>'
           }
           if (gym.ex_raid_eligible && gym.ar_scan_eligible) {
-		    content += '<img src="/static/img/misc/ex.png" height="24" width="32"> <img src="/static/img/misc/ar.png" height="24" width="32"><br>'
-		  } else if (gym.ex_raid_eligible) {
+            content += '<img src="/static/img/misc/ex.png" height="24" width="32"> <img src="/static/img/misc/ar.png" height="24" width="32"><br>'
+          } else if (gym.ex_raid_eligible) {
             //content += '<b>Gym is EX-Raid eligible</b>'
             content += '<img src="/static/img/misc/ex.png" height="24" width="32"><br>'
           } else if (gym.ar_scan_eligible) {
@@ -3730,13 +3730,13 @@ function getPokestopMarkerIcon (pokestop, ts) {
     } else if (pokestop.incident_expire_timestamp >= ts) {
       sizeId = 'invasion'
     }
-	let size
-	if (sizeId === 'invasion') {
+    let size
+    if (sizeId === 'invasion') {
        size = getInvasionSize(pokestop.grunt_type)
-	} else {
-	  size = getPokestopSize(sizeId)
-	}
-	//console.log(size)
+    } else {
+      size = getPokestopSize(sizeId)
+    }
+    //console.log(size)
     icon = L.icon({
       iconUrl: '/static/img/pokestop/' + invasionString + lureId + '.png',
       iconSize: [size, size],
@@ -4022,7 +4022,7 @@ function setPokestopMarker(pokestop) {
       } 
       if (showInvasions && showRocketTimers) {
         text += "<div class='rounded pokestop-timer'><span class='p-1'>" + timer + "</span></div>"
-	  }
+      }
       pokestop.marker.setTooltipContent(text)
     } else {
       var options = {permanent: true, className: "leaflet-tooltip", direction: "center", offset: [-5, 0]}
