@@ -1052,7 +1052,8 @@ class ApiRequestHandler {
             let normalString = Localizer.global.get(value: "filter_normal")
             let largeString = Localizer.global.get(value: "filter_large")
             let hugeString = Localizer.global.get(value: "filter_huge")
-
+			
+            let generalString = Localizer.global.get(value: "filter_general")
             let invasionTypeString = Localizer.global.get(value: "filter_invasion_grunt_type")
 
             var invasionData = [[String: Any]]()
@@ -1100,13 +1101,74 @@ class ApiRequestHandler {
                         "sort": i
                     ],
                     "name": grunt,
-                    "image": "<img class=\"lazy_load\" data-src=\"/static/img/grunt/\(i).png\" " +
+                    "image": "<img class=\"lazy_load\" data-src=\"/static/img/grunts/\(i).png\" " +
                         "style=\"height:50px; width:50px;\">",
                     "filter": filter,
                     "size": size,
                     "type": invasionTypeString
                 ])
             }
+
+
+            let rocketIcons = Localizer.global.get(value: "filter_rocket_icons")
+
+            let rifilter = """
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <label class="btn btn-sm btn-off select-button-new" data-id="icons"
+             data-type="rocket-icons" data-info="hide">
+            <input type="radio" name="options" id="hide" autocomplete="off">\(hideString)
+            </label>
+            <label class="btn btn-sm btn-on select-button-new" data-id="icons"
+             data-type="rocket-icons" data-info="show">
+            <input type="radio" name="options" id="show" autocomplete="off">\(showString)
+            </label>
+            </div>
+            """
+
+            let risize = ""
+
+            invasionData.append([
+                "id": [
+                    "formatted": String(format: "%03d", 0),
+                    "sort": 0
+                ],
+                "name": rocketIcons,
+                "image": "<img class=\"lazy_load\" data-src=\"/static/img/grunttype/40.png\" " +
+                             "style=\"height:50px; width:50px;\">",
+                "filter": rifilter,
+                "size": risize,
+                "type": generalString
+                ])
+
+            let rocketTimers = Localizer.global.get(value: "filter_rocket_timers")
+
+            let rfilter = """
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <label class="btn btn-sm btn-off select-button-new" data-id="timers"
+             data-type="rocket-timers" data-info="hide">
+            <input type="radio" name="options" id="hide" autocomplete="off">\(hideString)
+            </label>
+            <label class="btn btn-sm btn-on select-button-new" data-id="timers"
+             data-type="rocket-timers" data-info="show">
+            <input type="radio" name="options" id="show" autocomplete="off">\(showString)
+            </label>
+            </div>
+            """
+
+            let rsize = ""
+
+            invasionData.append([
+                "id": [
+                    "formatted": String(format: "%03d", 0),
+                    "sort": 0
+                ],
+                "name": rocketTimers,
+                "image": "<img class=\"lazy_load\" data-src=\"/static/img/misc/timer.png\" " +
+                             "style=\"height:50px; width:50px;\">",
+                "filter": rfilter,
+                "size": rsize,
+                "type": generalString
+                ])
 
             data["invasion_filters"] = invasionData
         }
@@ -1127,8 +1189,6 @@ class ApiRequestHandler {
             var pokestopData = [[String: Any]]()
 
             let pokestopNormal = Localizer.global.get(value: "filter_pokestop_normal")
-            let pokestopInvasion = Localizer.global.get(value: "filter_pokestop_invasion")
-            let pokestopLeaders = Localizer.global.get(value: "filter_pokestop_leaders")
             let arOnly = Localizer.global.get(value: "filter_pokestop_ar_only")
 
             let filter = """
@@ -1242,87 +1302,6 @@ class ApiRequestHandler {
             </div>
             """
 
-            let trSize = """
-            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-            <label class="btn btn-sm btn-size select-button-new" data-id="invasion"
-             data-type="pokestop-invasion" data-info="small">
-            <input type="radio" name="options" id="hide" autocomplete="off">\(smallString)
-            </label>
-            <label class="btn btn-sm btn-size select-button-new" data-id="invasion"
-             data-type="pokestop-invasion" data-info="normal">
-            <input type="radio" name="options" id="show" autocomplete="off">\(normalString)
-            </label>
-            <label class="btn btn-sm btn-size select-button-new" data-id="invasion"
-             data-type="pokestop-invasion" data-info="large">
-            <input type="radio" name="options" id="show" autocomplete="off">\(largeString)
-            </label>
-            <label class="btn btn-sm btn-size select-button-new" data-id="invasion"
-             data-type="pokestop-invasion" data-info="huge">
-            <input type="radio" name="options" id="show" autocomplete="off">\(hugeString)
-            </label>
-            </div>
-            """
-
-            pokestopData.append([
-                "id": [
-                    "formatted": String(format: "%03d", 6),
-                    "sort": 6
-                ],
-                "name": pokestopInvasion,
-                "image": "<img class=\"lazy_load\" data-src=\"/static/img/pokestop/i0.png\" " +
-                         "style=\"height:50px; width:50px;\">",
-                "filter": trFilter,
-                "size": trSize,
-                "type": pokestopOptionsString
-            ])
-
-            let leadersFilter = """
-            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-            <label class="btn btn-sm btn-off select-button-new" data-id="leaders"
-             data-type="pokestop-leaders" data-info="hide">
-            <input type="radio" name="options" id="hide" autocomplete="off">\(hideString)
-            </label>
-            <label class="btn btn-sm btn-on select-button-new" data-id="leaders"
-             data-type="pokestop-leaders" data-info="show">
-            <input type="radio" name="options" id="show" autocomplete="off">\(showString)
-            </label>
-            </div>
-            """
-
-            let leadersSize = """
-            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-            <label class="btn btn-sm btn-size select-button-new" data-id="leaders"
-             data-type="pokestop-leaders" data-info="small">
-            <input type="radio" name="options" id="hide" autocomplete="off">\(smallString)
-            </label>
-            <label class="btn btn-sm btn-size select-button-new" data-id="leaders"
-             data-type="pokestop-leaders" data-info="normal">
-            <input type="radio" name="options" id="show" autocomplete="off">\(normalString)
-            </label>
-            <label class="btn btn-sm btn-size select-button-new" data-id="leaders"
-             data-type="pokestop-leaders" data-info="large">
-            <input type="radio" name="options" id="show" autocomplete="off">\(largeString)
-            </label>
-            <label class="btn btn-sm btn-size select-button-new" data-id="leaders"
-             data-type="pokestop-leaders" data-info="huge">
-            <input type="radio" name="options" id="show" autocomplete="off">\(hugeString)
-            </label>
-            </div>
-            """
-
-            pokestopData.append([
-                "id": [
-                    "formatted": String(format: "%03d", 7),
-                    "sort": 7
-                ],
-                "name": pokestopLeaders,
-                "image": "<img class=\"lazy_load\" data-src=\"/static/img/pokestop/i0.png\"" +
-                         "style=\"height:50px; width:50px;\">",
-                "filter": leadersFilter,
-                "size": leadersSize,
-                "type": pokestopOptionsString
-                ])
-
             let arFilter = """
             <div class="btn-group btn-group-toggle" data-toggle="buttons">
             <label class="btn btn-sm btn-off select-button-new" data-id="ar"
@@ -1369,66 +1348,6 @@ class ApiRequestHandler {
                 "size": arSize,
                 "type": pokestopOptionsString
             ])
-
-            let rocketIcons = Localizer.global.get(value: "filter_rocket_icons")
-
-            let rifilter = """
-            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-            <label class="btn btn-sm btn-off select-button-new" data-id="icons"
-             data-type="rocket-icons" data-info="hide">
-            <input type="radio" name="options" id="hide" autocomplete="off">\(hideString)
-            </label>
-            <label class="btn btn-sm btn-on select-button-new" data-id="icons"
-             data-type="rocket-icons" data-info="show">
-            <input type="radio" name="options" id="show" autocomplete="off">\(showString)
-            </label>
-            </div>
-            """
-
-            let risize = ""
-
-            pokestopData.append([
-                "id": [
-                    "formatted": String(format: "%03d", 9),
-                    "sort": 9
-                ],
-                "name": rocketIcons,
-                "image": "<img class=\"lazy_load\" data-src=\"/static/img/grunttype/40.png\" " +
-                             "style=\"height:50px; width:50px;\">",
-                "filter": rifilter,
-                "size": risize,
-                "type": generalString
-                ])
-
-            let rocketTimers = Localizer.global.get(value: "filter_rocket_timers")
-
-            let rfilter = """
-            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-            <label class="btn btn-sm btn-off select-button-new" data-id="timers"
-             data-type="rocket-timers" data-info="hide">
-            <input type="radio" name="options" id="hide" autocomplete="off">\(hideString)
-            </label>
-            <label class="btn btn-sm btn-on select-button-new" data-id="timers"
-             data-type="rocket-timers" data-info="show">
-            <input type="radio" name="options" id="show" autocomplete="off">\(showString)
-            </label>
-            </div>
-            """
-
-            let rsize = ""
-
-            pokestopData.append([
-                "id": [
-                    "formatted": String(format: "%03d", 10),
-                    "sort": 10
-                ],
-                "name": rocketTimers,
-                "image": "<img class=\"lazy_load\" data-src=\"/static/img/misc/timer.png\" " +
-                             "style=\"height:50px; width:50px;\">",
-                "filter": rfilter,
-                "size": rsize,
-                "type": generalString
-                ])
 
             data["pokestop_filters"] = pokestopData
         }

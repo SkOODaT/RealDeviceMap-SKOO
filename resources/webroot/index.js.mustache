@@ -1954,7 +1954,7 @@ function getGymSize (teamId) {
 }
 
 function getRaidSize (id) {
-  console.log(id, raidFilter);
+  //console.log(id, raidFilter);
   const size = raidFilter[id].size
   if (size === 'small') {
     return 30
@@ -1968,15 +1968,27 @@ function getRaidSize (id) {
 }
 
 function getPokestopSize (id) {
-  const size = pokestopFilter[id] ? pokestopFilter[id].size : null
+  const size = pokestopFilter[id].size
   if (size === 'small') {
     return 20
   } else if (size === 'large') {
     return 45
   } else if (size === 'huge') {
     return 65
-  } else if (size === 'invasion') {
-    return 25
+  } else {
+    return 30
+  }
+}
+
+function getInvasionSize (id) {
+  const size = invasionFilter[id].size
+  //console.log(size)
+  if (size === 'small') {
+    return 20
+  } else if (size === 'large') {
+    return 45
+  } else if (size === 'huge') {
+    return 65
   } else {
     return 30
   }
@@ -2348,11 +2360,7 @@ function updateMapTimers () {
     }
   })
   $.each(pokestopMarkers, function(index, marker) {
-    if (pokestopFilter.invasion.show === true) {
-      setPokestopMarker(marker)
-    } else if (showRocketTimers) {
-      setPokestopMarker(marker)
-    } else if (showRocketIcons) {
+    if (showInvasions | showRocketTimers | showRocketIcons) {
       setPokestopMarker(marker)
     } else {
       marker.marker.unbindTooltip()
@@ -3689,8 +3697,6 @@ function getPokestopMarkerIcon (pokestop, ts) {
     }
 
     let invasionString
-    let invasionStringEnd
-    let folder
     if ((pokestop.is_start || showInvasions === true) && pokestop.incident_expire_timestamp >= ts) {
       invasionString = 'i'
     } else {
@@ -3710,22 +3716,25 @@ function getPokestopMarkerIcon (pokestop, ts) {
       lureId = 0
     }
     let invasionString
-    let invasionStringEnd
-    let folder
+    //let folder
     if ((pokestop.is_start || showInvasions === true) && pokestop.incident_expire_timestamp >= ts) {
       invasionString = 'i'
     } else {
       invasionString = ''
     }
-
     var sizeId = 'normal'
     if (lureId > 0) {
       sizeId = 'l' + getLureIconId(pokestop.lure_id)
     } else if (pokestop.incident_expire_timestamp >= ts) {
       sizeId = 'invasion'
     }
-    const size = getPokestopSize(sizeId)
-
+	let size
+	if (sizeId === 'invasion') {
+       size = getInvasionSize(pokestop.grunt_type)
+	} else {
+	  size = getPokestopSize(sizeId)
+	}
+	//console.log(size)
     icon = L.icon({
       iconUrl: '/static/img/pokestop/' + invasionString + lureId + '.png',
       iconSize: [size, size],
@@ -3993,7 +4002,7 @@ function setPokestopMarker(pokestop) {
   var date = new Date()
   var ts = date.getTime() / 1000
   var rocketTimestamp = 0
-  if (pokestop.incident_expire_timestamp >= ts && showPokestops) {
+  if (pokestop.incident_expire_timestamp >= ts && showInvasions) {
     //Rocket Stop
     rocketTimestamp = pokestop.incident_expire_timestamp
   } else {
@@ -4006,12 +4015,12 @@ function setPokestopMarker(pokestop) {
     var type = "<img src='/static/img/grunttype/"+pokestop.grunt_type+".png' height='25' width='25'>"
     if (pokestop.marker.timerSet) {
       var text = ""
-      if (pokestopFilter["invasion"]["show"] === true && showRocketIcons) {
+      if (showInvasions && showRocketIcons) {
         text += "<div class='type-tip'><span class='p-1'>" + type + "</span></div>"
-      }
-      if (pokestopFilter["invasion"]["show"] === true && showRocketTimers) {
+      } 
+      if (showInvasions && showRocketTimers) {
         text += "<div class='rounded pokestop-timer'><span class='p-1'>" + timer + "</span></div>"
-      }
+	  }
       pokestop.marker.setTooltipContent(text)
     } else {
       var options = {permanent: true, className: "leaflet-tooltip", direction: "center", offset: [-5, 0]}
