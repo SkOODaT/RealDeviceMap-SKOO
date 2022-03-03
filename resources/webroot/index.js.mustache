@@ -692,6 +692,12 @@ function loadStorage () {
   const pokestopFilterValue = retrieve('pokestop_filter')
   if (pokestopFilterValue === null) {
     const defaultPokestopFilter = {}
+    if (defaultPokestopFilter.icons === undefined) {
+      defaultPokestopFilter.icons = {show: true, size: 'normal'}
+    }
+    if (defaultPokestopFilter.timers === undefined) {
+      defaultPokestopFilter.timers = {show: true, size: 'normal'}
+    }
     if (defaultPokestopFilter.normal === undefined) {
       defaultPokestopFilter.normal = { show: true, size: 'normal' }
     }
@@ -704,10 +710,29 @@ function loadStorage () {
     if (defaultPokestopFilter.ar === undefined) {
       defaultPokestopFilter.ar = { show: false, size: 'normal' }
     }
+
     store('pokestop_filter', JSON.stringify(defaultPokestopFilter))
     pokestopFilter = defaultPokestopFilter
   } else {
     pokestopFilter = JSON.parse(pokestopFilterValue)
+    //if (pokestopFilter.icons === undefined) {
+    //  pokestopFilter.icons = {show: true, size: 'normal'}
+    //  showRocketIcons = true
+    //} else {
+    //  showRocketIcons = pokestopFilter.icons.show
+    //}
+    if (pokestopFilter.icons === undefined) {
+      pokestopFilter.icons = {show: true, size: 'normal'}
+      showRocketIcons = true
+    } else {
+      showRocketIcons = pokestopFilter.icons.show
+    }
+    if (pokestopFilter.timers === undefined) {
+      pokestopFilter.timers = {show: true, size: 'normal'}
+      showRocketTimers = true
+    } else {
+      showRocketTimers = pokestopFilter.timers.show
+    }
     if (pokestopFilter.normal === undefined) {
       pokestopFilter.normal = { show: true, size: 'normal' }
     }
@@ -726,12 +751,6 @@ function loadStorage () {
   if (invasionFilterValue === null) {
     const defaultInvasionFilter = {}
     availableGrunts.forEach((gruntId) => {
-      if (defaultInvasionFilter.icons === undefined) {
-        defaultInvasionFilter.icons = {show: true, size: 'normal'}
-      }
-      if (defaultInvasionFilter.timers === undefined) {
-        defaultInvasionFilter.timers = {show: true, size: 'normal'}
-      }
       defaultInvasionFilter[gruntId] = { show: true, size: 'normal' }
     });
     store('invasion_filter', JSON.stringify(defaultInvasionFilter))
@@ -739,18 +758,6 @@ function loadStorage () {
   } else {
     invasionFilter = JSON.parse(invasionFilterValue)
     availableGrunts.forEach((gruntId) => {
-      if (invasionFilter.icons === undefined) {
-        invasionFilter.icons = {show: true, size: 'normal'}
-        showRocketIcons = true
-      } else {
-        showRocketIcons = invasionFilter.icons.show
-      }
-      if (invasionFilter.timers === undefined) {
-        invasionFilter.timers = {show: true, size: 'normal'}
-        showRocketTimers = true
-      } else {
-        showRocketTimers = invasionFilter.timers.show
-      }
       if (invasionFilter[gruntId] === undefined) {
         invasionFilter[gruntId] = { show: true, size: 'normal' }
       }
@@ -1002,8 +1009,6 @@ function initMap () {
 
   $('#reset-invasion-filter').on('click', function () {
     const defaultInvasionFilter = {}
-    defaultInvasionFilter.icons = {show: true, size: 'normal'}
-    defaultInvasionFilter.timers = {show: true, size: 'normal'}
     availableGrunts.forEach((gruntId) => {
       defaultInvasionFilter[gruntId] = { show: true, size: 'normal' }
     })
@@ -1015,8 +1020,6 @@ function initMap () {
 
   $('#disable-all-invasion-filter').on('click', function () {
     const defaultInvasionFilter = {}
-    defaultInvasionFilter.icons = {show: false, size: invasionFilterNew.icons.size}
-    defaultInvasionFilter.timers = {show: false, size: invasionFilterNew.timers.size}
     availableGrunts.forEach((gruntId) => {
       defaultInvasionFilter[gruntId] = { show: false, size: invasionFilterNew[gruntId].size }
     })
@@ -1028,6 +1031,8 @@ function initMap () {
 
   $('#reset-pokestop-filter').on('click', function () {
     const defaultPokestopFilter = {}
+    defaultPokestopFilter.icons = {show: true, size: 'normal'}
+    defaultPokestopFilter.timers = {show: true, size: 'normal'}
     defaultPokestopFilter.normal = { show: true, size: 'normal' }
     for (var i = 1; i < 6; i++) {
       defaultPokestopFilter['l' + i] = { show: true, size: 'normal' }
@@ -1042,6 +1047,8 @@ function initMap () {
 
   $('#disable-all-pokestop-filter').on('click', function () {
     const defaultPokestopFilter = {}
+    defaultPokestopFilter.icons = {show: false, size: pokestopFilterNew.icons.size}
+    defaultPokestopFilter.timers = {show: false, size: pokestopFilterNew.timers.size}
     defaultPokestopFilter.normal = { show: false, size: pokestopFilterNew.normal.size }
     for (var i = 1; i < 6; i++) {
       defaultPokestopFilter['l' + i] = { show: false, size: pokestopFilterNew['l' + i].size }
@@ -1253,12 +1260,12 @@ function initMap () {
       showRaidTimers = newShowRaidTimers
     }
 
-    let newShowRocketIcons = invasionFilter.icons.show
+    let newShowRocketIcons = pokestopFilter.icons.show
     if (newShowRocketIcons !== showRocketIcons) {
       showRocketIcons = newShowRocketIcons
     }
 
-    let newShowRocketTimers = invasionFilter.timers.show
+    let newShowRocketTimers = pokestopFilter.timers.show
     if (newShowRocketTimers !== showRocketTimers) {
       showRocketTimers = newShowRocketTimers
     }
@@ -1563,12 +1570,6 @@ function loadData () {
   const invasionFilterExclude = []
   if (showInvasions) {
     availableGrunts.forEach((gruntId) => {
-	  if (invasionFilter.icons.show === false) {
-        invasionFilterExclude.push('icons')
-      }
-      if (invasionFilter.timers.show === false) {
-        invasionFilterExclude.push('timers')
-      }
       if (invasionFilter[gruntId].show === false) {
         invasionFilterExclude.push(gruntId)
       }
@@ -1577,6 +1578,13 @@ function loadData () {
 
   const pokestopFilterExclude = []
   if (showPokestops) {
+    //REVIEW: Probably not needed
+    if (pokestopFilter.icons.show === false) {
+      pokestopFilterExclude.push('icons')
+    }
+    if (pokestopFilter.timers.show === false) {
+      pokestopFilterExclude.push('timers')
+    }
     if (pokestopFilter.normal.show === false) {
       pokestopFilterExclude.push('normal')
     }
@@ -4269,6 +4277,24 @@ function manageSelectButton (e, isNew) {
         shouldShow = gymFilterNew['s' + id].size === 'huge'
         break
     }
+  } else if (type === 'rocket-icons') {
+    switch (info) {
+      case 'hide':
+        shouldShow = pokestopFilterNew[id].show === false;
+        break
+      case 'show':
+        shouldShow = pokestopFilterNew[id].show === true;
+        break
+    }
+  } else if (type === 'rocket-timers') {
+    switch (info) {
+      case 'hide':
+        shouldShow = pokestopFilterNew[id].show === false;
+        break
+      case 'show':
+        shouldShow = pokestopFilterNew[id].show === true;
+        break
+    }
   } else if (type === 'pokestop-normal') {
     switch (info) {
       case 'hide':
@@ -4351,24 +4377,6 @@ function manageSelectButton (e, isNew) {
         break
       case 'huge':
         shouldShow = invasionFilterNew[id].size === 'huge'
-        break
-    }
-  } else if (type === 'rocket-icons') {
-    switch (info) {
-      case 'hide':
-        shouldShow = invasionFilterNew[id].show === false;
-        break
-      case 'show':
-        shouldShow = invasionFilterNew[id].show === true;
-        break
-    }
-  } else if (type === 'rocket-timers') {
-    switch (info) {
-      case 'hide':
-        shouldShow = invasionFilterNew[id].show === false;
-        break
-      case 'show':
-        shouldShow = invasionFilterNew[id].show === true;
         break
     }
   } else if (type === 'spawnpoint-timer') {
@@ -4646,6 +4654,24 @@ function manageSelectButton (e, isNew) {
             gymFilterNew['s' + id].size = 'huge'
             break
         }
+      } else if (type === 'rocket-icons') {
+        switch (info) {
+          case 'hide':
+            pokestopFilterNew[id].show = false
+            break
+          case 'show':
+            pokestopFilterNew[id].show = true
+            break
+        }
+      } else if (type === 'rocket-timers') {
+        switch (info) {
+          case 'hide':
+            pokestopFilterNew[id].show = false
+            break
+          case 'show':
+            pokestopFilterNew[id].show = true
+            break
+        }
       } else if (type === 'pokestop-normal') {
         switch (info) {
           case 'hide':
@@ -4728,24 +4754,6 @@ function manageSelectButton (e, isNew) {
             break
           case 'huge':
             invasionFilterNew[id].size = 'huge'
-            break
-        }
-      } else if (type === 'rocket-icons') {
-        switch (info) {
-          case 'hide':
-            invasionFilterNew[id].show = false
-            break
-          case 'show':
-            invasionFilterNew[id].show = true
-            break
-        }
-      } else if (type === 'rocket-timers') {
-        switch (info) {
-          case 'hide':
-            invasionFilterNew[id].show = false
-            break
-          case 'show':
-            invasionFilterNew[id].show = true
             break
         }
       } else if (type === 'spawnpoint-timer') {
