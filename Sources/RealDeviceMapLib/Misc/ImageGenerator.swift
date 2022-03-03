@@ -27,21 +27,21 @@ public class ImageGenerator {
         if !unkownEggDir.exists {
             unkownEggDir = Dir("\(Dir.projectroot)/resources/webroot/static/img/unknown_egg/")
         }
-        let pokestopDir = Dir("\(projectroot)/resources/webroot/static/img/pokestop/")
-        let pokemonDir = Dir("\(projectroot)/resources/webroot/static/img/pokemon/")
-        //let wildPokemonDir = Dir("\(projectroot)/resources/webroot/static/img/wild_pokemon/")
-        let pokemonLeagueDir = Dir("\(projectroot)/resources/webroot/static/img/pokemon_league/")
-        let itemDir = Dir("\(projectroot)/resources/webroot/static/img/item/")
-        let questDir = Dir("\(projectroot)/resources/webroot/static/img/quest/")
-        let gruntDir = Dir("\(projectroot)/resources/webroot/static/img/grunt/")
-        let invasionDir = Dir("\(projectroot)/resources/webroot/static/img/invasion/")
-        let questInvasionDir = Dir("\(projectroot)/resources/webroot/static/img/quest_invasion/")
+        let pokestopDir = Dir("\(Dir.projectroot)/resources/webroot/static/img/pokestop/")
+        let pokemonDir = Dir("\(Dir.projectroot)/resources/webroot/static/img/pokemon/")
+        //let wildPokemonDir = Dir("\(Dir.projectroot)/resources/webroot/static/img/wild_pokemon/")
+        let pokemonLeagueDir = Dir("\(Dir.projectroot)/resources/webroot/static/img/pokemon_league/")
+        let itemDir = Dir("\(Dir.projectroot)/resources/webroot/static/img/item/")
+        let questDir = Dir("\(Dir.projectroot)/resources/webroot/static/img/quest/")
+        let gruntDir = Dir("\(Dir.projectroot)/resources/webroot/static/img/grunt/")
+        let invasionDir = Dir("\(Dir.projectroot)/resources/webroot/static/img/invasion/")
+        let questInvasionDir = Dir("\(Dir.projectroot)/resources/webroot/static/img/quest_invasion/")
 
-        let firstFile = File("\(projectroot)/resources/webroot/static/img/misc/first.png")
-        let secondFile = File("\(projectroot)/resources/webroot/static/img/misc/second.png")
-        let thirdFile = File("\(projectroot)/resources/webroot/static/img/misc/third.png")
+        let firstFile = File("\(Dir.projectroot)/resources/webroot/static/img/misc/first.png")
+        let secondFile = File("\(Dir.projectroot)/resources/webroot/static/img/misc/second.png")
+        let thirdFile = File("\(Dir.projectroot)/resources/webroot/static/img/misc/third.png")
 
-        //let grassFile = File("\(projectroot)/resources/webroot/static/img/misc/grass.png")
+        //let grassFile = File("\(Dir.projectroot)/resources/webroot/static/img/misc/grass.png")
 
         if !raidDir.exists {
             try! raidDir.create()

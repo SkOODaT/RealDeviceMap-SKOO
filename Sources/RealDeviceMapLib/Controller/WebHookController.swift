@@ -219,7 +219,7 @@ public class WebHookController {
                         self.accountEventLock.unlock()
 
                         if !events.isEmpty {
-                            Log.debug(message: "[WebHookController] Sending \(events.count) events to" +
+                            Log.debug(message: "[WebHookController] Sending \(events.count) events to " +
                                                "\(self.self.webhookURLStrings.count) endpoints")
                             guard let body = events.jsonEncodeForceTry() else {
                                 Log.error(message: "[WebHookController] Failed to parse events into json string")

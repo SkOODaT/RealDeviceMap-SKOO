@@ -40,7 +40,7 @@ public class Shell {
         return String(data: data, encoding: String.Encoding.utf8)
     }
 
-    public func runError(standartPipe: Any?=nil, inputPipe: Any?=nil, environment: [String: String]?=nil) -> String? {
+    public func runError(standardPipe: Any?=nil, inputPipe: Any?=nil, environment: [String: String]?=nil) -> String? {
         let task = Process()
         task.executableURL = URL(fileURLWithPath: "/usr/bin/env")
         if environment != nil {

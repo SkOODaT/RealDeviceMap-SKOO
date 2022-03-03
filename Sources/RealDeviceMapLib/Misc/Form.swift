@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  RealDeviceMap
+//  RealDeviceMapLib
 //
 //  Created by Florian Kostenzer on 17.10.18.
 //

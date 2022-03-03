@@ -13,7 +13,7 @@ import PerfectHTTPServer
 import TurnstileCrypto
 import POGOProtos
 import Backtrace
-import RealDeviceMapLib
+import Rainbow
 
 public func setupRealDeviceMap() {
     Backtrace.install()
@@ -22,16 +22,13 @@ public func setupRealDeviceMap() {
     Log.logDebug = logDebug
     Log.even = true
 
-    Log.info(message: "[MAIN] Getting Version")
+    Log.info(message: "[MAIN] Getting Version".green)
     _ = VersionManager.global
 
     // Starting Startup Webserver
-    Log.info(message: "[MAIN] Starting Startup Webserver")
+    Log.info(message: "[MAIN] Starting Startup Webserver".green)
     var startupServer: HTTPServer.Server? = WebServer.startupServer
     var startupServerContext: HTTPServer.LaunchContext? = try! HTTPServer.launch(wait: false, startupServer!)[0]
-
-    Log.info(message: "[MAIN] Getting Version")
-    _ = VersionManager.global
 
     // Check if /backups exists
     let backups = Dir("\(Dir.projectroot)/backups")
@@ -46,7 +43,7 @@ public func setupRealDeviceMap() {
     }
 
     // Init DBController
-    Log.info(message: "[MAIN] Starting Database Controller")
+    Log.info(message: "[MAIN] Starting Database Controller".green)
     _ = DBController.global
 
     // Init MemoryCache
@@ -56,15 +53,18 @@ public func setupRealDeviceMap() {
         let memoryCacheKeepTime = ProcessInfo.processInfo.environment["MEMORY_CACHE_KEEP_TIME"]?.toDouble() ?? 3600
         Log.info(message:
             "[MAIN] Starting Memory Cache with interval \(memoryCacheClearInterval) " +
-            "and keep time \(memoryCacheKeepTime)"
+            "and keep time \(memoryCacheKeepTime)".green
         )
         Pokestop.cache = MemoryCache(interval: memoryCacheClearInterval, keepTime: memoryCacheKeepTime)
         Pokemon.cache = MemoryCache(interval: memoryCacheClearInterval, keepTime: memoryCacheKeepTime)
         Gym.cache = MemoryCache(interval: memoryCacheClearInterval, keepTime: memoryCacheKeepTime)
         SpawnPoint.cache = MemoryCache(interval: memoryCacheClearInterval, keepTime: memoryCacheKeepTime)
         Weather.cache = MemoryCache(interval: memoryCacheClearInterval, keepTime: memoryCacheKeepTime)
+        // 900 3600
+        Pokemon.mapPokemonDisplayIdCache = MemoryCache(interval: memoryCacheClearInterval, keepTime: 300)
+        Pokemon.diskEncounterCache = MemoryCache(interval: memoryCacheClearInterval, keepTime: 300)
     } else {
-        Log.info(message: "[MAIN] Memory Cache deactivated")
+        Log.info(message: "[MAIN] Memory Cache deactivated".red)
     }
 
     // Load Groups
@@ -73,12 +73,12 @@ public func setupRealDeviceMap() {
         try Group.setup()
     } catch {
         let message = "[MAIN] Failed to load groups (\(error.localizedDescription))"
-        Log.critical(message: message)
+        Log.critical(message: message.red)
         fatalError(message)
     }
 
     // Load timezone
-    Log.info(message: "[MAIN] Loading Timezone")
+    Log.info(message: "[MAIN] Loading Timezone".green)
     if let result = Shell("date", "+%z").run()?.replacingOccurrences(of: "\n", with: "") {
         let sign = result.substring(toIndex: 1)
         if let hours = Int(result.substring(toIndex: 3).substring(fromIndex: 1)),
@@ -96,7 +96,7 @@ public func setupRealDeviceMap() {
     }
 
     // Load Settings
-    Log.info(message: "[MAIN] Loading Settings")
+    Log.info(message: "[MAIN] Loading Settings".green)
     WebRequestHandler.startLat = try! DBController.global.getValueForKey(key: "MAP_START_LAT")!.toDouble()!
     WebRequestHandler.startLon = try! DBController.global.getValueForKey(key: "MAP_START_LON")!.toDouble()!
     WebRequestHandler.startZoom = try! DBController.global.getValueForKey(key: "MAP_START_ZOOM")!.toInt()!
@@ -115,6 +115,7 @@ public func setupRealDeviceMap() {
         .emptyToNil()
     WebRequestHandler.oauthDiscordClientSecret = try! DBController.global.getValueForKey(key: "DISCORD_CLIENT_SECRET")?
         .emptyToNil()
+    WebRequestHandler.logoUrl = try! DBController.global.getValueForKey(key: "LOGO_URL") ?? ""
     WebRequestHandler.statsUrl = try! DBController.global.getValueForKey(key: "STATS_URL") ?? ""
     WebHookRequestHandler.hostWhitelist = try! DBController.global.getValueForKey(key: "DEVICEAPI_HOST_WHITELIST")?
         .emptyToNil()?.components(separatedBy: ";")
@@ -185,33 +186,52 @@ public func setupRealDeviceMap() {
     if let webhookDelay = Double(webhookDelayString) {
         WebHookController.global.webhookSendDelay = webhookDelay
     }
+    Log.info(message: "[MAIN] Starting Webhook".green)
     WebHookController.global.webhookURLStrings = webhookUrlStrings.components(separatedBy: ";")
 
     // Init Instance Contoller
     do {
-        Log.info(message: "[MAIN] Starting Instance Controller")
+        Log.info(message: "[MAIN] Starting Instance Controller".green)
         try InstanceController.setup()
     } catch {
         let message = "[MAIN] Failed to setup InstanceController"
-        Log.critical(message: message)
+        Log.critical(message: message.red)
         fatalError(message)
     }
 
     // Start WebHookController
-    Log.info(message: "[MAIN] Starting Webhook Controller")
+    Log.info(message: "[MAIN] Starting Webhook Controller".green)
     WebHookController.global.start()
 
     // Load Forms
-    Log.info(message: "[MAIN] Loading Available Forms")
+    //Log.info(message: "[MAIN] Loading available Forms")
+    //var availableForms = [String]()
+    //do {
+    //    try Dir("\(Dir.projectroot)/resources/webroot/static/img/pokemon").forEachEntry { (file) in
+    //        let split = file.replacingOccurrences(of: ".png", with: "").components(separatedBy: "-")
+    //        if split.count == 2, let pokemonID = Int(split[0]), let formID = Int(split[1]) {
+    //            availableForms.append("\(pokemonID)-\(formID)")
+    //        } else if split.count == 3, let pokemonID = Int(split[0]),
+    //                 let formID = Int(split[1]), let evoId = Int(split[2]) {
+    //            availableForms.append("\(pokemonID)-\(formID)-\(evoId)")
+    //        }
+    //    }
+    //    WebReqeustHandler.availableFormsJson = try availableForms.jsonEncodedString()
+    //} catch {
+    //    Log.error(
+    //        message: "Failed to load forms. Frontend will only display default forms. " +
+    //                 "Error: \(error.localizedDescription)"
+    //    )
+    //}
+
+    // Load Forms
+    Log.info(message: "[MAIN] Loading Available Forms".green)
     var availableForms = [String]()
     do {
-        try Dir("\(Dir.projectroot)/resources/webroot/static/img/pokemon").forEachEntry { (file) in
-            let split = file.replacingOccurrences(of: ".png", with: "").components(separatedBy: "-")
-            if split.count == 2, let pokemonID = Int(split[0]), let formID = Int(split[1]) {
-                availableForms.append("\(pokemonID)-\(formID)")
-            } else if split.count == 3, let pokemonID = Int(split[0]),
-                      let formID = Int(split[1]), let evoId = Int(split[2]) {
-                availableForms.append("\(pokemonID)-\(formID)-\(evoId)")
+        for formString in PokemonDisplayProto.Form.allFormsInString {
+            let file = File("\(Dir.projectroot)/resources/webroot/static/img/pokemon/\(formString).png")
+            if file.exists {
+                availableForms.append(formString)
             }
         }
         WebRequestHandler.availableFormsJson = try availableForms.jsonEncodedString()
@@ -222,9 +242,39 @@ public func setupRealDeviceMap() {
         )
     }
 
-    Log.info(message: "[MAIN] Loading Available Items")
+    // Load Costumes
+    Log.debug(message: "[MAIN] Loading Available Costumes".green)
+    var availableCostumes = [String]()
+    do {
+        for costumeString in PokemonDisplayProto.Costume.allCostumesInString {
+            let file = File("\(Dir.projectroot)/resources/webroot/static/img/pokemon/\(costumeString).png")
+            if file.exists {
+                availableCostumes.append(costumeString)
+            }
+        }
+        WebRequestHandler.availableCostumesJson = try availableCostumes.jsonEncodedString()
+    } catch {
+        Log.error(message: "Failed to load costumes. Error: \(error.localizedDescription)".red)
+    }
+
+    // Load Pokemon Evolutions
+    Log.debug(message: "[MAIN] Loading Available Pokemon Evolutions".green)
+    var availablePokemonEvolutions = [String]()
+    do {
+        for temporaryevolutionString in HoloTemporaryEvolutionId.allTemporaryEvolutionIdsInString {
+            let file = File("\(Dir.projectroot)/resources/webroot/static/img/pokemon/\(temporaryevolutionString).png")
+            if file.exists {
+                availablePokemonEvolutions.append(temporaryevolutionString)
+            }
+        }
+        WebRequestHandler.availablePokemonEvolutionsJson = try availablePokemonEvolutions.jsonEncodedString()
+    } catch {
+        Log.error(message: "Failed to load pokemon evolutions. Error: \(error.localizedDescription)".red)
+    }
+
+    Log.info(message: "[MAIN] Loading Available Items".green)
     var availableItems = [-6, -5, -4, -3, -2, -1]
-    for itemId in Item.allAvilable {
+    for itemId in Item.allAvailable {
         availableItems.append(itemId.rawValue)
     }
     WebRequestHandler.availableItemJson = try! availableItems.jsonEncodedString()
@@ -235,32 +285,32 @@ public func setupRealDeviceMap() {
     InstanceController.noRequireAccount = ProcessInfo.processInfo.environment["NO_REQUIRE_ACCOUNT"] != nil
 
     if !Pokemon.noPVP {
-        Log.info(message: "[MAIN] Getting PVP Stats")
+        Log.info(message: "[MAIN] Getting PVP Stats".green)
         _ = PVPStatsManager.global
     } else {
-        Log.info(message: "[MAIN] PVP Stats deactivated")
+        Log.info(message: "[MAIN] PVP Stats deactivated".red)
     }
 
-    Log.info(message: "[MAIN] Starting Account Controller")
+    Log.info(message: "[MAIN] Starting Account Controller".green)
     AccountController.global.setup()
 
-    Log.info(message: "[MAIN] Starting Assignement Controller")
+    Log.info(message: "[MAIN] Starting Assignement Controller".green)
     do {
         try AssignmentController.global.setup()
     } catch {
         let message = "[MAIN] Failed to start Assignement Controller"
-        Log.critical(message: message)
+        Log.critical(message: message.red)
         fatalError(message)
     }
 
     // Check if is setup
-    Log.info(message: "[MAIN] Checking if setup is completed")
+    Log.info(message: "[MAIN] Checking if setup is completed".cyan)
     let isSetup: String?
     do {
         isSetup = try DBController.global.getValueForKey(key: "IS_SETUP")
     } catch {
         let message = "Failed to get setup status."
-        Log.critical(message: "[Main] " + message)
+        Log.critical(message: "[Main] " + message.red)
         fatalError(message)
     }
 
@@ -273,11 +323,11 @@ public func setupRealDeviceMap() {
     }
 
     // Start MailController
-    Log.info(message: "[MAIN] Starting Mail Controller")
+    Log.info(message: "[MAIL] Starting Mail Controller".green)
     try! MailController.global.setup()
 
     // Start DiscordController
-    Log.info(message: "[MAIN] Starting Discord Controller")
+    Log.info(message: "[MAIL] Starting Discord Controller".green)
     try! DiscordController.global.setup()
 
     // Create Raid images
@@ -291,14 +341,14 @@ public func setupRealDeviceMap() {
     }
 
     // Stopping Startup Webserver
-    Log.info(message: "[MAIN] Stopping Startup Webserver")
+    Log.info(message: "[MAIN] Stopping Startup Webserver".red)
     startupServerContext!.terminate()
     startupServer = nil
     startupServerContext = nil
 
     ApiRequestHandler.start = Date()
 
-    Log.info(message: "[MAIN] Starting Webservers")
+    Log.info(message: "[MAIN] Starting Webservers".green)
     do {
         try HTTPServer.launch(
             [
@@ -308,7 +358,7 @@ public func setupRealDeviceMap() {
         )
     } catch {
         let message = "Failed to launch Servers: \(error.localizedDescription)"
-        Log.critical(message: message)
+        Log.critical(message: message.red)
         fatalError(message)
     }
 }
