@@ -1101,7 +1101,7 @@ class ApiRequestHandler {
                         "sort": i
                     ],
                     "name": grunt,
-                    "image": "<img class=\"lazy_load\" data-src=\"/static/img/grunts/\(i).png\" " +
+                    "image": "<img class=\"lazy_load\" data-src=\"/static/img/grunttype/\(i).png\" " +
                         "style=\"height:50px; width:50px;\">",
                     "filter": filter,
                     "size": size,
