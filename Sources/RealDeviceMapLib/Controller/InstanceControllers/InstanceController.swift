@@ -15,7 +15,7 @@ import Turf
 import POGOProtos
 import Rainbow
 
-public protocol InstanceControllerDelegate: class {
+public protocol InstanceControllerDelegate: AnyObject {
     func instanceControllerDone(mysql: MySQL?, name: String)
 }
 

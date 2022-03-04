@@ -435,6 +435,7 @@ public class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
             case .quest: break
             case .levelCap: break
             case .incident: break
+            case .playerAttribute: break
             case .unset: break
             case .UNRECOGNIZED: break
             }
@@ -663,7 +664,6 @@ public class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
         let excludeQuestItemSQL: String
         let excludeLureSQL: String
         var excludePokestopSQL: String
-        let excludeInvasionButLeadersSQL: String
         var onlyArSQL: String
         var excludeInvasionSQL: String
 

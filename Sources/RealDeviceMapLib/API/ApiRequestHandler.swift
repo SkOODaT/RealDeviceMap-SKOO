@@ -1061,7 +1061,7 @@ public class ApiRequestHandler {
             let normalString = Localizer.global.get(value: "filter_normal")
             let largeString = Localizer.global.get(value: "filter_large")
             let hugeString = Localizer.global.get(value: "filter_huge")
-
+			
             let generalString = Localizer.global.get(value: "filter_general")
             let invasionTypeString = Localizer.global.get(value: "filter_invasion_grunt_type")
 
@@ -1117,6 +1117,7 @@ public class ApiRequestHandler {
                     "type": invasionTypeString
                 ])
             }
+
 
             let rocketIcons = Localizer.global.get(value: "filter_rocket_icons")
 
@@ -1184,8 +1185,6 @@ public class ApiRequestHandler {
         if permViewMap && showPokestopFilter {
             let hideString = Localizer.global.get(value: "filter_hide")
             let showString = Localizer.global.get(value: "filter_show")
-
-            let generalString = Localizer.global.get(value: "filter_general")
 
             let smallString = Localizer.global.get(value: "filter_small")
             let normalString = Localizer.global.get(value: "filter_normal")
@@ -1296,19 +1295,6 @@ public class ApiRequestHandler {
                     "type": pokestopOptionsString
                 ])
             }
-
-            let trFilter = """
-            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-            <label class="btn btn-sm btn-off select-button-new" data-id="invasion"
-             data-type="pokestop-invasion" data-info="hide">
-            <input type="radio" name="options" id="hide" autocomplete="off">\(hideString)
-            </label>
-            <label class="btn btn-sm btn-on select-button-new" data-id="invasion"
-             data-type="pokestop-invasion" data-info="show">
-            <input type="radio" name="options" id="show" autocomplete="off">\(showString)
-            </label>
-            </div>
-            """
 
             let arFilter = """
             <div class="btn-group btn-group-toggle" data-toggle="buttons">
