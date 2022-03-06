@@ -1206,7 +1206,7 @@ public class ApiRequestHandler {
             let normalString = Localizer.global.get(value: "filter_normal")
             let largeString = Localizer.global.get(value: "filter_large")
             let hugeString = Localizer.global.get(value: "filter_huge")
-			
+
             let generalString = Localizer.global.get(value: "filter_general")
             let invasionTypeString = Localizer.global.get(value: "filter_invasion_grunt_type")
 
@@ -1531,8 +1531,8 @@ public class ApiRequestHandler {
 
             pokestopData.append([
                 "id": [
-                    "formatted": String(format: "%03d", 8),
-                    "sort": 8
+                    "formatted": String(format: "%03d", 6),
+                    "sort": 6
                 ],
                 "name": arOnly,
                 "image": "<img class=\"lazy_load\" data-src=\"/static/img/misc/ar.png\" " +

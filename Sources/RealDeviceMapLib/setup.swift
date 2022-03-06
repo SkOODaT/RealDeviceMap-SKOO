@@ -233,15 +233,13 @@ public func setupRealDeviceMap() {
             if file.exists {
                 availableForms.append(formString)
             }
-            WebRequestHandler.availableFormsJson = try availableForms.jsonEncodedString()
-        } catch {
-            Log.error(
-                message: "Failed to load forms. Frontend will only display default forms. " +
-                    "Error: \(error.localizedDescription)"
-            )
         }
-    } else {
-        Log.info(message: "[MAIN] Loading Available Forms skipped - Image generation disabled")
+        WebRequestHandler.availableFormsJson = try availableForms.jsonEncodedString()
+    } catch {
+        Log.error(
+            message: "Failed to load forms. Frontend will only display default forms. " +
+                     "Error: \(error.localizedDescription)"
+        )
     }
 
     // Load Costumes

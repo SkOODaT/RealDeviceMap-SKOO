@@ -658,16 +658,28 @@ function loadStorage () {
     const defaultGymFilter = {}
     let i
     for (i = 0; i <= 3; i++) {
-      defaultGymFilter['t' + i] = { show: true, size: 'normal' }
+      if (defaultGymFilter['t' + i] === undefined || defaultGymFilter['t' + i] === null) {
+        defaultGymFilter['t' + i] = { show: true, size: 'normal' }
+      }
     }
-    defaultGymFilter.ex = { show: false, size: 'normal' }
-    defaultGymFilter.ar = { show: false, size: 'normal' }
-    defaultGymFilter.sponsored = { show: false, size: 'normal' }
+    if (defaultGymFilter.ex === undefined || defaultGymFilter.ex === null) {
+      defaultGymFilter.ex = { show: false, size: 'normal' }
+    }
+    if (defaultGymFilter.ar === undefined || defaultGymFilter.ar === null) {
+      defaultGymFilter.ar = { show: false, size: 'normal' }
+    }
+    if (defaultGymFilter.sponsored === undefined || defaultGymFilter.sponsored === null) {
+      defaultGymFilter.sponsored = { show: false, size: 'normal' }
+    }
     for (i = 0; i<= 3; i++) {
-      defaultGymFilter['p' + i] = { show: true, size: 'normal' }
+      if (defaultGymFilter['p' + i] === undefined || defaultGymFilter['p' + i] === null) {
+        defaultGymFilter['p' + i] = { show: true, size: 'normal' }
+      }
     }
     for (i = 0; i <= 6; i++) {
-      defaultGymFilter['s' + i] = { show: true, size: 'normal' }
+      if (defaultGymFilter['s' + i] === undefined || defaultGymFilter['s' + i] === null) {
+        defaultGymFilter['s' + i] = { show: true, size: 'normal' }
+      }
     }
 
     gymFilter = defaultGymFilter
@@ -704,35 +716,43 @@ function loadStorage () {
   const pokestopFilterValue = retrieve('pokestop_filter')
   if (pokestopFilterValue === null) {
     const defaultPokestopFilter = {}
-    if (defaultPokestopFilter.icons === undefined) {
+    if (defaultPokestopFilter.icons === undefined || defaultPokestopFilter.icons === null) {
       defaultPokestopFilter.icons = {show: true, size: 'normal'}
     }
-    if (defaultPokestopFilter.timers === undefined) {
+    if (defaultPokestopFilter.timers === undefined || defaultPokestopFilter.timers === null) {
       defaultPokestopFilter.timers = {show: true, size: 'normal'}
     }
-    if (defaultPokestopFilter.normal === undefined) {
+    if (defaultPokestopFilter.normal === undefined || defaultPokestopFilter.normal === null) {
       defaultPokestopFilter.normal = { show: true, size: 'normal' }
     }
     let i
     for (i = 1; i < 6; i++) {
-      defaultPokestopFilter['l' + i] = { show: true, size: 'normal' }
+      if (defaultPokestopFilter['l' + i] === undefined || defaultPokestopFilter['l' + i] === null) {
+        defaultPokestopFilter['l' + i] = { show: true, size: 'normal' }
+      }
     }
     for (i = 0; i <= 3; i++) {
-      defaultPokestopFilter['p' + i] = { show: true, size: 'normal' }
+      if (defaultPokestopFilter['p' + i] === undefined || defaultPokestopFilter['p' + i] === null) {
+        defaultPokestopFilter['p' + i] = { show: true, size: 'normal' }
+      }
     }
-    defaultPokestopFilter.ar = { show: false, size: 'normal' }
-    defaultPokestopFilter.sponsored = { show: false, size: 'normal' }
+    if (defaultPokestopFilter.ar === undefined || defaultPokestopFilter.ar === null) {
+      defaultPokestopFilter.ar = { show: false, size: 'normal' }
+    }
+    if (defaultPokestopFilter.sponsored === undefined || defaultPokestopFilter.sponsored === null) {
+      defaultPokestopFilter.sponsored = { show: false, size: 'normal' }
+    }
 
     pokestopFilter = defaultPokestopFilter
   } else {
     pokestopFilter = JSON.parse(pokestopFilterValue)
-    if (pokestopFilter.icons === undefined) {
+    if (pokestopFilter.icons === undefined || pokestopFilter.icons === null) {
       pokestopFilter.icons = {show: true, size: 'normal'}
       showRocketIcons = true
     } else {
       showRocketIcons = pokestopFilter.icons.show
     }
-    if (pokestopFilter.timers === undefined) {
+    if (pokestopFilter.timers === undefined || pokestopFilter.timers === null) {
       pokestopFilter.timers = {show: true, size: 'normal'}
       showRocketTimers = true
     } else {
@@ -2910,16 +2930,51 @@ function getPokestopPopupContent (pokestop) {
         })
           conditionsString += ')'
       }
+      content += '<b>--AR-Quest in Inventory--</b><br>'
       content += '<b>Quest Condition:</b> ' + getQuestName(pokestop.quest_type, pokestop.quest_target) + conditionsString + '<br>'
       $.each(pokestop.quest_rewards, function (index, reward) {
         content += '<b>Quest Reward:</b> ' + getQuestReward(reward) + '<br>'
       })
     }
-    
+    content += '<br>'
+    if (pokestop.alternative_quest_type !== null) {
+      const conditions = pokestop.alternative_quest_conditions
+      let conditionsString = ''
+      if (conditions !== undefined && conditions.length > 0) {
+        conditionsString += ' ('
+        $.each(conditions, function (index, condition) {
+          let formating
+          if (index === 0) {
+            formating = ''
+          } else {
+            formating = ', '
+          }
+
+          conditionsString += formating + getQuestCondition(condition)
+        })
+        conditionsString += ')'
+      }
+      content += '<b>--No AR-Quest in Inventory--</b><br>'
+      content += '<b>Quest Condition:</b> ' + getQuestName(pokestop.alternative_quest_type, pokestop.alternative_quest_target) + conditionsString + '<br>'
+      $.each(pokestop.alternative_quest_rewards, function (index, reward) {
+        content += '<b>Quest Reward:</b> ' + getQuestReward(reward) + '<br>'
+      })
+    }
+    content += '<br>'
+
     if (pokestop.ar_scan_eligible) {
       content += '<img src="/static/img/misc/ar.png" height="24" width="32"><br>'
     }
-  
+    if (pokestop.partner_id !== null) {
+      content += '<img src="/static/img/misc/sponsor.png" height="26" width="26"><br><br>'
+    }
+
+    if (isPoweredUp) {
+      content += 
+        '<b>Power Up Level:</b> ' + pokestop.power_up_level + '<br>' +
+        '<b>Power Up End:</b> ' + powerUpEndDate.toLocaleTimeString() + ' (' + getTimeUntill(powerUpEndDate) + ')<br><br>'
+    } 
+
     const updatedDate = new Date(pokestop.updated*1000)
     if (updatedDate) {
       content += "<small><b>Last Updated:</b> " + updatedDate.toLocaleDateString() + ' ' + updatedDate.toLocaleTimeString() + ' (' + getTimeSince(updatedDate) + ')<br></small>'
@@ -3120,6 +3175,12 @@ function getGymPopupContent (gym) {
               if (gym.gym_weather !== null && gym.gym_weather > 0) {
                 content += '<b>'+ wname +':</b> ' + wtypes
               }
+              if (gym.ar_scan_eligible) {
+                content += '<img src="/static/img/misc/ar.png" height="26" width="26">'
+              }
+              if (gym.partner_id !== null) {
+                content += '<img src="/static/img/misc/sponsor.png" height="26" width="26">'
+              }
               content += '</div>' 
         content += '</div>'  //END PIC/IV ROW
   } else {
@@ -3171,6 +3232,9 @@ function getGymPopupContent (gym) {
           } else if (gym.ar_scan_eligible) {
             content += '<img src="/static/img/misc/ar.png" height="24" width="32"><br>'
           }
+          if (gym.partner_id !== null) {
+            content += '<img src="/static/img/misc/sponsor.png" height="26" width="26"><br>'
+          }
       content +=
         '</div></div>' + //END 2ND COL
       '</div>'  //END 3RD ROW
@@ -3182,6 +3246,11 @@ function getGymPopupContent (gym) {
     if (isRaid) {
       content += "<b>Raid End:</b> " + raidEndDate.toLocaleTimeString() + ' ('+getTimeUntill(raidEndDate)+')<br><br>'
     }
+    if (isPoweredUp) {
+      content += 
+        '<b>Power Up Level:</b> ' + gym.power_up_level + '<br>' +
+        '<b>Power Up End:</b> ' + powerUpEndDate.toLocaleTimeString() + ' (' + getTimeUntill(powerUpEndDate) + ')<br><br>'
+    } 
   content += '</div>'
   const updatedDate = new Date(gym.updated*1000)
   const modifiedDate = new Date(gym.last_modified_timestamp*1000)

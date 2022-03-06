@@ -49,7 +49,7 @@ public class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
             "total_cp": totalCp as Any,
             "raid_pokemon_evolution": raidPokemonEvolution as Any,
             "gym_weather": gymWeather as Any,
-            "ar_scan_eligible": arScanEligible as Any
+            "ar_scan_eligible": arScanEligible as Any,
             "sponsor_id": sponsorId as Any,
             "partner_id": partnerId as Any,
             "power_up_points": powerUpPoints as Any,
@@ -201,7 +201,7 @@ public class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
          updated: UInt32?, exRaidEligible: Bool?, inBattle: Bool?, raidPokemonMove1: UInt16?, raidPokemonMove2: UInt16?,
          raidPokemonForm: UInt16?, raidPokemonCostume: UInt16?, raidPokemonCp: UInt32?, raidPokemonGender: UInt8?,
          raidIsExclusive: Bool?, cellId: UInt64?, totalCp: UInt32?, sponsorId: UInt16?, raidPokemonEvolution: UInt8?,
-         gymWeather: UInt8?, partnerId: String?, arScanEligible: Bool?, powerUpPoints: UInt32?, powerUpLevel: UInt16?,
+         gymWeather: UInt8?, arScanEligible: Bool?, partnerId: String?, powerUpPoints: UInt32?, powerUpLevel: UInt16?,
          powerUpEndTimestamp: UInt32?) {
         self.id = id
         self.lat = lat
@@ -233,8 +233,8 @@ public class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
         self.sponsorId = sponsorId
         self.raidPokemonEvolution = raidPokemonEvolution
         self.gymWeather = gymWeather
-        self.partnerId = partnerId
         self.arScanEligible = arScanEligible
+        self.partnerId = partnerId
         self.powerUpPoints = powerUpPoints
         self.powerUpLevel = powerUpLevel
         self.powerUpEndTimestamp = powerUpEndTimestamp
@@ -460,10 +460,10 @@ public class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
         mysqlStmt.bindParam(cellId)
         mysqlStmt.bindParam(totalCp)
         mysqlStmt.bindParam(sponsorId)
-        mysqlStmt.bindParam(partnerId)
         mysqlStmt.bindParam(raidPokemonEvolution)
         mysqlStmt.bindParam(gymWeather)
         mysqlStmt.bindParam(arScanEligible)
+        mysqlStmt.bindParam(partnerId)
         mysqlStmt.bindParam(powerUpPoints)
         mysqlStmt.bindParam(powerUpLevel)
         mysqlStmt.bindParam(powerUpEndTimestamp)
@@ -772,7 +772,7 @@ public class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
                 raidPokemonCostume: raidPokemonCostume, raidPokemonCp: raidPokemonCp,
                 raidPokemonGender: raidPokemonGender, raidIsExclusive: raidIsExclusive, cellId: cellId,
                 totalCp: totalCp, sponsorId: sponsorId, raidPokemonEvolution: raidPokemonEvolution,
-                gymWeather: gymWeather, arScanEligible: arScanEligible partnerId: partnerId,
+                gymWeather: gymWeather, arScanEligible: arScanEligible, partnerId: partnerId,
                 powerUpPoints: powerUpPoints, powerUpLevel: powerUpLevel,
                 powerUpEndTimestamp: powerUpEndTimestamp))
         }
@@ -1021,7 +1021,7 @@ public class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
                    raid_level, ex_raid_eligible, in_battle, raid_pokemon_move_1, raid_pokemon_move_2, raid_pokemon_form,
                    raid_pokemon_costume, raid_pokemon_cp, raid_pokemon_gender, raid_is_exclusive, cell_id, total_cp,
                    sponsor_id, raid_pokemon_evolution, gym_weather, ar_scan_eligible, partner_id, power_up_points,
-				   power_up_level, power_up_end_timestamp
+                   power_up_level, power_up_end_timestamp
             FROM gym
             WHERE cell_id IN \(inSQL) AND deleted = false
         """

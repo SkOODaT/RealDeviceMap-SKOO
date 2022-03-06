@@ -540,6 +540,7 @@ public class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStri
         let costume = UInt8(diskencounterData.pokemon.pokemonDisplay.costume.rawValue)
         let form = UInt16(diskencounterData.pokemon.pokemonDisplay.form.rawValue)
         let gender = UInt8(diskencounterData.pokemon.pokemonDisplay.gender.rawValue)
+        let weather = UInt8(diskencounterData.pokemon.pokemonDisplay.weatherBoostedCondition.rawValue.toUInt8())
 
         if pokemonId != self.pokemonId ||
            cp != self.cp ||
@@ -552,7 +553,8 @@ public class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStri
            staIv != self.staIv ||
            costume != self.costume ||
            form != self.form ||
-           gender != self.gender {
+           gender != self.gender ||
+           weather != self.weather {
                self.hasChanges = true
                self.hasIvChanges = true
             }
@@ -570,6 +572,7 @@ public class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStri
         self.costume = costume
         self.form = form
         self.gender = gender
+        self.weather = weather
 
         self.shiny = diskencounterData.pokemon.pokemonDisplay.shiny
         self.username = username
@@ -589,16 +592,18 @@ public class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStri
                 level = UInt8(round(171.0112688 * cpMultiplier - 95.20425243))
             }
             self.level = level
-            self.isDitto = Pokemon.isDittoDisguised(pokemonId: self.pokemonId,
-                                                    level: self.level ?? 0,
-                                                    weather: self.weather ?? 0,
-                                                    atkIv: self.atkIv ?? 0,
-                                                    defIv: self.defIv ?? 0,
-                                                    staIv: self.staIv ?? 0
+            self.isDitto = Pokemon.isDittoDisguised(
+                id: self.id,
+                pokemonId: pokemonId,
+                level: level,
+                weather: weather,
+                atkIv: atkIv,
+                defIv: defIv,
+                staIv: staIv
             )
             if self.isDitto {
-                Log.debug(message: "[POKEMON] Pokemon \(id) Ditto found, disguised as \(self.pokemonId)")
-                self.setDittoAttributes(displayPokemonId: self.pokemonId)
+                self.setDittoAttributes(displayPokemonId: pokemonId,
+                    weather: weather, level: level)
             }
             setPVP()
         }

@@ -833,7 +833,7 @@
                     $("#invasion-stats-table").html(html);
                     result.data.stats.forEach(function(stat) {
                         html += "<div class='col-sm-2 col-sd-offset-1 text-center'>";
-                        html +=   "<img src='./static/img/grunt/" + stat.grunt_type + ".png'' width='48' height='48'>";
+                        html +=   "<img src='./static/img/grunttype/" + stat.grunt_type + ".png'' width='48' height='48'>";
                         html +=   "<div class='card-body'>";
                         html +=     "<span class='text-nowrap'><b>" + stat.name + "</b></span>";
                         html +=     "<p class='card-text text-nowrap'>";
@@ -1399,7 +1399,7 @@
                 <div id="invasion-stats-table" class="row justify-content-center">
                     {{#invasions}}
                         <div id="invasion-{{grunt_type}}" class="col-sm-2 col-sd-offset-1 text-center">
-                            <img src="./static/img/grunt/{{grunt_type}}.png"" width="48" height="48">
+                            <img src="./static/img/grunttype/{{grunt_type}}.png"" width="48" height="48">
                             <div class="card-body">
                                 <span class="text-nowrap"><b>{{name}}</b></span>
                                 <p class="card-text text-nowrap">
