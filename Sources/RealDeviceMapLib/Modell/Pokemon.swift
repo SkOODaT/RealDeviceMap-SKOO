@@ -811,15 +811,15 @@ public class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStri
             if oldPokemon!.pokemonId != self.pokemonId {
                 if oldPokemon!.pokemonId != Pokemon.dittoPokemonId {
                     Log.debug(
-                        message: "[POKEMON] Pokemon \(id) changed from \(oldPokemon!.pokemonId) to \(self.pokemonId)"
+                        message: "[POKEMON] Pokemon \(id) changed from \(oldPokemon!.pokemonId) to \(self.pokemonId)".cyan
                     )
                 } else if oldPokemon!.displayPokemonId ?? 0 != self.pokemonId {
                     Log.debug(
-                        message: "[POKEMON] Pokemon \(id) Ditto disguised as \(oldPokemon!.displayPokemonId ?? 0) " +
-                                 "now seen as \(self.pokemonId)"
+                        message: "[POKEMON] Pokemon \(id) Ditto disguised as \(oldPokemon!.displayPokemonId ?? 0) ".cyan +
+                                 "now seen as \(self.pokemonId)".cyan
                     )
                 } else if oldPokemon!.displayPokemonId != nil && oldPokemon!.pokemonId != self.pokemonId {
-                    Log.debug(message: "[POKEMON] Pokemon \(id) Ditto from \(oldPokemon!.pokemonId) to \(pokemonId)")
+                    Log.debug(message: "[POKEMON] Pokemon \(id) Ditto from \(oldPokemon!.pokemonId) to \(pokemonId)".cyan)
                 }
             }
 
@@ -882,7 +882,7 @@ public class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStri
                 self.capture2 = oldPokemon!.capture2
                 self.capture3 = oldPokemon!.capture3
                 if self.isDitto {
-                    Log.debug(message: "[POKEMON] oldPokemon \(id) Ditto found, disguised as \(self.pokemonId)")
+                    Log.debug(message: "[POKEMON] oldPokemon \(id) Ditto found, disguised as \(self.pokemonId)".cyan)
                     self.setDittoAttributes(displayPokemonId: self.pokemonId,
                         weather: oldPokemon!.weather ?? 0, level: oldPokemon!.level ?? 0)
                 }
@@ -892,7 +892,7 @@ public class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStri
                 setIVForWeather = false
                 updateIV = true
             } else if weatherChanged && oldPokemon!.atkIv != nil && !Pokemon.noWeatherIVClearing {
-                Log.debug(message: "[POKEMON] Pokemon \(id) changed Weatherboosted State. Clearing IVs.")
+                Log.debug(message: "[POKEMON] Pokemon \(id) changed Weatherboosted State. Clearing IVs.".cyan)
                 setIVForWeather = true
                 self.atkIv = nil
                 self.defIv = nil
@@ -908,7 +908,7 @@ public class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStri
                 self.capture3 = nil
                 self.pvpRankingsGreatLeague = nil
                 self.pvpRankingsUltraLeague = nil
-                Log.debug(message: "[POKEMON] Weather-Boosted state changed. Clearing IVs")
+                Log.debug(message: "[POKEMON] Weather-Boosted state changed. Clearing IVs".cyan)
             } else {
                 setIVForWeather = false
             }
@@ -929,7 +929,7 @@ public class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStri
 
             if oldPokemon!.pokemonId == Pokemon.dittoPokemonId && self.pokemonId != Pokemon.dittoPokemonId {
                 Log.debug(
-                    message: "[POKEMON] Pokemon \(id) Ditto changed from \(oldPokemon!.pokemonId) to \(self.pokemonId)"
+                    message: "[POKEMON] Pokemon \(id) Ditto changed from \(oldPokemon!.pokemonId) to \(self.pokemonId)".cyan
                 )
             }
 
@@ -994,7 +994,7 @@ public class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStri
             if mysqlStmt.errorCode() == 1062 {
                 Log.debug(message: "[POKEMON] Duplicated key. Skipping...".red)
             } else {
-                Log.error(message: "[POKEMON] Failed to execute query '\(oldPokemon != nil ? "update" : "insert")'. " +
+                Log.error(message: "[POKEMON] Failed to execute query '\(oldPokemon != nil ? "update" : "insert")'. ".red +
                                     "(\(mysqlStmt.errorMessage()))".red)
             }
             throw DBController.DBError()
@@ -1368,7 +1368,7 @@ public class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStri
         self.size = nil
         self.weight = nil
         if weather == 0 && level > 30 {
-            Log.debug(message: "[POKEMON] Pokemon \(id) weather boosted Ditto - reset IV is needed")
+            Log.debug(message: "[POKEMON] Pokemon \(id) weather boosted Ditto - reset IV is needed".cyan)
             // self.level = level - 5
             // self.atkIv = nil
             // self.defIv = nil
@@ -1400,7 +1400,7 @@ public class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStri
     private static func isDittoDisguised(id: String, pokemonId: UInt16, level: UInt8, weather: UInt8,
                                          atkIv: UInt8, defIv: UInt8, staIv: UInt8) -> Bool {
         if pokemonId == Pokemon.dittoPokemonId {
-            Log.debug(message: "[POKEMON] Pokemon \(id) was already detected as Ditto.")
+            Log.debug(message: "[POKEMON] Pokemon \(id) was already detected as Ditto.".cyan)
             return true
         }
         let isUnderLevelBoosted = level > 0 && level < Pokemon.weatherBoostMinLevel
@@ -1413,12 +1413,12 @@ public class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStri
 
         if isWeatherBoosted {
             if isUnderLevelBoosted || isUnderIvStatBoosted {
-                Log.debug(message: "[POKEMON] Pokemon \(id) Ditto found, disguised as \(pokemonId)")
+                Log.debug(message: "[POKEMON] Pokemon \(id) Ditto found, disguised as \(pokemonId)".cyan)
                 return true
             }
         } else {
             if isOverLevel {
-                Log.debug(message: "[POKEMON] Pokemon \(id) weather boosted Ditto found, disguised as \(pokemonId)")
+                Log.debug(message: "[POKEMON] Pokemon \(id) weather boosted Ditto found, disguised as \(pokemonId)".cyan)
                 return true
             }
         }
