@@ -768,7 +768,9 @@ function loadStorage () {
       }
     }
     for (i = 0; i <= 3; i++) {
-      pokestopFilter['p' + i] = { show: true, size: 'normal' }
+      if (pokestopFilter['p' + i] === undefined || pokestopFilter['l' + i] === null) {
+        pokestopFilter['p' + i] = { show: true, size: 'normal' }
+      }
     }
     if (pokestopFilter.ar === undefined || pokestopFilter.ar === null) {
       pokestopFilter.ar = { show: false, size: 'normal' }
