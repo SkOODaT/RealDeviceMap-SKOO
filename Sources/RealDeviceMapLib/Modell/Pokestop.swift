@@ -267,6 +267,7 @@ public class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
             self.powerUpLevel = 0
         }
 
+        self.powerUpEndTimestamp = UInt32(fortData.powerUpRemainingUntilMs / 1000)
         let lastModifiedTimestamp = UInt32(fortData.lastModifiedMs / 1000)
         if fortData.activeFortModifier.contains(.troyDisk) ||
             fortData.activeFortModifier.contains(.troyDiskGlacial) ||
