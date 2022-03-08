@@ -2779,9 +2779,16 @@ function getPokestopPopupContent (pokestop) {
   const isPoweredUp = powerUpEndDate >= now && parseInt(pokestop.power_up_level) > 0
 
   var stopBG = ''
-  if (isActiveLure) {
+
+  if (pokestop.quest_type !== null || pokestop.alternative_quest_type !== null) {
+    stopBG = 'quest'
+  } else if (isActiveInvasion) {
+    stopBG = 'rocket'
+  } else if (isPoweredUp) {
+    stopBG = 'power'
+  } else if (isActiveLure) {
     if (pokestop.lure_id === 501) {
-      stopBG = 'default'
+      stopBG = 'lure'
     } else if (pokestop.lure_id === 502) {
       stopBG = 'glacial'
     } else if (pokestop.lure_id === 503) {
@@ -2791,14 +2798,10 @@ function getPokestopPopupContent (pokestop) {
     } else if (pokestop.lure_id === 505) {
       stopBG = 'rainy'
     } else {
-      stopBG = 'regular'
+      stopBG = 'pokestop'
     }
-  } else if (isActiveInvasion) {
-    stopBG = 'rocket'
-  } else if (isPoweredUp) {
-    stopBG = 'power'
   } else {
-    stopBG = 'regular'
+    stopBG = 'pokestop'
   }
   //MAIN ICONS
   let ts = Math.round((new Date()).getTime() / 1000)
