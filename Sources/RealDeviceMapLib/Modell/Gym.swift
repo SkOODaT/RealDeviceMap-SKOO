@@ -978,7 +978,7 @@ public class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
                 raidPokemonGender: raidPokemonGender, raidIsExclusive: raidIsExclusive, cellId: cellId,
                 totalCp: totalCp, sponsorId: sponsorId, raidPokemonEvolution: raidPokemonEvolution,
                 gymWeather: gymWeather, arScanEligible: arScanEligible, partnerId: partnerId,
-                powerUpPoints: powerUpPoints,powerUpLevel: powerUpLevel,
+                powerUpPoints: powerUpPoints, powerUpLevel: powerUpLevel,
                 powerUpEndTimestamp: powerUpEndTimestamp
             ))
         }

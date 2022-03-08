@@ -816,7 +816,7 @@ public class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStri
                     )
                 } else if oldPokemon!.displayPokemonId ?? 0 != self.pokemonId {
                     Log.debug(
-                        message: "[POKEMON] Pokemon \(id) Ditto disguised as ".cyan + 
+                        message: "[POKEMON] Pokemon \(id) Ditto disguised as ".cyan +
                                  " \(oldPokemon!.displayPokemonId ?? 0) now seen as \(self.pokemonId)".cyan
                     )
                 } else if oldPokemon!.displayPokemonId != nil && oldPokemon!.pokemonId != self.pokemonId {

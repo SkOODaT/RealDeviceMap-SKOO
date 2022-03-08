@@ -1263,7 +1263,6 @@ public class ApiRequestHandler {
                 ])
             }
 
-
             let rocketIcons = Localizer.global.get(value: "filter_rocket_icons")
 
             let rifilter = """
