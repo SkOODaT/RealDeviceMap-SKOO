@@ -333,7 +333,7 @@ public class DBController {
             let resultSchema = commandSchema.runError()
             if resultSchema == nil ||
                    resultSchema!.stringByReplacing(
-                      string: "mysqldump: [Warning] Using a password on the command" + 
+                      string: "mysqldump: [Warning] Using a password on the command" +
                               " line interface can be insecure.".red,
                       withString: ""
                    ).trimmingCharacters(in: .whitespacesAndNewlines) != "" {
