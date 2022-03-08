@@ -2867,14 +2867,11 @@ function getPokestopPopupContent (pokestop) {
       : "stop-normal" 
       if (isActiveInvasion) {
         content += '<img src="' + pokestop.url.replace("http://", "https://") + '" class="circle-image ' + invasionClass + ' background-image"/>'
-      }
-      if (isActiveLure && pokestop.lure_id !== 0) {
+      } else if (isActiveLure && pokestop.lure_id !== 0) {
         content += '<img src="' + pokestop.url.replace("http://", "https://") + '" class="circle-image ' + lureClass + ' background-image"/>'
-      }
-      if (pokestop.partner_id !== null) {
+      } else if (pokestop.partner_id !== null) {
         content += '<img src="' + pokestop.url.replace("http://", "https://") + '" class="circle-image ' + sponsorClass + ' background-image"/>'
-      } 
-      if (!isActiveInvasion && !isActiveLure && pokestop.partner_id === null) {
+      } else {
         content += '<img src="' + pokestop.url.replace("http://", "https://") + '" class="circle-image stop-normal background-image"/>'
       }
     }
@@ -2968,7 +2965,6 @@ function getPokestopPopupContent (pokestop) {
       content += "<small><b>Last Updated:</b> " + updatedDate.toLocaleDateString() + ' ' + updatedDate.toLocaleTimeString() + ' (' + getTimeSince(updatedDate) + ')<br></small>'
     }
   content += '</div>'
-
   content +=
         '<form><button class="button" type="submit" formaction="/@pokestop/'+pokestop.id+'">Link</button>' +
         '<div class="row">' +
@@ -3091,7 +3087,7 @@ function getGymPopupContent (gym) {
              '</center>'  //END TITLE ROW
   }
 
-  if (isRaid) {
+  if (isRaid && showRaids) {
       var pokemonName
       if (hasRaidBoss) {
         if (gym.raid_pokemon_costume !== 0 && gym.raid_pokemon_costume !== null) {
