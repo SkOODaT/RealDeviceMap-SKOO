@@ -333,8 +333,8 @@ public class DBController {
             let resultSchema = commandSchema.runError()
             if resultSchema == nil ||
                    resultSchema!.stringByReplacing(
-                       string: "mysqldump: [Warning] Using a password on the command line interface can be insecure.".red,
-                       withString: ""
+                      string: "mysqldump: [Warning] Using a password on the command line interface can be insecure.".red,
+                      withString: ""
                    ).trimmingCharacters(in: .whitespacesAndNewlines) != "" {
                 let message = "Failed to create Command Backup: \(resultSchema as Any)"
                 Log.critical(message: "[DBController] " + message)
@@ -349,8 +349,8 @@ public class DBController {
             let resultTrigger = commandTrigger.runError()
             if resultTrigger == nil ||
                    resultTrigger!.stringByReplacing(
-                       string: "mysqldump: [Warning] Using a password on the command line interface can be insecure.".red,
-                       withString: ""
+                      string: "mysqldump: [Warning] Using a password on the command line interface can be insecure.".red,
+                      withString: ""
                    ).trimmingCharacters(in: .whitespacesAndNewlines) != "" {
                 let message = "Failed to create Command Backup \(resultTrigger as Any)"
                 Log.critical(message: "[DBController] " + message)
@@ -365,8 +365,8 @@ public class DBController {
             let resultData = commandData.runError()
             if resultData == nil ||
                    resultData!.stringByReplacing(
-                       string: "mysqldump: [Warning] Using a password on the command line interface can be insecure.".red,
-                       withString: ""
+                      string: "mysqldump: [Warning] Using a password on the command line interface can be insecure.".red,
+                      withString: ""
                    ).trimmingCharacters(in: .whitespacesAndNewlines) != "" {
                 let message = "Failed to create Data Backup \(resultData as Any)"
                 Log.critical(message: "[DBController] " + message)

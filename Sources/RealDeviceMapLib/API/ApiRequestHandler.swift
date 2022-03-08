@@ -33,7 +33,7 @@ public class ApiRequestHandler {
 
     // swiftlint:disable:next function_body_length cyclomatic_complexity
     private static func getPerms(request: HTTPRequest, response: HTTPResponse, route: WebServer.APIPage)
-	-> [Group.Perm]? {
+    -> [Group.Perm]? {
         let tmp = WebRequestHandler.getPerms(request: request, fromCache: true)
         let perms = tmp.perms
         let username = tmp.username
@@ -319,30 +319,30 @@ public class ApiRequestHandler {
             }
 
             if !Pokemon.noCellPokemon {
-				let filter = """
-					<div class="btn-group btn-group-toggle" data-toggle="buttons">
-						<label class="btn btn-sm btn-off select-button-new" data-id="show_cell"
-						 data-type="pokemon-iv" data-info="show_cell_hide">
-							<input type="radio" name="options" id="hide" autocomplete="off">\(offString)
-						</label>
-						<label class="btn btn-sm btn-on select-button-new" data-id="show_cell"
-						 data-type="pokemon-iv" data-info="show_cell_show">
-							<input type="radio" name="options" id="show" autocomplete="off">\(onString)
-						</label>
-					</div>
-				"""
-				pokemonData.append([
-					"id": [
-						"formatted": "",
-						"sort": -1
-					],
-					"name": includeCellString,
-					"image": "<img class=\"lazy_load\" data-src=\"/static/img/misc/cell.png\"" +
-							"style=\"height:50px; width:50px;\">",
-					"filter": filter,
-					"size": "",
-					"type": miscString
-				])
+                let filter = """
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <label class="btn btn-sm btn-off select-button-new" data-id="show_cell"
+                         data-type="pokemon-iv" data-info="show_cell_hide">
+                            <input type="radio" name="options" id="hide" autocomplete="off">\(offString)
+                        </label>
+                        <label class="btn btn-sm btn-on select-button-new" data-id="show_cell"
+                         data-type="pokemon-iv" data-info="show_cell_show">
+                            <input type="radio" name="options" id="show" autocomplete="off">\(onString)
+                        </label>
+                    </div>
+                """
+                pokemonData.append([
+                    "id": [
+                        "formatted": "",
+                        "sort": -1
+                    ],
+                    "name": includeCellString,
+                    "image": "<img class=\"lazy_load\" data-src=\"/static/img/misc/cell.png\"" +
+                            "style=\"height:50px; width:50px;\">",
+                    "filter": filter,
+                    "size": "",
+                    "type": miscString
+                ])
             }
 
             if permShowIV {
@@ -2353,7 +2353,7 @@ public class ApiRequestHandler {
            } catch {
                response.respondWithError(status: .internalServerError)
            }
-	    } else if reloadInstances && perms.contains(.admin) {
+        } else if reloadInstances && perms.contains(.admin) {
            do {
                Log.info(message: "[ApiRequestHandler] API request to restart all instances.")
                try InstanceController.setup()

@@ -811,15 +811,17 @@ public class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStri
             if oldPokemon!.pokemonId != self.pokemonId {
                 if oldPokemon!.pokemonId != Pokemon.dittoPokemonId {
                     Log.debug(
-                        message: "[POKEMON] Pokemon \(id) changed from \(oldPokemon!.pokemonId) to \(self.pokemonId)".cyan
+                        message: "[POKEMON] Pokemon \(id) changed from \(oldPokemon!.pokemonId) to"  +
+                                 " \(self.pokemonId)".cyan
                     )
                 } else if oldPokemon!.displayPokemonId ?? 0 != self.pokemonId {
                     Log.debug(
-                        message: "[POKEMON] Pokemon \(id) Ditto disguised as \(oldPokemon!.displayPokemonId ?? 0) ".cyan +
-                                 "now seen as \(self.pokemonId)".cyan
+                        message: "[POKEMON] Pokemon \(id) Ditto disguised as ".cyan + 
+                                 " \(oldPokemon!.displayPokemonId ?? 0) now seen as \(self.pokemonId)".cyan
                     )
                 } else if oldPokemon!.displayPokemonId != nil && oldPokemon!.pokemonId != self.pokemonId {
-                    Log.debug(message: "[POKEMON] Pokemon \(id) Ditto from \(oldPokemon!.pokemonId) to \(pokemonId)".cyan)
+                    Log.debug(message: "[POKEMON] Pokemon \(id) Ditto from \(oldPokemon!.pokemonId)".cyan +
+                                       " to \(pokemonId)".cyan)
                 }
             }
 
@@ -929,7 +931,8 @@ public class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStri
 
             if oldPokemon!.pokemonId == Pokemon.dittoPokemonId && self.pokemonId != Pokemon.dittoPokemonId {
                 Log.debug(
-                    message: "[POKEMON] Pokemon \(id) Ditto changed from \(oldPokemon!.pokemonId) to \(self.pokemonId)".cyan
+                    message: "[POKEMON] Pokemon \(id) Ditto changed from \(oldPokemon!.pokemonId) to".cyan +
+                             " \(self.pokemonId)".cyan
                 )
             }
 
@@ -994,8 +997,8 @@ public class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStri
             if mysqlStmt.errorCode() == 1062 {
                 Log.debug(message: "[POKEMON] Duplicated key. Skipping...".red)
             } else {
-                Log.error(message: "[POKEMON] Failed to execute query '\(oldPokemon != nil ? "update" : "insert")'. ".red +
-                                    "(\(mysqlStmt.errorMessage()))".red)
+                Log.error(message: "[POKEMON] Failed to execute query " +
+                                   "'\(oldPokemon != nil ? "update" : "insert")'. (\(mysqlStmt.errorMessage()))".red)
             }
             throw DBController.DBError()
         }
@@ -1418,7 +1421,8 @@ public class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStri
             }
         } else {
             if isOverLevel {
-                Log.debug(message: "[POKEMON] Pokemon \(id) weather boosted Ditto found, disguised as \(pokemonId)".cyan)
+                Log.debug(message: "[POKEMON] Pokemon \(id) weather boosted Ditto found, disguised".cyan +
+                                   " as \(pokemonId)".cyan)
                 return true
             }
         }
