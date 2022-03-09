@@ -2779,7 +2779,6 @@ function getPokestopPopupContent (pokestop) {
   const isPoweredUp = powerUpEndDate >= now && parseInt(pokestop.power_up_level) > 0
 
   var stopBG = ''
-
   if (pokestop.quest_type !== null || pokestop.alternative_quest_type !== null) {
     stopBG = 'quest'
   } else if (isActiveInvasion) {
@@ -2822,7 +2821,9 @@ function getPokestopPopupContent (pokestop) {
   }
   //TIP START
   var hasPokestopUrl = pokestop.url !== null
-  var url = pokestop.url.replace("http://", "https://")
+  if (hasPokestopUrl) {
+    var url = pokestop.url.replace("http://", "https://")
+  }
   var lureClass = isActiveLure && pokestop.lure_id !== 0
     ?
       (pokestop.lure_id === 501
@@ -2851,12 +2852,12 @@ function getPokestopPopupContent (pokestop) {
     : "stop-normal"
   let content = '<div class="text-center">'
   let pokestopName
-  if (pokestop.url !== null) {  //SET BACKGROUND
+  if (pokestop !== null) {  //SET BACKGROUND
     content += '<div style="background-image: url(/static/img/background/' + stopBG + '.png); background-size: cover; border-radius: 12px; background-repeat: no-repeat; background-position: center bottom; background-color: #009FDD;">'
   }
   content +='<div class="title-label">'
   if (pokestop.name === null || pokestop.name === "") {
-    pokestopName = 'Unknown Pokestop Name'
+    pokestopName = 'New Pokestop - Unknown Name'
   } else {
     pokestopName = pokestop.name
   }
@@ -2876,7 +2877,9 @@ function getPokestopPopupContent (pokestop) {
       } else {
         content += '<img src="' + url + '" class="circle-image stop-normal background-image"/>'
       }
-    }
+    } else {
+        content += '<img src="/static/img/misc/missing.png" class="circle-image stop-normal background-image"/>'
+	}
     if (isActiveLure) {
       if (pokestop.quest_type !== null) {
         content += '<img src="/static/img/' + icon + '" class="overlayImage" height="60" width="40"/><br>'
@@ -3013,7 +3016,7 @@ function getGymPopupContent (gym) {
   //GYM NAME
   var gymName = ""
   if (gym.name === null || gym.name === "") {
-    gymName = 'Unknown Gym Name'
+    gymName = 'New Gym - Unknown Name'
   } else {
     gymName = gym.name
   }
@@ -3088,7 +3091,9 @@ function getGymPopupContent (gym) {
              '</center>'  //END TITLE ROW
   }
   var hasGymUrl = gym.url !== null
-  var url = gym.url.replace("http://", "https://")
+  if (hasGymUrl) {
+    var url = gym.url.replace("http://", "https://")
+  }
   var teamClass = gym.team_id === 0
     ? "team-neutral"
     : gym.team_id === 1
@@ -3126,9 +3131,15 @@ function getGymPopupContent (gym) {
         content +=
         '<div class="col-4 col-md-4">' + //START 1ST COL
           '<br><a href="' + url + '" target="_blank"><img src="' + url + '" class="circle-image ' + teamClass + '" style="height:96px; width:96px;"></a>' +
-        '</div>'+ //END 1ST COL
+        '</div>' + //END 1ST COL
         '<img src="/static/img/' + icon + '" class="overlayImageRaid" height="80" width="48"/><br>'
-      }
+      } else {
+        content +=
+        '<div class="col-4 col-md-4">' + //START 1ST COL
+          '<br><a href="" target="_blank"><img src="/static/img/misc/missing.png" class="circle-image ' + teamClass + '" style="height:96px; width:96px;"></a>' +
+        '</div>' + //END 1ST COL
+        '<img src="/static/img/' + icon + '" class="overlayImageRaid" height="80" width="48"/><br>'
+	  }
     content +=
         '<div class="col-4 col-md-4 ' + (hasGymUrl ? 'text-center' : '') + ' center-vertical">' + //START 2ND COL
           '<div class="iv-label">' +
@@ -3177,6 +3188,18 @@ function getGymPopupContent (gym) {
         content +=
         '<div class="col-4 col-md-4">' + //START 1ST COL
           '<br><a href="' + url + '" target="_blank"><img src="' + url + '" class="circle-image ' + teamClass + '" style="height:96px; width:96px;"></a>' +
+        '</div>' //END 1ST COL
+        if (gym.in_battle) {
+        content += '<img src="/static/img/' + icon + '" class="overlayImageGymBattle" height="48" width="48"/><br>' +
+                   '<img src="/static/img/' + iconPokemon + '" class="overlayImageGymGuardBattle" height="20" width="20"/><br>'
+        } else {
+        content += '<img src="/static/img/' + icon + '" class="overlayImageGym" height="48" width="48"/><br>' +
+                   '<img src="/static/img/' + iconPokemon + '" class="overlayImageGymGuard" height="20" width="20"/><br>'
+        }
+      } else {
+        content +=
+        '<div class="col-4 col-md-4">' + //START 1ST COL
+          '<br><a href="" target="_blank"><img src="/static/img/misc/missing.png" class="circle-image ' + teamClass + '" style="height:96px; width:96px;"></a>' +
         '</div>' //END 1ST COL
         if (gym.in_battle) {
         content += '<img src="/static/img/' + icon + '" class="overlayImageGymBattle" height="48" width="48"/><br>' +
