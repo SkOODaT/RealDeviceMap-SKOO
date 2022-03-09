@@ -2460,7 +2460,8 @@ public class ApiRequestHandler {
             if instances != nil {
                 for instanceinfo in instances! {
                     var instanceData = [String: Any]()
-                    if instanceinfo.type == .circlePokemon  && instanceinfo.count != 0 || instanceinfo.type == .circleSmartPokemon && instanceinfo.count != 0 {
+                    if instanceinfo.type == .circlePokemon  && instanceinfo.count != 0 ||
+                       instanceinfo.type == .circleSmartPokemon && instanceinfo.count != 0 {
                         instanceData["name"] = instanceinfo.name
                         instanceData["count"] = instanceinfo.count
                         instanceData["type"] = instanceinfo.type
@@ -2482,7 +2483,8 @@ public class ApiRequestHandler {
             } else {
                 instanceString = "\(instanceRandom!)"
             }
-            Log.info(message: "[ApiRequestHandler] API request to scan next coordinates with instance '\(instanceString)'")
+            Log.info(message: "[ApiRequestHandler] API request to scan next coordinates" +
+                              " with instance '\(instanceString)'")
             guard let instance = InstanceController.global.getInstanceController(instanceName: instanceString)
                 as? CircleInstanceController else {
                     Log.error(message: "[ApiRequestHandler] Instance '\(instanceString)' not found")

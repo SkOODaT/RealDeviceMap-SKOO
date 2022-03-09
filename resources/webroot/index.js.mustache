@@ -3139,7 +3139,7 @@ function getGymPopupContent (gym) {
           '<br><a href="" target="_blank"><img src="/static/img/misc/missing.png" class="circle-image ' + teamClass + '" style="height:96px; width:96px;"></a>' +
         '</div>' + //END 1ST COL
         '<img src="/static/img/' + icon + '" class="overlayImageRaid" height="80" width="48"/><br>'
-	  }
+      }
     content +=
         '<div class="col-4 col-md-4 ' + (hasGymUrl ? 'text-center' : '') + ' center-vertical">' + //START 2ND COL
           '<div class="iv-label">' +
@@ -3299,7 +3299,7 @@ function getCellPopupContent (cell) {
   content += 'lat:' + cell.lat + '<br>'
   content += ' lon:' + cell.lon + '<br><br>'
 
-  url = 'api/set_data?scan_next=true&instance=&coords=[{%22lat%22:' + cell.lat + ',%22lon%22:' + cell.lon + '}]'
+  var url = 'api/set_data?scan_next=true&instance=&coords=[{%22lat%22:' + cell.lat + ',%22lon%22:' + cell.lon + '}]'
   content += '{{#perm_admin}}<a href="' + url + '" target="_blank" title="Send A worker">Send Worker Here</a href>{{/perm_admin}}<br><br>'
 
   const updatedDate = new Date(cell.updated * 1000)
