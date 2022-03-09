@@ -20,7 +20,8 @@ RUN apt-get -y update && apt-get install -y imagemagick && cp /usr/bin/convert /
 RUN apt-get -y update && apt-get install -y wget
 
 # MySQL Client
-RUN apt-get -y update && \
+RUN export DEBIAN_FRONTEND=noninteractive && \
+    apt-get -y update && \
 	apt-get install -y lsb-release mysql-client libmysqlclient-dev && \
 	sed -i -e 's/-fabi-version=2 -fno-omit-frame-pointer//g' /usr/lib/x86_64-linux-gnu/pkgconfig/mysqlclient.pc
 
