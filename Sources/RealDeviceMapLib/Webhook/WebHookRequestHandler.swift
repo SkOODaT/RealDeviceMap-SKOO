@@ -377,21 +377,21 @@ public class WebHookRequestHandler {
             InstanceController.global.gotPlayerInfo(username: username!, level: trainerLevel, xp: trainerXP)
         }
 
-        let targetCoord: CLLocationCoordinate2D?
+        let targetCoord: LocationCoordinate2D?
         var inArea = false
         if latTarget != nil && lonTarget != nil {
-            targetCoord = CLLocationCoordinate2D(latitude: latTarget!, longitude: lonTarget!)
+            targetCoord = LocationCoordinate2D(latitude: latTarget!, longitude: lonTarget!)
         } else {
             targetCoord = nil
         }
 
-        var pokemonCoords: CLLocationCoordinate2D?
+        var pokemonCoords: LocationCoordinate2D?
 
         if targetCoord != nil {
             for fort in forts {
                 InstanceController.global.gotFortData(fortData: fort.data, username: username)
                 if !inArea {
-                    let coord = CLLocationCoordinate2D(latitude: fort.data.latitude, longitude: fort.data.longitude)
+                    let coord = LocationCoordinate2D(latitude: fort.data.latitude, longitude: fort.data.longitude)
                     if coord.distance(to: targetCoord!) <= targetMaxDistance {
                         inArea = true
                     }
@@ -402,7 +402,7 @@ public class WebHookRequestHandler {
             for pokemon in wildPokemons {
                 if targetCoord != nil {
                     if !inArea {
-                        let coord = CLLocationCoordinate2D(latitude: pokemon.data.latitude,
+                        let coord = LocationCoordinate2D(latitude: pokemon.data.latitude,
                                                            longitude: pokemon.data.longitude)
                         if coord.distance(to: targetCoord!) <= targetMaxDistance {
                             inArea = true
@@ -414,7 +414,7 @@ public class WebHookRequestHandler {
                 if pokemonEncounterId != nil {
                     if pokemonCoords == nil {
                         if pokemon.data.encounterID.description == pokemonEncounterId {
-                            pokemonCoords = CLLocationCoordinate2D(latitude: pokemon.data.latitude,
+                            pokemonCoords = LocationCoordinate2D(latitude: pokemon.data.latitude,
                                                                    longitude: pokemon.data.longitude)
                         }
                     } else if pokemonCoords != nil && inArea {
@@ -494,7 +494,7 @@ public class WebHookRequestHandler {
                     }
                 } catch {}
 
-                let coords = CLLocationCoordinate2D(latitude: pokemon.data
+                let coords = LocationCoordinate2D(latitude: pokemon.data
                     .latitude, longitude: pokemon.data.longitude)
                 let distance = pokemonCoords!.distance(to: coords)
 
@@ -806,7 +806,7 @@ public class WebHookRequestHandler {
                         pokemon!.addEncounter(mysql: mysql, encounterData: encounter, username: username)
                         try? pokemon!.save(mysql: mysql, updateIV: true)
                     } else {
-                        let centerCoord = CLLocationCoordinate2D(latitude: encounter.pokemon.latitude,
+                        let centerCoord = LocationCoordinate2D(latitude: encounter.pokemon.latitude,
                                                                  longitude: encounter.pokemon.longitude)
                         let cellID = S2CellId(latlng: S2LatLng(coord: centerCoord)).parent(level: 15)
                         let newPokemon = Pokemon(
