@@ -3296,6 +3296,11 @@ function getCellPopupContent (cell) {
   let content = '<center>'
   content += '<h6><b>Level ' + cell.level + ' S2 Cell</b></h6>'
   content += '<b>Id:</b> ' + cell.id + '<br>'
+  content += 'lat:' + cell.lat + '<br>'
+  content += ' lon:' + cell.lon + '<br><br>'
+
+  url = 'api/set_data?scan_next=true&instance=&coords=[{%22lat%22:' + cell.lat + ',%22lon%22:' + cell.lon + '}]'
+  content += '{{#perm_admin}}<a href="' + url + '" target="_blank" title="Send A worker">Send Worker Here</a href>{{/perm_admin}}<br><br>'
 
   const updatedDate = new Date(cell.updated * 1000)
 

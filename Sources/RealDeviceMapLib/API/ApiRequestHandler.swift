@@ -2313,7 +2313,6 @@ public class ApiRequestHandler {
             let size = instance.getNextCoordsSize()
             data["size"] = size
         }
-
         do {
             if data.isEmpty {
                 response.respondWithError(status: .badRequest)
@@ -2451,14 +2450,46 @@ public class ApiRequestHandler {
                 response.respondWithError(status: .internalServerError)
             }
         } else if scanNext && perms.contains(.admin), let name = instance, let coords = coords {
-            Log.info(message: "[ApiRequestHandler] API request to scan next coordinates with instance '\(name)'")
-            guard let instance = InstanceController.global.getInstanceController(instanceName: name.decodeUrl() ?? "")
+
+            guard let mysql = DBController.global.mysql else {
+                response.respondWithError(status: .internalServerError)
+                return
+            }
+            var instanceArray = [[String: Any]]()
+            let instances = try? Instance.getAll(mysql: mysql, getData: false)
+            if instances != nil {
+                for instanceinfo in instances! {
+                    var instanceData = [String: Any]()
+                    if instanceinfo.type == .circlePokemon  && instanceinfo.count != 0 || instanceinfo.type == .circleSmartPokemon && instanceinfo.count != 0 {
+                        instanceData["name"] = instanceinfo.name
+                        instanceData["count"] = instanceinfo.count
+                        instanceData["type"] = instanceinfo.type
+                    }
+                    if instanceData["name"] != nil {
+                        instanceArray.append(instanceData)
+                    }
+                }
+            }
+            var nameArray = [Any?]()
+            for data in instanceArray {
+                let iname = data["name"]
+                nameArray.append(iname!)
+            }
+            let instanceRandom = nameArray.randomElement()!
+            var instanceString = String()
+            if !name.isEmpty {
+                instanceString = name
+            } else {
+                instanceString = "\(instanceRandom!)"
+            }
+            Log.info(message: "[ApiRequestHandler] API request to scan next coordinates with instance '\(instanceString)'")
+            guard let instance = InstanceController.global.getInstanceController(instanceName: instanceString)
                 as? CircleInstanceController else {
-                    Log.error(message: "[ApiRequestHandler] Instance '\(name)' not found")
+                    Log.error(message: "[ApiRequestHandler] Instance '\(instanceString)' not found")
                     return response.respondWithError(status: .custom(code: 404, message: "Instance not found"))
             }
-            if InstanceController.global.getDeviceUUIDsInInstance(instanceName: name.decodeUrl() ?? "").isEmpty {
-                Log.error(message: "[ApiRequestHandler] Instance '\(name)' without devices")
+            if InstanceController.global.getDeviceUUIDsInInstance(instanceName: instanceString).isEmpty {
+                Log.error(message: "[ApiRequestHandler] Instance '\(instanceString)' without devices")
                 return response.respondWithError(status: .custom(code: 416, message: "Instance without devices"))
             }
             var size = 0
@@ -2468,13 +2499,13 @@ public class ApiRequestHandler {
             do {
                 try response.respondWithData(data: [
                     "action": "next_scan",
+                    "instance": instanceString,
                     "size": size,
                     "timestamp": Int(Date().timeIntervalSince1970)
                 ])
             } catch {
                 response.respondWithError(status: .internalServerError)
             }
-
         } else {
             response.respondWithError(status: .badRequest)
         }

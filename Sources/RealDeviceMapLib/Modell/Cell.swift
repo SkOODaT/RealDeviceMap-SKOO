@@ -35,6 +35,8 @@ class Cell: JSONConvertibleObject {
         return [
             "id": id.description,
             "level": level,
+            "lat": centerLat,
+            "lon": centerLon,
             "updated": updated ?? 1,
             "polygon": polygon
         ]
