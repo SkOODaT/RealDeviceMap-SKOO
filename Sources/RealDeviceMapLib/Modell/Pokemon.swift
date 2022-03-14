@@ -109,7 +109,7 @@ public class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStri
             "pvp_rankings_great_league": pvpRankingsGreatLeague as Any,
             "pvp_rankings_ultra_league": pvpRankingsUltraLeague as Any,
             "is_event": isEvent,
-            "map_status": mapStatus as Any,
+            "map_status": mapStatus as Any
         ]
         return [
             "type": "pokemon",
@@ -166,10 +166,10 @@ public class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStri
     init(id: String, pokemonId: UInt16, lat: Double, lon: Double, spawnId: UInt64?, expireTimestamp: UInt32?,
          atkIv: UInt8?, defIv: UInt8?, staIv: UInt8?, move1: UInt16?, move2: UInt16?, gender: UInt8?, form: UInt16?,
          cp: UInt16?, level: UInt8?, weight: Double?, costume: UInt8?, size: Double?,
-         capture1: Double?, capture2: Double?, capture3: Double?, displayPokemonId: UInt16?, 
-         weather: UInt8?, shiny: Bool?, username: String?, pokestopId: String?, firstSeenTimestamp: UInt32?, 
+         capture1: Double?, capture2: Double?, capture3: Double?, displayPokemonId: UInt16?,
+         weather: UInt8?, shiny: Bool?, username: String?, pokestopId: String?, firstSeenTimestamp: UInt32?,
          updated: UInt32?, changed: UInt32?, cellId: UInt64?, expireTimestampVerified: Bool,
-         pvpRankingsGreatLeague: [[String: Any]]?, pvpRankingsUltraLeague: [[String: Any]]?, isEvent: Bool, 
+         pvpRankingsGreatLeague: [[String: Any]]?, pvpRankingsUltraLeague: [[String: Any]]?, isEvent: Bool,
          mapStatus: UInt8?) {
         self.id = id
         self.pokemonId = pokemonId
@@ -779,7 +779,7 @@ public class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStri
                 INSERT INTO pokemon (
                     id, pokemon_id, lat, lon, spawn_id, expire_timestamp, atk_iv, def_iv, sta_iv, move_1, move_2, cp,
                     level, weight, size, capture_1, capture_2, capture_3, shiny, display_pokemon_id,
-                    pvp_rankings_great_league, pvp_rankings_ultra_league, username, gender, 
+                    pvp_rankings_great_league, pvp_rankings_ultra_league, username, gender,
                     form, weather, costume, pokestop_id, updated, first_seen_timestamp, changed, cell_id,
                     expire_timestamp_verified, is_event, map_status
                 )
@@ -945,7 +945,7 @@ public class Pokemon: JSONConvertibleObject, WebHookEvent, Equatable, CustomStri
                 SET pokemon_id = ?, lat = ?, lon = ?, spawn_id = ?, expire_timestamp = ?, \(ivSQL) username = ?,
                     gender = ?, form = ?, weather = ?, costume = ?, pokestop_id = ?, updated = UNIX_TIMESTAMP(),
                     first_seen_timestamp = ?, changed = \(changedSQL), cell_id = ?, expire_timestamp_verified = ?,
-                    is_event = ?, map_status = ? 
+                    is_event = ?, map_status = ?
                 WHERE id = ? AND is_event = ?
             """
             self.updated = now
