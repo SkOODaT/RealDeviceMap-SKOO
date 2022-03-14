@@ -5,7 +5,6 @@
 //  Created by Florian Kostenzer on 18.09.18.
 //
 //  swiftlint:disable superfluous_disable_command file_length type_body_length
-
 import Foundation
 import PerfectLib
 import PerfectHTTP
@@ -109,6 +108,7 @@ public class ApiRequestHandler {
         let showQuests = request.param(name: "show_quests")?.toBool() ?? false
         let questFilterExclude = request.param(name: "quest_filter_exclude")?.jsonDecodeForceTry() as? [String]
         let showPokemon = request.param(name: "show_pokemon")?.toBool() ?? false
+        let pokemonFilterEventOnly = request.param(name: "pokemon_filter_event_only")?.toBool() ?? false
         let pokemonFilterExcludeArray = request.param(name: "pokemon_filter_exclude")?
             .jsonDecodeForceTry() as? [Any] ?? [Any]()
         var pokemonFilterExclude = [String]()
@@ -121,7 +121,6 @@ public class ApiRequestHandler {
             pokemonFilterExclude.append(String(key))
           }
         }
-        let pokemonFilterEventOnly = request.param(name: "pokemon_filter_event_only")?.toBool() ?? false
         let pokemonFilterIV = request.param(name: "pokemon_filter_iv")?.jsonDecodeForceTry() as? [String: String]
         let excludeCellPokemon = request.param(name: "pokemon_exclude_cell")?.toBool() ?? false
         let raidFilterExclude = request.param(name: "raid_filter_exclude")?.jsonDecodeForceTry() as? [String]
@@ -319,7 +318,6 @@ public class ApiRequestHandler {
                     "type": miscString
                 ])
             }
-
             if !Pokemon.noCellPokemon {
                 let filter = """
                     <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -769,7 +767,26 @@ public class ApiRequestHandler {
             </div>
             """
 
-            let size = ""
+           let size = """
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <label class="btn btn-sm btn-size select-button-new" data-id="timers"
+             data-type="raid-timers" data-info="small" disabled>
+            <input type="radio" name="options" id="hide" autocomplete="off">\(smallString)
+            </label>
+            <label class="btn btn-sm btn-size select-button-new" data-id="timers"
+             data-type="raid-timers" data-info="normal" disabled>
+            <input type="radio" name="options" id="show" autocomplete="off">\(normalString)
+            </label>
+            <label class="btn btn-sm btn-size select-button-new" data-id="timers"
+             data-type="raid-timers" data-info="large" disabled>
+            <input type="radio" name="options" id="show" autocomplete="off">\(largeString)
+            </label>
+            <label class="btn btn-sm btn-size select-button-new" data-id="timers"
+             data-type="raid-timers" data-info="huge" disabled>
+            <input type="radio" name="options" id="show" autocomplete="off">\(hugeString)
+            </label>
+            </div>
+            """
 
             raidData.append([
                 "id": [
@@ -1826,10 +1843,7 @@ public class ApiRequestHandler {
                             "<a href=\"/dashboard/devicegroup/edit/\(id)\" " +
                             "role=\"button\" class=\"btn btn-primary\">Edit</a>" +
                             "<a href=\"/dashboard/devicegroup/delete/\(id)\" " +
-                            "role=\"button\" class=\"btn btn-danger\" onclick=\"return " +
-                            "confirm('Are you sure you want to delete this device " +
-                            "group? This action is irreversible and cannot be " +
-                            "undone without backups.')\">Delete</a>>Delete</a></div>"
+                            "role=\"button\" class=\"btn btn-danger\">Delete</a></div>"
                     } else {
                         deviceGroupData["instances"] = instances
                         deviceGroupData["devices"] = deviceGroup.deviceUUIDs
@@ -1886,10 +1900,7 @@ public class ApiRequestHandler {
                             "<a href=\"/dashboard/assignment/edit/\(assignment.id!)\" " +
                             "role=\"button\" class=\"btn btn-primary\">Edit</a>" +
                             "<a href=\"/dashboard/assignment/delete/\(assignment.id!)\" " +
-                            "role=\"button\" class=\"btn btn-danger\" onclick=\"return " +
-                            "confirm('Are you sure you want to delete this assignment? " +
-                            "This action is irreversible and cannot be " +
-                            "undone without backups.')\">Delete</a>>Delete</a></div>"
+                            "role=\"button\" class=\"btn btn-danger\">Delete</a></div>"
                     } else {
                         assignmentData["time"] = assignment.time as Any
                     }
@@ -1972,10 +1983,7 @@ public class ApiRequestHandler {
                         "<a href=\"/dashboard/webhook/edit/\(webhook.name.encodeUrl()!)\" role=\"button\" " +
                         "class=\"btn btn-primary\">Edit</a>" +
                         "<a href=\"/dashboard/webhook/delete/\(webhook.name.encodeUrl()!)\" role=\"button\" " +
-                        "class=\"btn btn-danger\" onclick=\"return " +
-                        "confirm('Are you sure you want to delete this webhook? " +
-                        "This action is irreversible and cannot be " +
-                        "undone without backups.')\">Delete</a></div>"
+                        "class=\"btn btn-danger\">Delete</a></div>"
                     }
                     jsonArray.append(webhookData)
                 }

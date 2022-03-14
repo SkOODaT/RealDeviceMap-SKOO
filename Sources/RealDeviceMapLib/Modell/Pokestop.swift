@@ -6,7 +6,6 @@
 //
 //  swiftlint:disable:next superfluous_disable_command
 //  swiftlint:disable file_length type_body_length function_body_length cyclomatic_complexity force_cast
-
 import Foundation
 import PerfectLib
 import PerfectMySQL
@@ -267,7 +266,6 @@ public class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
             self.powerUpLevel = 0
         }
 
-        self.powerUpEndTimestamp = UInt32(fortData.powerUpRemainingUntilMs / 1000)
         let lastModifiedTimestamp = UInt32(fortData.lastModifiedMs / 1000)
         if fortData.activeFortModifier.contains(.troyDisk) ||
             fortData.activeFortModifier.contains(.troyDiskGlacial) ||
@@ -307,7 +305,6 @@ public class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
             }
             self.url = url
         }
-
         let name = fortData.name
         if self.name != name {
             hasChanges = true
@@ -805,7 +802,7 @@ public class Pokestop: JSONConvertibleObject, WebHookEvent, Hashable {
             for filter in pokestopFilterExclude! {
                 if filter.contains(string: "normal") {
                     excludeNormal = true
-                } else if showLures && filter.contains(string: "l") && !filter.contains(string: "leaders") {
+                } else if showLures && filter.contains(string: "l") {
                     if let id = filter.stringByReplacing(string: "l", withString: "").toInt() {
                         excludedLures.append(id + 500)
                     }
