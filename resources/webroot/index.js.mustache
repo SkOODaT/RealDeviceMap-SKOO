@@ -2588,7 +2588,12 @@ function getPokemonPopupContent (pokemon) {
         content += '<b>Charge:</b> ' + getMoveName(pokemon.move_2) + '<br>'
       }
       if (pokemon.height !== null && pokemon.weight !== null) {
-        content += '<b>Size:</b> ' + getSize(pokemon.size) + ' | <b>Weight:</b> ' + Math.round(pokemon.weight) + 'kg<br>'
+        if (pokemon.baseHeight !== null) {
+          content += '<b>Size:</b> ' + (pokemon.size).toFixed(2) + getSize(pokemon.size, pokemon.baseHeight) + '<br>'
+        } else {
+          content += '<b>Size:</b> ' + (pokemon.size).toFixed(2) + ' m<br>'
+        }
+        content += '<b>Weight:</b> ' + (pokemon.weight).toFixed(2) + ' kg<br>'
       }
       if (pokemon.catch_1 !== null && pokemon.catch_1 !== null) {
         content += '<b>Catch Chances:</b><br>'
@@ -5305,7 +5310,7 @@ function getSize (value, baseValue) {
       return " XS"
     }
   } else {
-    return "m"
+    return " m"
   }
 }
 
