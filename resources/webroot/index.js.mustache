@@ -3066,15 +3066,14 @@ function getGymPopupContent (gym) {
   let guardtypesIcon = ''
   if (hasGuard && !hasRaidBoss) {
     //let types = pokemonDb[gym.guard_pokemon_id].types
-    var pkmn = pokemonDb[gym.guard_pokemon_id]
-    var formInfo = 0//pkmn.forms[gym.raid_pokemon_form]
+    var gpkmn = pokemonDb[gym.guard_pokemon_id]
+    var gformInfo = 0//pkmn.forms[gym.raid_pokemon_form]
     var types
-    if (formInfo && formInfo.types) {
-      types = formInfo.types
+    if (gformInfo && gformInfo.types) {
+      types = gformInfo.types
     } else {
-      types = pkmn.types
+      types = gpkmn.types
     }
-	
     if (types !== null && types.length > 0) {
       if (types.length === 2) {
         guardtypesIcon += '<b>' + types[0] + '</b><img src="/static/img/type/' + types[0].toLowerCase() + '.png" height="16" width="16">&nbsp;'
@@ -3090,13 +3089,13 @@ function getGymPopupContent (gym) {
   let raidtypesIcon = ''
   if (hasRaidBoss) {
     //let types = pokemonDb[gym.raid_pokemon_id].types
-    var pkmn = pokemonDb[gym.raid_pokemon_id]
-    var formInfo = pkmn.forms[gym.raid_pokemon_form]
+    var rpkmn = pokemonDb[gym.raid_pokemon_id]
+    var rformInfo = pkmn.forms[gym.raid_pokemon_form]
     var types
-    if (formInfo && formInfo.types) {
-      types = formInfo.types
+    if (rformInfo && rformInfo.types) {
+      types = rformInfo.types
     } else {
-      types = pkmn.types
+      types = rpkmn.types
     }
     if (types !== null && types.length > 0) {
       if (types.length === 2) {
