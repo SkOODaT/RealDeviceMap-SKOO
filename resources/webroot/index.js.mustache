@@ -2539,21 +2539,29 @@ function getPokemonPopupContent (pokemon) {
   } else {
     weatherIcon = ''
   }
-  let types = pokemonDb[pokemon.pokemon_id].types
+  //let types = pokemonDb[pokemon.pokemon_id].types
+  var pkmn = pokemonDb[pokemon.pokemon_id]
+  var formInfo = pkmn.forms[pokemon.form]
+  var types
+  if (formInfo && formInfo.types) {
+    types = formInfo.types
+  } else {
+    types = pkmn.types
+  }
   let typesIcon
   if (types !== null && types.length > 0) {
     if (types.length === 2) {
-      typesIcon = '<img src="/static/img/type/' + types[0].type.toLowerCase() + '.png" height="16" width="16">&nbsp;'
-      typesIcon += '<img src="/static/img/type/' + types[1].type.toLowerCase() + '.png" height="16" width="16">'
+      typesIcon = '<img src="/static/img/type/' + types[0].toLowerCase() + '.png" height="16" width="16">&nbsp;'
+      typesIcon += '<img src="/static/img/type/' + types[1].toLowerCase() + '.png" height="16" width="16">'
     } else if (types.length === 1) {
-      typesIcon = '<img src="/static/img/type/' + types[0].type.toLowerCase() + '.png" height="16" width="16">'
+      typesIcon = '<img src="/static/img/type/' + types[0].toLowerCase() + '.png" height="16" width="16">'
     } else {
       typesIcon = ''
     }
   }
   //TIP START
   content +=
-  '<div style="background-image: url(/static/img/background/' + types[0].type.toLowerCase() + '.png); background-size: cover; border-radius: 12px; background-repeat: no-repeat; background-position: center bottom; background-color: #009FDD;">' +
+  '<div style="background-image: url(/static/img/background/' + types[0].toLowerCase() + '.png); background-size: cover; border-radius: 12px; background-repeat: no-repeat; background-position: center bottom; background-color: #009FDD;">' +
     '<center>' + //START TITLE ROW
       '<div class="title-label">' +
         '<h6><b>' + pokemonName + ' ' + getGenderIcon(pokemon.gender) + ' ' + typesIcon + ' ' + weatherIcon + '</b></h6>' +
@@ -3034,7 +3042,16 @@ function getGymPopupContent (gym) {
     wtypes = weatherTypes[gym.gym_weather].types
     wname = weatherTypes[gym.gym_weather].name
     if (hasRaidBoss) {
-      let ptypes = pokemonDb[gym.raid_pokemon_id].types
+      //let ptypes = pokemonDb[gym.raid_pokemon_id].types
+      var pkmn = pokemonDb[gym.raid_pokemon_id]
+      var formInfo = pkmn.forms[gym.raid_pokemon_form]
+      var types
+      if (formInfo && formInfo.types) {
+        types = formInfo.types
+      } else {
+        types = pkmn.types
+      }
+      let ptypes = types
       compare = isWeatherBoosted(ptypes, wtypes)
     }
     if (compare !== false) {
@@ -3048,13 +3065,22 @@ function getGymPopupContent (gym) {
   //GUARD TYPE ICONS
   let guardtypesIcon = ''
   if (hasGuard && !hasRaidBoss) {
-    let types = pokemonDb[gym.guard_pokemon_id].types
+    //let types = pokemonDb[gym.guard_pokemon_id].types
+    var pkmn = pokemonDb[gym.guard_pokemon_id]
+    var formInfo = 0//pkmn.forms[gym.raid_pokemon_form]
+    var types
+    if (formInfo && formInfo.types) {
+      types = formInfo.types
+    } else {
+      types = pkmn.types
+    }
+	
     if (types !== null && types.length > 0) {
       if (types.length === 2) {
-        guardtypesIcon += '<b>' + types[0].type + '</b><img src="/static/img/type/' + types[0].type.toLowerCase() + '.png" height="16" width="16">&nbsp;'
-        guardtypesIcon += '<b>' + types[1].type + '</b><img src="/static/img/type/' + types[1].type.toLowerCase() + '.png" height="16" width="16">'
+        guardtypesIcon += '<b>' + types[0] + '</b><img src="/static/img/type/' + types[0].toLowerCase() + '.png" height="16" width="16">&nbsp;'
+        guardtypesIcon += '<b>' + types[1] + '</b><img src="/static/img/type/' + types[1].toLowerCase() + '.png" height="16" width="16">'
       } else if (types.length === 1) {
-        guardtypesIcon += '<b>' + types[0].type + '</b><img src="/static/img/type/' + types[0].type.toLowerCase() + '.png" height="16" width="16">'
+        guardtypesIcon += '<b>' + types[0] + '</b><img src="/static/img/type/' + types[0].toLowerCase() + '.png" height="16" width="16">'
       } else {
         guardtypesIcon = ''
       }
@@ -3063,13 +3089,21 @@ function getGymPopupContent (gym) {
   //RAID TYPE ICONS
   let raidtypesIcon = ''
   if (hasRaidBoss) {
-    let types = pokemonDb[gym.raid_pokemon_id].types
+    //let types = pokemonDb[gym.raid_pokemon_id].types
+    var pkmn = pokemonDb[gym.raid_pokemon_id]
+    var formInfo = pkmn.forms[gym.raid_pokemon_form]
+    var types
+    if (formInfo && formInfo.types) {
+      types = formInfo.types
+    } else {
+      types = pkmn.types
+    }
     if (types !== null && types.length > 0) {
       if (types.length === 2) {
-        raidtypesIcon += '<b>' + types[0].type + '</b><img src="/static/img/type/' + types[0].type.toLowerCase() + '.png" height="16" width="16">&nbsp;'
-        raidtypesIcon += '<b>' + types[1].type + '</b><img src="/static/img/type/' + types[1].type.toLowerCase() + '.png" height="16" width="16">'
+        raidtypesIcon += '<b>' + types[0] + '</b><img src="/static/img/type/' + types[0].toLowerCase() + '.png" height="16" width="16">&nbsp;'
+        raidtypesIcon += '<b>' + types[1] + '</b><img src="/static/img/type/' + types[1].toLowerCase() + '.png" height="16" width="16">'
       } else if (types.length === 1) {
-        raidtypesIcon += '<b>' + types[0].type + '</b><img src="/static/img/type/' + types[0].type.toLowerCase() + '.png" height="16" width="16">'
+        raidtypesIcon += '<b>' + types[0] + '</b><img src="/static/img/type/' + types[0].toLowerCase() + '.png" height="16" width="16">'
       } else {
         raidtypesIcon = ''
       }
