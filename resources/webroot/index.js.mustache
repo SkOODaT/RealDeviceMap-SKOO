@@ -3068,18 +3068,18 @@ function getGymPopupContent (gym) {
     //let types = pokemonDb[gym.guard_pokemon_id].types
     var gpkmn = pokemonDb[gym.guard_pokemon_id]
     var gformInfo = 0//pkmn.forms[gym.raid_pokemon_form]
-    var types
+    var gtypes
     if (gformInfo && gformInfo.types) {
-      types = gformInfo.types
+      gtypes = gformInfo.types
     } else {
-      types = gpkmn.types
+      gtypes = gpkmn.types
     }
-    if (types !== null && types.length > 0) {
-      if (types.length === 2) {
-        guardtypesIcon += '<b>' + types[0] + '</b><img src="/static/img/type/' + types[0].toLowerCase() + '.png" height="16" width="16">&nbsp;'
-        guardtypesIcon += '<b>' + types[1] + '</b><img src="/static/img/type/' + types[1].toLowerCase() + '.png" height="16" width="16">'
-      } else if (types.length === 1) {
-        guardtypesIcon += '<b>' + types[0] + '</b><img src="/static/img/type/' + types[0].toLowerCase() + '.png" height="16" width="16">'
+    if (gtypes !== null && gtypes.length > 0) {
+      if (gtypes.length === 2) {
+        guardtypesIcon += '<b>' + gtypes[0] + '</b><img src="/static/img/type/' + gtypes[0].toLowerCase() + '.png" height="16" width="16">&nbsp;'
+        guardtypesIcon += '<b>' + gtypes[1] + '</b><img src="/static/img/type/' + gtypes[1].toLowerCase() + '.png" height="16" width="16">'
+      } else if (gtypes.length === 1) {
+        guardtypesIcon += '<b>' + gtypes[0] + '</b><img src="/static/img/type/' + gtypes[0].toLowerCase() + '.png" height="16" width="16">'
       } else {
         guardtypesIcon = ''
       }
@@ -3091,18 +3091,18 @@ function getGymPopupContent (gym) {
     //let types = pokemonDb[gym.raid_pokemon_id].types
     var rpkmn = pokemonDb[gym.raid_pokemon_id]
     var rformInfo = pkmn.forms[gym.raid_pokemon_form]
-    var types
+    var rtypes
     if (rformInfo && rformInfo.types) {
-      types = rformInfo.types
+      rtypes = rformInfo.types
     } else {
-      types = rpkmn.types
+      rtypes = rpkmn.types
     }
-    if (types !== null && types.length > 0) {
-      if (types.length === 2) {
-        raidtypesIcon += '<b>' + types[0] + '</b><img src="/static/img/type/' + types[0].toLowerCase() + '.png" height="16" width="16">&nbsp;'
-        raidtypesIcon += '<b>' + types[1] + '</b><img src="/static/img/type/' + types[1].toLowerCase() + '.png" height="16" width="16">'
-      } else if (types.length === 1) {
-        raidtypesIcon += '<b>' + types[0] + '</b><img src="/static/img/type/' + types[0].toLowerCase() + '.png" height="16" width="16">'
+    if (rtypes !== null && rtypes.length > 0) {
+      if (rtypes.length === 2) {
+        raidtypesIcon += '<b>' + rtypes[0] + '</b><img src="/static/img/type/' + rtypes[0].toLowerCase() + '.png" height="16" width="16">&nbsp;'
+        raidtypesIcon += '<b>' + rtypes[1] + '</b><img src="/static/img/type/' + rtypes[1].toLowerCase() + '.png" height="16" width="16">'
+      } else if (rtypes.length === 1) {
+        raidtypesIcon += '<b>' + rtypes[0] + '</b><img src="/static/img/type/' + rtypes[0].toLowerCase() + '.png" height="16" width="16">'
       } else {
         raidtypesIcon = ''
       }
