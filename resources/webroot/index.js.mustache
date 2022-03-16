@@ -3064,7 +3064,7 @@ function getGymPopupContent (gym) {
   let iconPokemon = 'pokemon/' + gym.guard_pokemon_id + '.png'
   //GUARD TYPE ICONS
   let guardtypesIcon = ''
-  if (hasGuard && !hasRaidBoss) {
+  if (hasGuard) {
     //let types = pokemonDb[gym.guard_pokemon_id].types
     var gpkmn = pokemonDb[gym.guard_pokemon_id]
     var gformInfo = 0//pkmn.forms[gym.raid_pokemon_form]
