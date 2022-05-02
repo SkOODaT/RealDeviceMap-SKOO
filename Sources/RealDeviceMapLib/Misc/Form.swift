@@ -2209,7 +2209,7 @@ extension PokemonDisplayProto.Form {
         .silvallyRock,
         .silvallySteel,
         .silvallyWater,
-        .miniorMeteor,
+        .miniorMeteorBlue,
         .miniorBlue,
         .miniorGreen,
         .miniorIndigo,
@@ -4448,7 +4448,7 @@ extension PokemonDisplayProto.Form {
         case .silvallyRock: return ["773-2704"]
         case .silvallySteel: return ["773-2705"]
         case .silvallyWater: return ["773-2706"]
-        case .miniorMeteor: return ["774-2707"]
+        case .miniorMeteorBlue: return ["774-2707"]
         case .miniorBlue: return ["774-2708"]
         case .miniorGreen: return ["774-2709"]
         case .miniorIndigo: return ["774-2710"]
