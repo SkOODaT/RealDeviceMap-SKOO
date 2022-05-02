@@ -1176,6 +1176,7 @@ public class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
             new.arScanEligible != old.arScanEligible ||
             new.powerUpPoints != old.powerUpPoints ||
             new.powerUpEndTimestamp != old.powerUpEndTimestamp ||
+            new.gymWeather != old.gymWeather ||
             fabs(new.lat - old.lat) >= 0.000001 ||
             fabs(new.lon - old.lon) >= 0.000001
     }
