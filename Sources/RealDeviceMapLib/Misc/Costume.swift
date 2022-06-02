@@ -64,7 +64,9 @@ extension PokemonDisplayProto.Costume {
         .gems22021Noevolve,
         .holiday2021Noevolve,
         .tcg2022Noevolve,
-        .jan2022Noevolve
+        .jan2022Noevolve,
+        .gofest2022Noevolve,
+        .anniversary2022Noevolve
     ]
 
     static var allCostumesInString: [String] {
@@ -133,6 +135,8 @@ extension PokemonDisplayProto.Costume {
         case .holiday2021Noevolve: return ["52"]
         case .tcg2022Noevolve: return ["53"]
         case .jan2022Noevolve: return ["54"]
+        case .gofest2022Noevolve: return ["55"]
+        case .anniversary2022Noevolve: return ["56"]
         case .unset: return []
         case .UNRECOGNIZED: return []
         default:

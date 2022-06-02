@@ -2237,7 +2237,76 @@ extension PokemonDisplayProto.Form {
         .enteiS,
         .suicuneS,
         .slowking2022,
-        .electrodeHisuian
+        .electrodeHisuian,
+        .pikachuFlyingOkinawa,
+        .rockruffDusk,
+        .miniorMeteorGreen,
+        .miniorMeteorIndigo,
+        .miniorMeteorOrange,
+        .miniorMeteorRed,
+        .miniorMeteorViolet,
+        .miniorMeteorYellow,
+        .scatterbugArchipelago,
+        .scatterbugContinental,
+        .scatterbugElegant,
+        .scatterbugFancy,
+        .scatterbugGarden,
+        .scatterbugHighPlains,
+        .scatterbugIcySnow,
+        .scatterbugJungle,
+        .scatterbugMarine,
+        .scatterbugMeadow,
+        .scatterbugModern,
+        .scatterbugMonsoon,
+        .scatterbugOcean,
+        .scatterbugPokeball,
+        .scatterbugPolar,
+        .scatterbugRiver,
+        .scatterbugSandstorm,
+        .scatterbugSavanna,
+        .scatterbugSun,
+        .scatterbugTundra,
+        .spewpaArchipelago,
+        .spewpaContinental,
+        .spewpaElegant,
+        .spewpaFancy,
+        .spewpaGarden,
+        .spewpaHighPlains,
+        .spewpaIcySnow,
+        .spewpaJungle,
+        .spewpaMarine,
+        .spewpaMeadow,
+        .spewpaModern,
+        .spewpaMonsoon,
+        .spewpaOcean,
+        .spewpaPokeball,
+        .spewpaPolar,
+        .spewpaRiver,
+        .spewpaSandstorm,
+        .spewpaSavanna,
+        .spewpaSun,
+        .spewpaTundra,
+        .decidueyeHisuian,
+        .typhlosionHisuian,
+        .samurottHisuian,
+        .qwilfishHisuian,
+        .lilligantHisuian,
+        .sliggooHisuian,
+        .goodraHisuian,
+        .growlitheHisuian,
+        .arcanineHisuian,
+        .sneaselHisuian,
+        .avaluggHisuian,
+        .zoruaHisuian,
+        .zoroarkHisuian,
+        .braviaryHisuian,
+        .moltresGalarian,
+        .zapdosGalarian,
+        .articunoGalarian,
+        .enamorusIncarnate,
+        .enamorusTherian,
+        .basculinWhiteStriped,
+        .pikachuGofest2022
     ]
 
     static var allFormsInString: [String] {
@@ -4476,7 +4545,76 @@ extension PokemonDisplayProto.Form {
         case .enteiS: return ["244-2732"]
         case .suicuneS: return ["245-2733"]
         case .slowking2022: return ["199-2734"]
-		case .electrodeHisuian: return ["101-2735"]
+        case .electrodeHisuian: return ["101-2735"]
+        case .pikachuFlyingOkinawa: return ["25-2736"]
+        case .rockruffDusk: return ["744-2737"]
+        case .miniorMeteorGreen: return ["774-2739"]
+        case .miniorMeteorIndigo: return ["774-2740"]
+        case .miniorMeteorOrange: return ["774-2741"]
+        case .miniorMeteorRed: return ["774-2742"]
+        case .miniorMeteorViolet: return ["774-2743"]
+        case .miniorMeteorYellow: return ["774-2744"]
+        case .scatterbugArchipelago: return ["664-2745"]
+        case .scatterbugContinental: return ["664-2746"]
+        case .scatterbugElegant: return ["664-2747"]
+        case .scatterbugFancy: return ["664-2748"]
+        case .scatterbugGarden: return ["664-2749"]
+        case .scatterbugHighPlains: return ["664-2750"]
+        case .scatterbugIcySnow: return ["664-2751"]
+        case .scatterbugJungle: return ["664-2752"]
+        case .scatterbugMarine: return ["664-2753"]
+        case .scatterbugMeadow: return ["664-2754"]
+        case .scatterbugModern: return ["664-2755"]
+        case .scatterbugMonsoon: return ["664-2756"]
+        case .scatterbugOcean: return ["664-2757"]
+        case .scatterbugPokeball: return ["664-2758"]
+        case .scatterbugPolar: return ["664-2759"]
+        case .scatterbugRiver: return ["664-2760"]
+        case .scatterbugSandstorm: return ["664-2761"]
+        case .scatterbugSavanna: return ["664-2762"]
+        case .scatterbugSun: return ["664-2763"]
+        case .scatterbugTundra: return ["664-2764"]
+        case .spewpaArchipelago: return ["665-2765"]
+        case .spewpaContinental: return ["665-2766"]
+        case .spewpaElegant: return ["665-2767"]
+        case .spewpaFancy: return ["665-2768"]
+        case .spewpaGarden: return ["665-2769"]
+        case .spewpaHighPlains: return ["665-2770"]
+        case .spewpaIcySnow: return ["665-2771"]
+        case .spewpaJungle: return ["665-2772"]
+        case .spewpaMarine: return ["665-2773"]
+        case .spewpaMeadow: return ["665-2774"]
+        case .spewpaModern: return ["665-2775"]
+        case .spewpaMonsoon: return ["665-2776"]
+        case .spewpaOcean: return ["665-2777"]
+        case .spewpaPokeball: return ["665-2778"]
+        case .spewpaPolar: return ["665-2779"]
+        case .spewpaRiver: return ["665-2780"]
+        case .spewpaSandstorm: return ["665-2781"]
+        case .spewpaSavanna: return ["665-2782"]
+        case .spewpaSun: return ["665-2783"]
+        case .spewpaTundra: return ["665-2784"]
+        case .decidueyeHisuian: return ["724-2785"]
+        case .typhlosionHisuian: return ["157-2786"]
+        case .samurottHisuian: return ["503-2787"]
+        case .qwilfishHisuian: return ["211-2788"]
+        case .lilligantHisuian: return ["549-2789"]
+        case .sliggooHisuian: return ["705-2790"]
+        case .goodraHisuian: return ["706-2791"]
+        case .growlitheHisuian: return ["58-2792"]
+        case .arcanineHisuian: return ["59-2793"]
+        case .sneaselHisuian: return ["215-2794"]
+        case .avaluggHisuian: return ["713-2795"]
+        case .zoruaHisuian: return ["570-2796"]
+        case .zoroarkHisuian: return ["571-2797"]
+        case .braviaryHisuian: return ["628-2798"]
+        case .moltresGalarian: return ["146-2799"]
+        case .zapdosGalarian: return ["145-2800"]
+        case .articunoGalarian: return ["144-2801"]
+        case .enamorusIncarnate: return ["905-2802"]
+        case .enamorusTherian: return ["905-2803"]
+        case .basculinWhiteStriped: return ["550-2804"]
+        case .pikachuGofest2022: return ["25-2805"]
         case .unset: return []
         case .UNRECOGNIZED: return []
         default:
