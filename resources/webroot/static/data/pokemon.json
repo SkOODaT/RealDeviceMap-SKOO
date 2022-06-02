@@ -1,5 +1,5 @@
 {
-"1": {
+    "1": {
       "name": "Bulbasaur",
       "forms": {
         "163": {},
@@ -10519,5 +10519,118 @@
         "Grass",
         "Psychic"
       ]
+    },
+    "899": {
+      "name": "Wyrdeer",
+      "types": [],
+      "forms": {
+        "0": {}
+      }
+    },
+    "900": {
+      "name": "Kleavor",
+      "types": [],
+      "forms": {
+        "0": {}
+      }
+    },
+    "901": {
+      "name": "Ursaluna",
+      "types": [],
+      "forms": {
+        "0": {}
+      }
+    },
+    "902": {
+      "name": "Basculegion",
+      "types": [],
+      "forms": {
+        "0": {}
+      }
+    },
+    "903": {
+      "name": "Sneasler",
+      "types": [],
+      "forms": {
+        "0": {}
+      }
+    },
+    "904": {
+      "name": "Overqwil",
+      "types": [],
+      "forms": {
+        "0": {}
+      }
+    },
+    "905": {
+      "name": "Enamorus",
+      "types": [],
+      "forms": {
+        "2802": {},
+        "2803": {}
+      }
+    },
+    "906": {
+      "name": "Sprigatito",
+      "types": [],
+      "forms": {
+        "0": {}
+      }
+    },
+    "907": {
+      "name": "Sprigatito EVO",
+      "types": [],
+      "forms": {
+        "0": {}
+      }
+    },
+    "908": {
+      "name": "Sprigatito EVO",
+      "types": [],
+      "forms": {
+        "0": {}
+      }
+    },
+    "909": {
+      "name": "Fuecoco",
+      "types": [],
+      "forms": {
+        "0": {}
+      }
+    },
+    "910": {
+      "name": "Fuecoco EVO",
+      "types": [],
+      "forms": {
+        "0": {}
+      }
+    },
+    "911": {
+      "name": "Fuecoco EVO",
+      "types": [],
+      "forms": {
+        "0": {}
+      }
+    },
+    "912": {
+      "name": "Quaxly",
+      "types": [],
+      "forms": {
+        "0": {}
+      }
+    },
+    "913": {
+      "name": "Quaxly EVO",
+      "types": [],
+      "forms": {
+        "0": {}
+      }
+    },
+    "914": {
+      "name": "Quaxly EVO",
+      "types": [],
+      "forms": {
+        "0": {}
+      }
     }
 }
