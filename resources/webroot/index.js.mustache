@@ -3061,13 +3061,18 @@ function getGymPopupContent (gym) {
   //MAIN ICONS
   let ts = Math.round((new Date()).getTime() / 1000)
   let icon = getPopupGymMarkerIcon(gym, ts)
-  let iconPokemon = 'pokemon/' + gym.guard_pokemon_id + '.png'
+  var iconPokemon
+  if (gym.guard_pokemon_form) {
+      iconPokemon = 'pokemon/' + gym.guard_pokemon_id + '-' + gym.guard_pokemon_form + '.png'
+  } else {
+      iconPokemon = 'pokemon/' + gym.guard_pokemon_id + '.png'
+  }
   //GUARD TYPE ICONS
   let guardtypesIcon = ''
   if (hasGuard) {
     //let types = pokemonDb[gym.guard_pokemon_id].types
     var gpkmn = pokemonDb[gym.guard_pokemon_id]
-    var gformInfo = 0//pkmn.forms[gym.raid_pokemon_form]
+    var gformInfo = gpkmn.forms[gym.guard_pokemon_form]
     var gtypes
     if (gformInfo && gformInfo.types) {
       gtypes = gformInfo.types
@@ -3090,7 +3095,7 @@ function getGymPopupContent (gym) {
   if (hasRaidBoss) {
     //let types = pokemonDb[gym.raid_pokemon_id].types
     var rpkmn = pokemonDb[gym.raid_pokemon_id]
-    var rformInfo = pkmn.forms[gym.raid_pokemon_form]
+    var rformInfo = rpkmn.forms[gym.raid_pokemon_form]
     var rtypes
     if (rformInfo && rformInfo.types) {
       rtypes = rformInfo.types
@@ -3261,7 +3266,7 @@ function getGymPopupContent (gym) {
           '<b>Team:</b> ' + getTeamName(gym.team_id) + '<br>' +
           '<b>Slots Available:</b> ' + (gym.available_slots === 0 ? "Full" : gym.available_slots === 6 ? "Empty" : gym.available_slots) + '<br>'
           if (hasGuard) {
-            content += '<b>Guard:</b> ' + getPokemonName(gym.guard_pokemon_id) + '<br>'
+            content += '<b>Guard:</b> ' + getPokemonNameString(gym.guard_pokemon_id, gym.guard_pokemon_form, null, null) + '<br>'
           }
           if (guardtypesIcon) {
             content += '' + guardtypesIcon + '<br>'
