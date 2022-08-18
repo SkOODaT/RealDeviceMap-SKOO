@@ -2306,7 +2306,18 @@ extension PokemonDisplayProto.Form {
         .enamorusIncarnate,
         .enamorusTherian,
         .basculinWhiteStriped,
-        .pikachuGofest2022
+        .pikachuGofest2022,
+        .pikachuWcs2022,
+        .basculegionNormal,
+        .basculegionFemale,
+        .decidueyeNormal,
+        .sliggooNormal,
+        .goodraNormal,
+        .avaluggNormal,
+        .pikachuTshirt01,
+        .pikachuTshirt02,
+        .pikachuFlying01,
+        .pikachuFlying02
     ]
 
     static var allFormsInString: [String] {
@@ -4615,6 +4626,17 @@ extension PokemonDisplayProto.Form {
         case .enamorusTherian: return ["905-2803"]
         case .basculinWhiteStriped: return ["550-2804"]
         case .pikachuGofest2022: return ["25-2805"]
+        case .pikachuWcs2022: return ["25-2806"]
+        case .basculegionNormal: return ["25-2807"]
+        case .basculegionFemale: return ["25-2808"]
+        case .decidueyeNormal: return ["25-2809"]
+        case .sliggooNormal: return ["25-2810"]
+        case .goodraNormal: return ["25-2811"]
+        case .avaluggNormal: return ["25-2812"]
+        case .pikachuTshirt01: return ["25-2813"]
+        case .pikachuTshirt02: return ["25-2814"]
+        case .pikachuFlying01: return ["25-2815"]
+        case .pikachuFlying02: return ["25-2816"]
         case .unset: return []
         case .UNRECOGNIZED: return []
         default:
