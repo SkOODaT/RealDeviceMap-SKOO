@@ -66,7 +66,11 @@ extension PokemonDisplayProto.Costume {
         .tcg2022Noevolve,
         .jan2022Noevolve,
         .gofest2022Noevolve,
-        .anniversary2022Noevolve
+        .anniversary2022Noevolve,
+        .fall2022,
+        .fall2022Noevolve,
+        .holiday2022,
+        .jan2023Noevolve
     ]
 
     static var allCostumesInString: [String] {
@@ -127,7 +131,7 @@ extension PokemonDisplayProto.Costume {
         //case .costume8NoEvolve: return ["44"]
         //case .costume9NoEvolve: return ["45"]
         //case .costume10NoEvolve: return ["46"]
-        //case .gofest2021Noevolve: return ["47"]
+        case .gofest2021Noevolve: return ["47"]
         case .fashion2021Noevolve: return ["48"]
         case .halloween2021Noevolve: return ["49"]
         case .gems12021Noevolve: return ["50"]
@@ -137,6 +141,10 @@ extension PokemonDisplayProto.Costume {
         case .jan2022Noevolve: return ["54"]
         case .gofest2022Noevolve: return ["55"]
         case .anniversary2022Noevolve: return ["56"]
+        case .fall2022: return ["57"]
+        case .fall2022Noevolve: return ["58"]
+        case .holiday2022: return ["59"]
+        case .jan2023Noevolve: return ["60"]
         case .unset: return []
         case .UNRECOGNIZED: return []
         default:

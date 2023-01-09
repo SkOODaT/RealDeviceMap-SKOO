@@ -2317,7 +2317,11 @@ extension PokemonDisplayProto.Form {
         .pikachuTshirt01,
         .pikachuTshirt02,
         .pikachuFlying01,
-        .pikachuFlying02
+        .pikachuFlying02,
+        .ursalunaNormal,
+        .ursalunaShadow,
+        .ursalunaPurified,
+        .bearticWinter2020
     ]
 
     static var allFormsInString: [String] {
@@ -4637,6 +4641,10 @@ extension PokemonDisplayProto.Form {
         case .pikachuTshirt02: return ["25-2814"]
         case .pikachuFlying01: return ["25-2815"]
         case .pikachuFlying02: return ["25-2816"]
+        case .ursalunaNormal: return ["901-2817"]
+        case .ursalunaShadow: return ["901-2818"]
+        case .ursalunaPurified: return ["901-2819"]
+        case .bearticWinter2020: return ["614-2820"]
         case .unset: return []
         case .UNRECOGNIZED: return []
         default:
