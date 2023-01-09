@@ -1230,9 +1230,19 @@ public class ApiRequestHandler {
             let invasionTypeString = Localizer.global.get(value: "filter_invasion_grunt_type")
 
             var invasionData = [[String: Any]]()
-            let filteredGrunts = [1...7, 10...44, 47...50, 500...510].joined()
+            let filteredGrunts = [0...7, 10...44, 47...50, 500...510].joined()
             for i in filteredGrunts {
-                let grunt = Localizer.global.get(value: "grunt_\(i)")
+                var grunt = Localizer.global.get(value: "grunt_\(i)")
+                var gimage = ""
+
+                if i == 0 { 
+                    grunt = "Special Encounter"
+                    gimage = "<img class=\"lazy_load\" data-src=\"/static/img/pokemon/352.png\" " +
+                             "style=\"height:50px; width:50px;\">"
+                } else {
+                    gimage = "<img class=\"lazy_load\" data-src=\"/static/img/grunttype/\(i).png\" " +
+                             "style=\"height:50px; width:50px;\">"
+                }
 
                 let filter = """
                              <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -1274,8 +1284,7 @@ public class ApiRequestHandler {
                         "sort": i
                     ],
                     "name": grunt,
-                    "image": "<img class=\"lazy_load\" data-src=\"/static/img/grunttype/\(i).png\" " +
-                        "style=\"height:50px; width:50px;\">",
+                    "image": gimage,
                     "filter": filter,
                     "size": size,
                     "type": invasionTypeString

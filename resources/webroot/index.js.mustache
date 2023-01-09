@@ -35,7 +35,7 @@ let pokestopFilter = {}
 let pokestopFilterNew = {}
 
 let availableGrunts = [
-  1,2,3,4,5,6,7,
+  0,1,2,3,4,5,6,7,
   10,11,12,13,14,15,16,17,18,19,
   20,21,22,23,24,25,26,27,28,29,
   30,31,32,33,34,35,36,37,38,39,
@@ -2048,8 +2048,10 @@ function getPokestopSize (id) {
 }
 
 function getInvasionSize (id) {
+  if (id === 0) {
+    return 20
+  }
   const size = invasionFilter[id].size
-  //console.log(size)
   if (size === 'small') {
     return 20
   } else if (size === 'large') {
@@ -2795,7 +2797,11 @@ function getPokestopPopupContent (pokestop) {
   if (pokestop.quest_type !== null || pokestop.alternative_quest_type !== null) {
     stopBG = 'quest'
   } else if (isActiveInvasion) {
-    stopBG = 'rocket'
+	  if (pokestop.display_type == 8) {
+		stopBG = 'kecleon'
+	  } else {
+        stopBG = 'rocket'
+	  }
   } else if (isPoweredUp) {
     stopBG = 'power'
   } else if (isActiveLure) {
@@ -2830,6 +2836,9 @@ function getPokestopPopupContent (pokestop) {
     }
     if (invasionExpireDate >= now) {
       icon = 'grunttype/' + pokestop.grunt_type + '.png'
+    }
+    if (pokestop.display_type == 8) {
+      icon = 'pokemon/352.png'
     }
   }
   //TIP START
@@ -2911,10 +2920,15 @@ function getPokestopPopupContent (pokestop) {
       content += '<b>Lure End Time:</b> ' + lureExpireDate.toLocaleTimeString() + ' (' + getTimeUntill(lureExpireDate) + ')<br><br>'
     }
     if (invasionExpireDate >= now) {
-      var gruntType = getGruntName(pokestop.grunt_type)
-      content += '<b>Team Rocket Invasion</b><br>'
-      content += '<b>Grunt Type:</b> ' + gruntType + '<br>'
-      content += '<b>End Time:</b> ' + invasionExpireDate.toLocaleTimeString() + ' (' + getTimeUntill(invasionExpireDate) + ')<br><br>'
+      if (pokestop.display_type == 8) {
+        content += '<b>Special Encounter</b><br>'
+        content += '<b>End Time:</b> ' + invasionExpireDate.toLocaleTimeString() + ' (' + getTimeUntill(invasionExpireDate) + ')<br><br>'
+      } else {
+        var gruntType = getGruntName(pokestop.grunt_type)
+        content += '<b>Team Rocket Invasion</b><br>'
+        content += '<b>Grunt Type:</b> ' + gruntType + '<br>'
+        content += '<b>End Time:</b> ' + invasionExpireDate.toLocaleTimeString() + ' (' + getTimeUntill(invasionExpireDate) + ')<br><br>'
+      }
     }
     if (pokestop.quest_type !== null) {
       let conditions = pokestop.quest_conditions
@@ -3350,7 +3364,8 @@ function getCellPopupContent (cell) {
   content += 'lat:' + cell.lat + '<br>'
   content += ' lon:' + cell.lon + '<br><br>'
 
-  var url = 'api/set_data?scan_next=true&instance=&coords=[{%22lat%22:' + cell.lat + ',%22lon%22:' + cell.lon + '}]'
+  var instanceName = '!Pokemon - [SkOODaT] [77]'
+  var url = 'api/set_data?scan_next=true&instance=' + instanceName + '&coords=[{%22lat%22:' + cell.lat + ',%22lon%22:' + cell.lon + '}]'
   content += '{{#perm_admin}}<a href="' + url + '" target="_blank" title="Send A worker">Send Worker Here</a href>{{/perm_admin}}<br><br>'
 
   const updatedDate = new Date(cell.updated * 1000)
@@ -3972,7 +3987,6 @@ function getPokestopMarkerIcon (pokestop, ts) {
       rewardString = 'i0'
       rewardSize = 'i0'
     }
-
     let rewardId
     if (id === 7 && info !== undefined && info.pokemon_id !== undefined) {
       rewardId = 'p' + info.pokemon_id
@@ -3984,6 +3998,8 @@ function getPokestopMarkerIcon (pokestop, ts) {
     let lureId
     if (pokestop.lure_expire_timestamp >= ts) {
       lureId = getLureIconId(pokestop.lure_id)
+    } else if (pokestop.display_type == 8) {
+      lureId = 8
     } else {
       lureId = 0
     }
@@ -4004,6 +4020,8 @@ function getPokestopMarkerIcon (pokestop, ts) {
     let lureId
     if (pokestop.lure_expire_timestamp >= ts) {
       lureId = getLureIconId(pokestop.lure_id)
+    } else if (pokestop.display_type == 8) {
+      lureId = 8
     } else {
       lureId = 0
     }
@@ -4354,7 +4372,15 @@ function setPokestopMarker(pokestop) {
 
   if (rocketTimestamp > 0) {
     var timer = getTimeUntill(new Date(rocketTimestamp * 1000))
-    var type = "<img src='/static/img/grunttype/"+pokestop.grunt_type+".png' height='25' width='25'>"
+    var type = ""
+
+    if (pokestop.display_type == 8) {
+      type = "<img src='/static/img/pokemon/352.png' height='25' width='25'>"
+    } else {
+      type = "<img src='/static/img/grunttype/"+pokestop.grunt_type+".png' height='25' width='25'>"
+    }
+
+
     if (pokestop.marker.timerSet) {
       var text = ""
       if (showInvasions && showRocketIcons) {
