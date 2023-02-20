@@ -623,7 +623,7 @@ function loadStorage () {
     const defaultRaidFilter = {}
     defaultRaidFilter.timers = { show: true, size: 'normal' }
     let i
-    for (i = 1; i <= 8; i++) {
+    for (i = 1; i <= 10; i++) {
       defaultRaidFilter['l' + i] = { show: true, size: 'normal' }
     }
     for (i = 1; i <= '{{max_pokemon_id}}'; i++) {
@@ -640,7 +640,7 @@ function loadStorage () {
       showRaidTimers = raidFilter.timers.show
     }
     let i
-    for (i = 1; i <= 8; i++) {
+    for (i = 1; i <= 10; i++) {
       if (raidFilter['l' + i] === undefined) {
         raidFilter['l' + i] = { show: true, size: 'normal' }
       }
@@ -976,7 +976,7 @@ function initMap () {
     const defaultRaidFilter = {}
     defaultRaidFilter.timers = { show: true, size: 'normal' }
     let i
-    for (i = 1; i <= 8; i++) {
+    for (i = 1; i <= 10; i++) {
       defaultRaidFilter['l' + i] = { show: true, size: 'normal' }
     }
     for (i = 1; i <= '{{max_pokemon_id}}'; i++) {
@@ -993,7 +993,7 @@ function initMap () {
     const defaultRaidFilter = {}
     defaultRaidFilter.timers = { show: false, size: raidFilterNew.timers.size }
     let i
-    for (i = 1; i <= 8; i++) {
+    for (i = 1; i <= 10; i++) {
       defaultRaidFilter['l' + i] = { show: false, size: raidFilterNew['l' + i].size }
     }
     for (i = 1; i <= '{{max_pokemon_id}}'; i++) {
@@ -1590,7 +1590,7 @@ function loadData () {
       raidFilterExclude.push('timers')
     }
     let i
-    for (i = 1; i <= 8; i++) {
+    for (i = 1; i <= 10; i++) {
       if (raidFilter['l' + i].show === false) {
         raidFilterExclude.push('l' + i)
       }
@@ -3182,6 +3182,10 @@ function getGymPopupContent (gym) {
         pokemonName = 'Mega Legendary Egg'
       } else if (gym.raid_level === 8) {
         pokemonName = 'Ultra Beast Egg'
+      } else if (gym.raid_level === 9) {
+        pokemonName = 'Extended Egg'
+      } else if (gym.raid_level === 10) {
+        pokemonName = 'Primal Egg'
       } else {
         pokemonName = 'Raid Egg'
       }
@@ -3217,6 +3221,10 @@ function getGymPopupContent (gym) {
               pokemonName = '<b>Mega Legendary</b><br>'
             } else if (gym.raid_level === 8) {
               pokemonName = '<b>Ultra Beast</b><br>'
+            } else if (gym.raid_level === 9) {
+              pokemonName = '<b>Extended</b><br>'
+            } else if (gym.raid_level === 10) {
+              pokemonName = '<b>Primal</b><br>'
             } else {
               content += '<b>Level:</b> ' + gym.raid_level + '<br>'
             }

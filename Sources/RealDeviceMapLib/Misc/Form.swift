@@ -2321,7 +2321,11 @@ extension PokemonDisplayProto.Form {
         .ursalunaNormal,
         .ursalunaShadow,
         .ursalunaPurified,
-        .bearticWinter2020
+        .bearticWinter2020,
+        .latiasS,
+        .latiosS,
+        .gimmighoulNormal,
+        .gholdengoNormal
     ]
 
     static var allFormsInString: [String] {
@@ -4645,6 +4649,10 @@ extension PokemonDisplayProto.Form {
         case .ursalunaShadow: return ["901-2818"]
         case .ursalunaPurified: return ["901-2819"]
         case .bearticWinter2020: return ["614-2820"]
+        case .latiasS: return ["380-2821"]
+        case .latiosS: return ["381-2822"]
+        case .gimmighoulNormal: return ["999-2998"]
+        case .gholdengoNormal: return ["1000-3000"]
         case .unset: return []
         case .UNRECOGNIZED: return []
         default:

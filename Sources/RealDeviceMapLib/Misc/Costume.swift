@@ -70,7 +70,9 @@ extension PokemonDisplayProto.Costume {
         .fall2022,
         .fall2022Noevolve,
         .holiday2022,
-        .jan2023Noevolve
+        .jan2023Noevolve,
+        .gotour2023BandanaNoevolve,
+        .gotour2023HatNoevolve
     ]
 
     static var allCostumesInString: [String] {
@@ -145,6 +147,8 @@ extension PokemonDisplayProto.Costume {
         case .fall2022Noevolve: return ["58"]
         case .holiday2022: return ["59"]
         case .jan2023Noevolve: return ["60"]
+        case .gotour2023BandanaNoevolve: return ["61"]
+        case .gotour2023HatNoevolve: return ["62"]
         case .unset: return []
         case .UNRECOGNIZED: return []
         default:
