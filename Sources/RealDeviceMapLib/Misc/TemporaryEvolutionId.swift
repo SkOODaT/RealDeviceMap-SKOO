@@ -15,6 +15,7 @@ extension HoloTemporaryEvolutionId {
         .tempEvolutionMega,
         .tempEvolutionMegaX,
         .tempEvolutionMegaY,
+        .tempEvolutionPrimal,
         .tempEvolutionUnset
     ]
 
@@ -34,6 +35,7 @@ extension HoloTemporaryEvolutionId {
         case .tempEvolutionMega: return ["1"]
         case .tempEvolutionMegaX: return ["2"]
         case .tempEvolutionMegaY: return ["3"]
+        case .tempEvolutionPrimal: return ["4"]
         case .tempEvolutionUnset: return ["0"]
         case .UNRECOGNIZED: return []
         }
