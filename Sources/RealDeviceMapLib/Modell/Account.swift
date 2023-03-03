@@ -263,6 +263,9 @@ public class Account: WebHookEvent {
             ) || (
                 self.failed! == "suspended" &&
                 ((self.failedTimestamp ?? UInt32.max) <= now - 2592000)
+            ) || (
+                self.failed! == "unknown" &&
+                    ((self.failedTimestamp ?? UInt32.max) <= now - 86400)
             ))
         )
     }
@@ -415,7 +418,8 @@ public class Account: WebHookEvent {
                 (failed IS NULL AND first_warning_timestamp IS NULL) OR
                 (failed = 'GPR_RED_WARNING_2' AND warn_expire_timestamp IS NOT NULL AND
                  warn_expire_timestamp != 0 AND warn_expire_timestamp <= UNIX_TIMESTAMP()) OR
-                (failed = 'suspended' AND failed_timestamp <= UNIX_TIMESTAMP() - 2592000)
+                (failed = 'suspended' AND failed_timestamp <= UNIX_TIMESTAMP() - 2592000) OR
+                (failed = 'unknown' AND failed_timestamp <= UNIX_TIMESTAMP() - \(86400))
             )
             """
         }
@@ -647,7 +651,8 @@ public class Account: WebHookEvent {
                     (failed IS NULL AND first_warning_timestamp is NULL) OR
                     (failed = 'GPR_RED_WARNING_2' AND warn_expire_timestamp IS NOT NULL AND
                      warn_expire_timestamp != 0 AND warn_expire_timestamp <= UNIX_TIMESTAMP()) OR
-                    (failed = 'suspended' AND failed_timestamp <= UNIX_TIMESTAMP() - 2592000)
+                    (failed = 'suspended' AND failed_timestamp <= UNIX_TIMESTAMP() - 2592000) OR
+                    (failed = 'unknown' AND failed_timestamp <= UNIX_TIMESTAMP() - \(86400))
                 ) AND (
                     last_encounter_time IS NULL OR
                     UNIX_TIMESTAMP() - CAST(last_encounter_time AS SIGNED INTEGER) >= 7200 AND
@@ -849,7 +854,8 @@ public class Account: WebHookEvent {
                   (failed IS NULL AND first_warning_timestamp is NULL) OR
                   (failed = 'GPR_RED_WARNING_2' AND warn_expire_timestamp IS NOT NULL AND
                    warn_expire_timestamp != 0 AND warn_expire_timestamp <= UNIX_TIMESTAMP()) OR
-                  (failed = 'suspended' AND failed_timestamp <= UNIX_TIMESTAMP() - 2592000)
+                  (failed = 'suspended' AND failed_timestamp <= UNIX_TIMESTAMP() - 2592000) OR
+                  (failed = 'unknown' AND failed_timestamp <= UNIX_TIMESTAMP() - \(86400))
               ) as good,
               SUM(failed IN('banned', 'GPR_BANNED')) as banned,
               SUM(first_warning_timestamp IS NOT NULL) as warning,
