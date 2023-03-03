@@ -33,6 +33,7 @@ extension Item {
         .troyDiskMossy,
         .troyDiskMagnetic,
         .troyDiskRainy,
+        .troyDiskSparkly,
         // .xAttack,
         // .xDefense,
         // .xMiracle,

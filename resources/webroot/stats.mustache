@@ -282,6 +282,8 @@
                     updateCounter(".lured-glacial-pokestop-count", result.data.pokestops_lures_glacial);
                     updateCounter(".lured-mossy-pokestop-count", result.data.pokestops_lures_mossy);
                     updateCounter(".lured-magnetic-pokestop-count", result.data.pokestops_lures_magnetic);
+                    updateCounter(".lured-rainy-pokestop-count", result.data.pokestops_lures_rainy);
+                    updateCounter(".lured-sparkly-pokestop-count", result.data.pokestops_lures_sparkly);
                     updateCounter(".invasions-count", result.data.pokestops_invasions);
                     updateCounter(".quest-pokestop-count", result.data.pokestops_quests);
 
@@ -1134,6 +1136,22 @@
                                 <p class="list-group-item-text">{{stats_magnetic_lures}}</p>
                             </a>
                         </div>
+
+                        <div class="col-md-4 p-1">
+                            <a class="list-group-item">
+                                <h3 class="pull-right"><img src="./static/img/pokestop/5.png" width="64" height="64"/></h3>
+                                <h4 class="list-group-item-heading lured-rainy-pokestop-count">0</h4>
+                                <p class="list-group-item-text">{{stats_rainy_lures}}</p>
+                            </a>
+                        </div>
+                        <div class="col-md-4 p-1">
+                            <a class="list-group-item">
+                                <h3 class="pull-right"><img src="./static/img/pokestop/6.png" width="64" height="64"/></h3>
+                                <h4 class="list-group-item-heading lured-sparkly-pokestop-count">0</h4>
+                                <p class="list-group-item-text">{{stats_sparkly_lures}}</p>
+                            </a>
+                        </div>
+
                     </div>
                     <br>
                     <div class="row justify-content-center container">

@@ -1419,7 +1419,7 @@ public class ApiRequestHandler {
                 "type": pokestopOptionsString
             ])
 
-            for i in 1...5 {
+            for i in 1...6 {
                 let pokestopLure = Localizer.global.get(value: "filter_pokestop_lure_\(i)")
 
                 let filter = """
@@ -1448,6 +1448,10 @@ public class ApiRequestHandler {
                 <label class="btn btn-sm btn-size select-button-new" data-id="\(i)"
                  data-type="pokestop-lure" data-info="large">
                 <input type="radio" name="options" id="show" autocomplete="off">\(largeString)
+                </label>
+                <label class="btn btn-sm btn-size select-button-new" data-id="\(i)"
+                 data-type="pokestop-lure" data-info="huge">
+                <input type="radio" name="options" id="show" autocomplete="off">\(hugeString)
                 </label>
                 <label class="btn btn-sm btn-size select-button-new" data-id="\(i)"
                  data-type="pokestop-lure" data-info="huge">
